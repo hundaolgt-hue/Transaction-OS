@@ -5,6 +5,9 @@ import { snapshot, getEngagement } from '@/lib/repo/core';
 import { Panel, PanelHead, Stat, Grid, Empty } from '@/components/ui';
 import { STAGES, STAGE_META, TRANSACTION_LABEL, fmtDate, fmtMoney, titleCase, stageIndex, type Stage, type TransactionType } from '@/lib/domain';
 import PortalUpload from '@/components/PortalUpload';
+import Chart from '@/components/Chart';
+import { CountUp } from '@/components/Motion';
+import { donut, SCREEN_THEME } from '@/lib/charts/svg';
 
 export const dynamic = 'force-dynamic';
 
@@ -41,7 +44,7 @@ export default async function PortalEngagement({ params }: { params: Promise<{ i
       </header>
 
       <Grid min={190}>
-        <Stat label="Overall progress" value={`${s.completeness.percent}%`}
+        <Stat label="Overall progress" value={<CountUp value={s.completeness.percent} suffix="%" />}
           tone={s.completeness.percent >= 75 ? 'good' : s.completeness.percent >= 40 ? 'medium' : 'high'}
           sub="Of the documents your advisor needs" />
         <Stat label="Still needed" value={outstanding.length} tone={outstanding.length ? 'high' : 'good'} sub={`${outstanding.filter((r) => r.mandatory).length} required by the regulator`} />
@@ -49,6 +52,27 @@ export default async function PortalEngagement({ params }: { params: Promise<{ i
         <Stat label="Accepted" value={accepted.length} tone="good" sub={`of ${s.requirements.length} items`} />
       </Grid>
 
+      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(min(340px, 100%), 1fr))', alignItems: 'start' }}>
+      <Panel className="lift">
+        <PanelHead title="Your document checklist" sub="Status of every item your advisor has requested" />
+        <div className="panel-body">
+          <Chart label="Donut of document checklist status" maxWidth={420} svg={donut({
+            theme: SCREEN_THEME, width: 420, height: 200,
+            centre: `${s.completeness.percent}%`, sub: 'complete',
+            items: [
+              { label: 'Accepted', value: accepted.length, color: 'var(--good)' },
+              { label: 'Being reviewed', value: inReview.length, color: 'var(--low)' },
+              { label: 'Still needed', value: outstanding.length, color: 'var(--high)' },
+            ],
+          })} />
+          <p style={{ fontSize: 12.5, color: 'var(--ink-subtle)', margin: '10px 0 0', lineHeight: 1.55 }}>
+            {outstanding.length
+              ? `${outstanding.length} item${outstanding.length === 1 ? '' : 's'} still needed — upload below or ask the assistant what each one should contain.`
+              : 'Nothing outstanding from you right now. Your advisor is reviewing what you submitted.'}
+            {sharedFindings.length ? ` ${sharedFindings.length} point${sharedFindings.length === 1 ? '' : 's'} shared with you by your advisor.` : ''}
+          </p>
+        </div>
+      </Panel>
       <Panel>
         <PanelHead title="Where your transaction stands" sub={STAGE_META[s.engagement.stage as Stage]?.blurb} />
         <div className="panel-body">
@@ -77,6 +101,7 @@ export default async function PortalEngagement({ params }: { params: Promise<{ i
           </ol>
         </div>
       </Panel>
+      </div>
 
       <PortalUpload
         engagementId={id}

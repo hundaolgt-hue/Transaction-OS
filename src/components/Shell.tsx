@@ -6,11 +6,15 @@ import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import type { Session } from '@/lib/types';
 import NotificationBell from './NotificationBell';
+import Motion from './Motion';
+import AssistantDock from './AssistantDock';
 
 interface EngSummary { id: string; reference: string; name: string; client: string; stage: string }
 
 const NAV = [
   { href: '/dashboard', label: 'Dashboard', icon: 'grid' },
+  { href: '/graph', label: 'Knowledge graph', icon: 'graph' },
+  { href: '/assistant', label: 'Ask the OS', icon: 'chat' },
   { href: '/engagements', label: 'Engagements', icon: 'folder' },
   { href: '/clients', label: 'Clients', icon: 'users' },
   { href: '/agents', label: 'Agents', icon: 'cpu' },
@@ -138,6 +142,8 @@ export default function Shell({ session, orgName, unread, engagements, children 
       </div>
 
       {open ? <button aria-label="Close navigation" onClick={() => setOpen(false)} className="app-scrim" /> : null}
+      <Motion />
+      <AssistantDock audience="staff" />
 
 
     </div>
@@ -147,6 +153,8 @@ export default function Shell({ session, orgName, unread, engagements, children 
 function Icon({ name }: { name: string }) {
   const p: Record<string, React.ReactNode> = {
     grid: <><rect x="3" y="3" width="7" height="7" rx="1.5" /><rect x="14" y="3" width="7" height="7" rx="1.5" /><rect x="3" y="14" width="7" height="7" rx="1.5" /><rect x="14" y="14" width="7" height="7" rx="1.5" /></>,
+    graph: <><circle cx="6" cy="6" r="2.5" /><circle cx="18" cy="8" r="2.5" /><circle cx="9" cy="18" r="2.5" /><path d="M8.3 7.2l7.4.6M7 8.3l1.4 7.3M16.6 10l-5.7 6.4" /></>,
+    chat: <path d="M4 5h16v11H9l-5 4V5Z" />,
     folder: <path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" />,
     users: <><circle cx="9" cy="8" r="3" /><path d="M3 20a6 6 0 0 1 12 0" /><path d="M16 5.5a3 3 0 0 1 0 5.9" /><path d="M17 14.2a6 6 0 0 1 4 5.8" /></>,
     cpu: <><rect x="6" y="6" width="12" height="12" rx="2" /><path d="M10 3v3M14 3v3M10 18v3M14 18v3M3 10h3M3 14h3M18 10h3M18 14h3" /></>,

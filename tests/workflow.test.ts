@@ -217,14 +217,15 @@ describe('report honesty', () => {
 });
 
 describe('prospectus batching', () => {
-  it('successive batch runs advance through the document instead of redrafting the same sections', async () => {
+  it('the rule engine drafts every section in one run, and a second run leaves human work alone', async () => {
     const e = repo.createEngagement(orgId, { clientId, name: 'Batch test', transactionType: 'IPO' });
     await runAgent({ engagementId: e.id, orgId, agent: 'PROSPECTUS', triggeredById: userId, forceRules: true });
-    const afterOne = repo.listProspectus(e.id).filter((s) => s.status !== 'NOT_STARTED').length;
-    await runAgent({ engagementId: e.id, orgId, agent: 'PROSPECTUS', triggeredById: userId, forceRules: true });
-    const afterTwo = repo.listProspectus(e.id).filter((s) => s.status !== 'NOT_STARTED').length;
-    expect(afterOne).toBe(4);
-    expect(afterTwo).toBe(8);
+    const sections = repo.listProspectus(e.id);
+    expect(sections.every((s) => s.status !== 'NOT_STARTED')).toBe(true);
+    const edited = sections[3];
+    repo.updateProspectusSection(edited.id, { body: 'Edited by a reviewer.', generatedBy: 'HUMAN', status: 'IN_REVIEW' });
+    const second = await runAgent({ engagementId: e.id, orgId, agent: 'PROSPECTUS', triggeredById: userId, forceRules: true });
+    expect(second.summary).toMatch(/already has a draft/);
+    expect(repo.getProspectusSection(edited.id)!.body).toBe('Edited by a reviewer.');
   });
 });
-

@@ -74,6 +74,45 @@ so an empty findings list can never be mistaken for a clean opinion.
 under review, what has been accepted, their milestones, and only the findings an adviser
 has explicitly shared. Internal notes, draft reports and the rest of the book stay invisible.
 
+**Two-sided sign-in.** One login page with an *Advisory firm* / *Client* switch, a
+four-step sequence (email → password → session checks → welcome) and a guard that tells a
+client who picked the firm side (or vice versa) to switch, rather than signing them in to
+the wrong surface.
+
+**Knowledge graph.** `/graph` and the dashboard draw the whole operation — firm, people,
+clients, engagements, documents, missing documents, findings, risks, agents and rule packs —
+as a force-directed graph. Drag, zoom, filter by type, search, and click any node for its
+details and neighbours; critical nodes pulse.
+
+**Ask the OS.** A portfolio assistant (`/assistant`, plus a floating dock on every page)
+answers questions across all engagements: missing documents, critical findings, covenant
+headroom, ratios, fees, milestones, owners. A BM25 index and intent handlers answer from the
+records and cite them; with an Anthropic key, Claude reasons over the retrieved records.
+Client users get the same assistant scoped to their own engagement and shared findings only.
+
+**PDF outputs.** Legal DD (36 pp), Financial DD (36 pp), Combined DD & risk (51 pp) and the
+prospectus (30 pp) are typeset with pdfmake from the live engagement — cover, contents,
+KPI rows, ratio and covenant tables, SVG charts, rule-by-rule test results, the review
+trail and a draft watermark until approved. Unsupported statements are marked
+`[INFORMATION REQUIRED]` rather than invented.
+
+**Sample data room.** `src/lib/dataroom/` holds a fully fictional 33-document data room for
+Abyssinia Agro-Industries S.C. (balanced FY2023–25 financials, projections, articles,
+registers, contracts, board minutes, tax and licence records) with planted gaps so every
+agent has real work: no audit committee, missing beneficial-owner data, a change-of-control
+clause, a director loan, stale tax clearance, an insurance placeholder, and stretched DSO,
+interest cover and gearing headroom. `npm run dataroom:export` writes them as PDFs; the
+documents tab offers them as downloads.
+
+**Telegram and Slack.** Settings → Telegram & Slack: alerts at or above a chosen severity go
+to a Telegram group (bot token + chat ID, webhook registered in one click and verified with
+the secret-token header) and a Slack channel (incoming webhook). `/ask` in Telegram and
+`/advisor` in Slack (HMAC-v0 signed, 5-minute replay window) answer with the assistant.
+Secrets are stored server-side and only ever returned masked.
+
+**Motion.** Scroll-reveal panels, count-up figures, button ripples, animated meters and
+login art — all disabled under `prefers-reduced-motion`, and content is visible at rest.
+
 **Audit trail.** Logins, uploads, review decisions, agent runs, stage overrides, approvals —
 every material action with actor, entity and timestamp.
 

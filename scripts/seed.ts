@@ -10,6 +10,8 @@ import { createUser } from '../src/lib/auth';
 import * as repo from '../src/lib/repo/core';
 import { storeFile } from '../src/lib/documents';
 import { runAgent } from '../src/lib/agents/runner';
+import { ABYSSINIA_DATAROOM } from '../src/lib/dataroom/abyssinia';
+import { SYNTHETIC } from '../src/lib/dataroom/format';
 
 async function main() {
   // Remove any previous database so the seed is deterministic.
@@ -120,7 +122,7 @@ async function main() {
 
   const ipo = repo.createEngagement(orgId, {
     clientId: abyssinia.id,
-    name: 'Initial public offering of 3,000,000 ordinary shares on the ESX',
+    name: 'Initial public offering of 2,000,000 ordinary shares on the ESX',
     transactionType: 'IPO',
     targetRaise: 900_000_000,
     currency: 'ETB',
@@ -129,7 +131,7 @@ async function main() {
     leadAdvisorId: advisor.id,
     documentThreshold: 80,
     stage: 'DUE_DILIGENCE',
-    description: 'Full-scope transaction advisory: due diligence, valuation support, prospectus drafting and ECMA filing for a primary offer of 3,000,000 ordinary shares of ETB 300 par.',
+    description: 'Full-scope transaction advisory: due diligence, valuation support, prospectus drafting and ECMA filing for a primary offer of 2,000,000 ordinary shares of ETB 300 par at an indicative ETB 450 per share.',
   });
 
   const bond = repo.createEngagement(orgId, {
@@ -213,258 +215,8 @@ async function main() {
 
   interface Seed { code: string; title: string; body: string; accept?: boolean }
 
-  const ipoDocs: Seed[] = [
-    {
-      code: 'ECMA-C-001', title: 'Memorandum of Association (as amended 2024)', accept: true,
-      body: `MEMORANDUM OF ASSOCIATION OF ABYSSINIA AGRO-INDUSTRIES SHARE COMPANY
-
-  Registered under the Commercial Code of Ethiopia. Date of this consolidated text: 12 November 2024.
-
-  1. NAME. The name of the Company is Abyssinia Agro-Industries Share Company.
-  2. HEAD OFFICE. The head office of the Company is at Kality Industrial Zone, Akaki Kality Sub-city, Addis Ababa.
-  3. OBJECTS. The objects of the Company are the crushing of oilseed, the refining, packaging and distribution of edible oil, the production and sale of oilseed cake and meal, and all activities incidental thereto.
-  4. DURATION. The duration of the Company is indefinite.
-  5. CAPITAL. The subscribed capital of the Company is Birr 480,000,000 divided into 1,600,000 ordinary shares of Birr 300 each, fully subscribed and paid up.
-  6. LIABILITY. The liability of the shareholders is limited to the amount unpaid, if any, on the shares held by them.
-  7. FOUNDERS. The founding shareholders and their subscriptions are set out in the schedule to this memorandum.
-
-  Signed at Addis Ababa this 12th day of November 2024.`,
-    },
-    {
-      code: 'ECMA-C-002', title: 'Articles of Association (in force)', accept: true,
-      body: `ARTICLES OF ASSOCIATION OF ABYSSINIA AGRO-INDUSTRIES SHARE COMPANY
-  Consolidated text as at 12 November 2024.
-
-  PART I — SHARES
-  Article 3. The share capital is divided into ordinary shares of Birr 300 each, carrying one vote per share at general meetings.
-  Article 4. Shares are indivisible as regards the Company.
-  Article 5. The Company shall maintain a register of shareholders at its head office.
-
-  PART II — GENERAL MEETINGS
-  Article 12. The ordinary general meeting shall be held within four months of the close of each financial year.
-  Article 13. An extraordinary general meeting may be convened by the board or on the requisition of shareholders holding not less than one tenth of the subscribed capital.
-  Article 15. Resolutions amending these articles require a majority of two thirds of the votes of shares represented.
-
-  PART III — THE BOARD
-  Article 20. The Company shall be managed by a board of not fewer than five and not more than nine directors elected by the general meeting for a term of three years.
-  Article 24. The board shall meet not less than four times in each financial year.
-  Article 27. The board shall appoint a chief executive officer and determine the terms of that appointment.
-
-  PART IV — ACCOUNTS AND AUDIT
-  Article 31. The financial year of the Company runs from 8 July to 7 July.
-  Article 32. The general meeting shall appoint an external auditor registered with the Accounting and Auditing Board of Ethiopia.
-  Article 34. The board shall submit audited accounts to the ordinary general meeting.
-
-  PART V — DISSOLUTION
-  Article 40. On dissolution the assets remaining after the discharge of liabilities shall be distributed among shareholders in proportion to their holdings.
-
-  Signed at Addis Ababa this 12th day of November 2024.`,
-    },
-    {
-      code: 'ECMA-C-003', title: 'Certificate of Commercial Registration', accept: true,
-      body: `FEDERAL DEMOCRATIC REPUBLIC OF ETHIOPIA
-  MINISTRY OF TRADE AND REGIONAL INTEGRATION
-  CERTIFICATE OF COMMERCIAL REGISTRATION
-
-  Registration number: MT/AA/2/0000451892/2018
-  Name of business organisation: Abyssinia Agro-Industries Share Company
-  Legal form: Share Company
-  Date of registration: 14 March 2018
-  Registered capital: Birr 480,000,000
-  Principal business: Manufacture of vegetable and animal oils and fats
-  Head office: Kality Industrial Zone, Akaki Kality Sub-city, Addis Ababa
-  Renewed: 06 October 2025. Valid until 05 October 2026.`,
-    },
-    {
-      code: 'ECMA-C-004', title: 'Business Licence 2026', accept: true,
-      body: `BUSINESS LICENCE
-  Licence number: AA/BL/09/2018/R8
-  Issued to: Abyssinia Agro-Industries Share Company
-  Field of business: Manufacture of edible oil; wholesale of oilseed cake
-  Date of issue: 06 October 2025
-  Valid to: 05 October 2026
-  Issuing authority: Addis Ababa City Administration Trade Bureau`,
-    },
-    {
-      code: 'ECMA-C-005', title: 'Register of Shareholders as at 30 June 2026', accept: true,
-      body: `REGISTER OF SHAREHOLDERS — ABYSSINIA AGRO-INDUSTRIES S.C.
-  As at 30 June 2026. Total issued: 1,600,000 ordinary shares of Birr 300.
-
-  Holder | Nationality | Shares | % | Paid up
-  Getachew Mengistu | Ethiopian | 512,000 | 32.0% | Fully paid
-  Hiwot Assefa | Ethiopian | 288,000 | 18.0% | Fully paid
-  Kality Holdings PLC | Ethiopian | 240,000 | 15.0% | Fully paid
-  Rift Valley Investments PLC | Ethiopian | 176,000 | 11.0% | Fully paid
-  Tigist Alemu | Ethiopian | 96,000 | 6.0% | Fully paid
-  Employee Share Trust | Ethiopian | 80,000 | 5.0% | Fully paid
-  Other holders (41) | Ethiopian | 208,000 | 13.0% | Fully paid
-
-  Certified by the Company Secretary, 2 July 2026.`,
-    },
-    {
-      code: 'ECMA-G-001', title: 'Board Resolution of 18 April 2026', accept: true,
-      body: `EXTRACT FROM THE MINUTES OF A MEETING OF THE BOARD OF DIRECTORS
-  ABYSSINIA AGRO-INDUSTRIES SHARE COMPANY
-  Held at the head office on 18 April 2026 at 09:30.
-
-  Present: Getachew Mengistu (Chair), Hiwot Assefa, Dr Alemayehu Fikre, Tigist Alemu, Bekele Roba, Sara Mohammed.
-
-  RESOLVED:
-  1. That the Company proceed with an initial public offering of ordinary shares for admission to the Ethiopian Securities Exchange.
-  2. That Rapha Capital Advisors be appointed transaction adviser to the offer.
-  3. That the Chief Executive Officer be authorised to execute all documents necessary to give effect to resolution 1.
-  4. That the board approve the appointment of the reporting accountant.
-
-  The meeting closed at 11:15.
-  Signed: Getachew Mengistu, Chairman.`,
-    },
-    {
-      code: 'ECMA-G-003', title: 'Board and Senior Management Profiles', accept: true,
-      body: `DIRECTORS AND SENIOR MANAGEMENT — ABYSSINIA AGRO-INDUSTRIES S.C.
-
-  Getachew Mengistu — Chairman, non-executive. BSc Agricultural Economics (Haramaya). Thirty-one years in oilseed trading. Founder of Kality Holdings PLC. Holds 32.0% of the issued capital.
-  Hiwot Assefa — Non-executive director. MBA (Addis Ababa University). Former Deputy CEO, Awash Bank. Holds 18.0%.
-  Dr Alemayehu Fikre — Independent non-executive director. PhD Food Technology. No shareholding. Declaration of interest filed 20 April 2026: none.
-  Tigist Alemu — Chief Finance Officer and executive director. ACCA. Twelve years in manufacturing finance. Holds 6.0%.
-  Bekele Roba — Chief Executive Officer. MSc Industrial Engineering. Appointed 2021.
-  Sara Mohammed — Independent non-executive director. LLB, LLM Commercial Law. Practising advocate. No shareholding.
-
-  Fit and proper declarations signed by each of the above on 20 April 2026. No director has been the subject of a bankruptcy order or a disqualification order.`,
-    },
-    {
-      code: 'ECMA-F-001', title: 'Audited Financial Statements FY2023–FY2025', accept: true,
-      body: `ABYSSINIA AGRO-INDUSTRIES SHARE COMPANY
-  FINANCIAL STATEMENTS FOR THE YEARS ENDED 7 JULY 2023, 2024 AND 2025
-
-  STATEMENT OF COMPLIANCE
-  These financial statements have been prepared in accordance with International Financial Reporting Standards (IFRS) as issued by the International Accounting Standards Board and the Financial Reporting Proclamation No. 847/2014.
-
-  STATEMENT OF FINANCIAL POSITION (Birr '000)
-                                     FY2025      FY2024      FY2023
-  Property, plant and equipment    1,842,110   1,612,455   1,388,902
-  Right-of-use assets                 96,400      88,220      79,650
-  Inventories                        612,880     498,331     421,004
-  Trade and other receivables        388,220     341,190     299,776
-  Cash and cash equivalents          142,655     188,402     121,338
-  Total assets                     3,082,265   2,728,598   2,310,670
-  Share capital                      480,000     480,000     400,000
-  Retained earnings                  744,118     602,440     468,210
-  Borrowings — non-current         1,102,400   1,010,880     902,115
-  Trade and other payables           532,997     468,778     407,995
-  Lease liabilities                  102,750      94,500      86,350
-  Total equity and liabilities     3,082,265   2,728,598   2,310,670
-
-  STATEMENT OF PROFIT OR LOSS AND OTHER COMPREHENSIVE INCOME (Birr '000)
-  Revenue                          2,884,506   2,461,880   2,095,440
-  Cost of sales                   (2,158,330) (1,861,220) (1,602,118)
-  Gross profit                       726,176     600,660     493,322
-  Administrative expenses           (288,412)   (252,008)   (221,556)
-  Finance costs                     (182,540)   (166,900)   (148,220)
-  Profit before tax                  255,224     181,752     123,546
-  Income tax expense                 (76,567)    (54,526)    (37,064)
-  Profit for the year                178,657     127,226      86,482
-
-  STATEMENT OF CHANGES IN EQUITY
-  Movements in share capital and retained earnings for each year are set out in note 18.
-
-  STATEMENT OF CASH FLOWS (Birr '000)
-  Net cash from operating activities   402,118     368,440     288,776
-  Net cash used in investing          (388,220)   (302,110)   (256,880)
-  Net cash from financing              (59,645)      1,734     (44,220)
-
-  NOTES TO THE FINANCIAL STATEMENTS
-  Note 1 — Basis of preparation. Historical cost, except where stated.
-  Note 12 — Borrowings. Facilities with Awash Bank and the Development Bank of Ethiopia. See note 12.3 for covenants.
-  Note 18 — Changes in equity.
-  Note 22 — Commitments and contingencies.`,
-    },
-    {
-      code: 'ECMA-F-003', title: 'Independent Auditor’s Report FY2025', accept: true,
-      body: `INDEPENDENT AUDITOR'S REPORT
-  To the Shareholders of Abyssinia Agro-Industries Share Company
-
-  Opinion
-  We have audited the financial statements of Abyssinia Agro-Industries Share Company, which comprise the statement of financial position as at 7 July 2025, and the statement of profit or loss and other comprehensive income, statement of changes in equity and statement of cash flows for the year then ended, and notes to the financial statements.
-
-  In our opinion, the accompanying financial statements present fairly, in all material respects, the financial position of the Company as at 7 July 2025 and its financial performance and its cash flows for the year then ended in accordance with International Financial Reporting Standards.
-
-  Basis for Opinion
-  We conducted our audit in accordance with International Standards on Auditing. We are independent of the Company in accordance with the IESBA Code and we have fulfilled our other ethical responsibilities.
-
-  Key Audit Matters
-  Valuation of inventories and impairment of trade receivables were the key audit matters.
-
-  Addis Audit and Consultancy Partners
-  Registered with the Accounting and Auditing Board of Ethiopia, registration no. AABE/AF/0187.
-  Addis Ababa, 14 October 2025.`,
-    },
-    {
-      code: 'ECMA-F-002', title: 'Interim Financial Statements — nine months to 7 April 2026',
-      body: `ABYSSINIA AGRO-INDUSTRIES S.C.
-  CONDENSED INTERIM FINANCIAL INFORMATION
-  For the nine months ended 7 April 2026 (reviewed, not audited)
-
-  Revenue for the period: Birr 2,341,880,000
-  Gross profit: Birr 601,220,000
-  Profit before tax: Birr 214,556,000
-  Total assets at 7 April 2026: Birr 3,288,440,000
-
-  Prepared on the basis of the accounting policies applied in the annual financial statements.`,
-    },
-    {
-      code: 'ECMA-T-001', title: 'Tax Clearance Certificate',
-      body: `MINISTRY OF REVENUE — LARGE TAXPAYERS BRANCH
-  TAX CLEARANCE CERTIFICATE
-
-  This is to certify that Abyssinia Agro-Industries Share Company, TIN 0045678901, has settled its tax obligations in respect of business profit tax, value added tax, withholding tax and employment income tax up to the date of this certificate.
-
-  Date of issue: 11 February 2025.
-  This certificate is valid for six months from the date of issue.`,
-    },
-    {
-      code: 'ECMA-L-001', title: 'Litigation and Contingency Schedule',
-      body: `SCHEDULE OF LEGAL PROCEEDINGS — ABYSSINIA AGRO-INDUSTRIES S.C.
-  As at 30 June 2026.
-
-  1. Abyssinia Agro-Industries S.C. v. Modjo Transport PLC — Federal First Instance Court, file no. 284/2024. Claim for damages arising from spoiled consignment. Status: pleadings closed.
-  2. Wegagen Bank S.C. v. Abyssinia Agro-Industries S.C. — Federal High Court, file no. 119/2025. Dispute over letter-of-credit charges. Status: awaiting judgment.
-  3. Employment claim by 14 former employees of the Bishoftu plant — Federal First Instance Court, Labour Division, file no. 902/2025. Status: at mediation.
-  4. Tax objection — assessment of business profit tax for FY2022. Status: before the Tax Appeal Commission.
-
-  Prepared by the Company Secretary.`,
-    },
-    {
-      code: 'ECMA-L-002', title: 'Schedule of Material Contracts',
-      body: `MATERIAL CONTRACTS — ABYSSINIA AGRO-INDUSTRIES S.C.
-
-  1. Oilseed supply agreement with Oromia Agricultural Cooperative Federation, dated 3 January 2024, five-year term. Minimum annual offtake of 42,000 tonnes.
-  2. Distribution agreement with Ethio Trading House PLC, dated 19 August 2023, three-year term, exclusive for the Addis Ababa and Oromia markets. Clause 18.2 provides that upon a change of control of the Company the distributor may terminate on sixty days' notice.
-  3. Plant construction and supply contract with Sichuan Grain Machinery Co. Ltd, dated 2 February 2025, for the fourth crushing line.
-  4. Lease of the Adama warehouse from Adama City Administration, twenty-year lease commencing 1 July 2019.
-  5. Facility agreement with Awash Bank S.C., dated 14 May 2024, Birr 620,000,000 term loan.`,
-    },
-    {
-      code: 'ECMA-F-005', title: 'Use of Proceeds Statement',
-      body: `USE OF PROCEEDS — PROPOSED OFFER
-  The net proceeds of the offer will be applied to the construction and commissioning of a fourth crushing line at the Kality plant, to the expansion of the refined-oil packaging capacity, and to general working capital purposes.
-
-  The board will determine the precise allocation having regard to the progress of the construction programme at the time the proceeds are received. Where the offer is not fully subscribed, priority will be given to the crushing line.`,
-    },
-    {
-      code: 'ECMA-R-003', title: 'AML / KYC Pack',
-      body: `CUSTOMER DUE DILIGENCE FILE — ABYSSINIA AGRO-INDUSTRIES S.C.
-
-  Beneficial owners holding 10% or more:
-  - Getachew Mengistu, Ethiopian national, passport EP1284471, 32.0% direct.
-  - Hiwot Assefa, Ethiopian national, passport EP0994218, 18.0% direct.
-  - Kality Holdings PLC, 15.0%. Ultimate beneficial owner: Getachew Mengistu (81% of Kality Holdings).
-  - Rift Valley Investments PLC, 11.0%. Ultimate beneficial owner: Hiwot Assefa (64%).
-
-  Identity documents for each of the above are held on file. Source of wealth: oilseed trading and prior manufacturing interests.
-
-  Prepared by the compliance officer, 22 April 2026.`,
-    },
-  ];
+  // The IPO engagement gets the full synthetic data room: one document per checklist item.
+  const ipoDocs: Seed[] = ABYSSINIA_DATAROOM.map((d) => ({ code: d.code ?? '', title: d.title, body: d.body, accept: d.accept }));
 
   const bondDocs: Seed[] = [
     {
@@ -622,7 +374,8 @@ async function main() {
     const reqs = repo.listRequirements(engagementId);
     for (const s of seeds) {
       const req = reqs.find((r) => r.code === s.code);
-      const bytes = Buffer.from(s.body, 'utf8');
+      const body = s.body.startsWith('SYNTHETIC') ? s.body : `${SYNTHETIC}\n\n${s.body}`;
+    const bytes = Buffer.from(body, 'utf8');
       const stored = await storeFile(engagementId, `${s.title.replace(/[^a-zA-Z0-9]+/g, '-').toLowerCase()}.txt`, 'text/plain', bytes);
       const doc = repo.createDocument({
         engagementId,
@@ -650,17 +403,6 @@ async function main() {
   await seedDocs(bond.id, bondDocs, analyst.id);
   await seedDocs(ma.id, maDocs, analyst.id);
 
-  // Mark a few optional items waived so the completeness maths is exercised.
-  const ipoReqs = repo.listRequirements(ipo.id);
-  for (const code of ['ECMA-L-004', 'ECMA-L-006', 'ECMA-R-002']) {
-    const r = ipoReqs.find((x) => x.code === code);
-    if (r) repo.updateRequirement(r.id, { status: 'WAIVED', waivedReason: 'Not applicable to this issuer; confirmed with the client on 2 September 2026.' });
-  }
-  for (const code of ['ECMA-G-004', 'ECMA-F-004', 'ECMA-F-006', 'ECMA-F-007']) {
-    const r = ipoReqs.find((x) => x.code === code);
-    if (r) repo.updateRequirement(r.id, { status: 'REQUESTED' });
-  }
-
   console.log('✓ documents seeded and filed against the checklist');
 
   // --------------------------------------------------------------- meetings
@@ -677,7 +419,7 @@ async function main() {
 
   Dawit to prepare the working capital analysis once the interim accounts are reviewed.
   Meron will obtain the related-party schedule from the company secretary this week.
-  Action: Tigist to send the facility agreements including the Awash Bank covenant schedule by Friday.
+  Action: Tigist to send the facility agreements including the Meskel Commercial Bank covenant schedule by Friday.
   Action: Dawit to draft the ratio pack for the MD&A section.
   The board has asked whether the filing can be pulled forward by two weeks. Agreed to revisit once the prospectus is at 70%.`,
     organiserId: advisor.id,

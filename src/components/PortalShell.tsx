@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import NotificationBell from './NotificationBell';
+import Motion from './Motion';
+import AssistantDock from './AssistantDock';
 import type { Session } from '@/lib/types';
 
 export default function PortalShell({ session, advisorName, unread, children }: {
@@ -53,6 +55,8 @@ export default function PortalShell({ session, advisorName, unread, children }: 
 
       <main className="portal-content">{children}</main>
 
+      <Motion />
+      <AssistantDock audience="client" />
       <footer style={{ borderTop: '1px solid var(--hairline)', padding: '14px 16px', textAlign: 'center', fontSize: 11.5, color: 'var(--ink-faint)' }}>
         This portal shows the progress of your transaction. Internal review notes and draft reports are not shown here
         until {advisorName} releases them.

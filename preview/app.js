@@ -4,7 +4,7 @@
 (function () {
   const { repo, progress, domain, RULE_PACKS, getRulePack, runAgent, suggestRequirement, renderMarkdown, notify } = AOS;
   const D = domain;
-  const STORE_KEY = 'advisoros-preview-db-v1';
+  const STORE_KEY = 'advisoros-preview-db-v2';
   let SQLDB, ORG, STAFF, CLIENT_USER, role = 'staff', sideOpen = false, busy = null;
 
   // ---------------------------------------------------------------- helpers
@@ -25,7 +25,7 @@
     return `<div>${label !== false ? `<div class="row" style="justify-content:space-between;margin-bottom:5px"><span class="small muted">${esc(label || '')}</span><span class="mono" style="font-weight:600">${p}%</span></div>` : ''}<div class="meter ${cls}"><i style="width:${p}%"></i></div></div>`;
   };
   const toneColor = (t) => (t ? `var(--${t})` : 'var(--ink)');
-  const stat = (label, value, sub, tone) => `<div class="panel stat"><div class="eyebrow">${esc(label)}</div><div class="v" style="color:${toneColor(tone)}">${esc(value)}</div>${sub ? `<div class="s">${esc(sub)}</div>` : ''}</div>`;
+  const stat = (label, value, sub, tone) => `<div class="panel stat lift"><div class="eyebrow">${esc(label)}</div><div class="v" style="color:${toneColor(tone)}">${/^\d+%?$/.test(String(value)) ? `<span data-count="${parseInt(value, 10)}" data-suffix="${String(value).endsWith('%') ? '%' : ''}">${esc(value)}</span>` : esc(value)}</div>${sub ? `<div class="s">${esc(sub)}</div>` : ''}</div>`;
   const empty = (t, b) => `<div class="empty"><b>${esc(t)}</b>${b ? `<span>${esc(b)}</span>` : ''}</div>`;
   const panel = (title, sub, body, actions = '') => `<section class="panel"><div class="ph"><div><h2>${esc(title)}</h2>${sub ? `<p>${esc(sub)}</p>` : ''}</div>${actions ? `<div class="row">${actions}</div>` : ''}</div>${body}</section>`;
   const healthColor = (h) => (h.tone === 'good' ? 'var(--good)' : h.tone === 'watch' ? 'var(--high)' : 'var(--critical)');
@@ -83,18 +83,18 @@
     book: '<path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5v-15Z"/>',
     shield: '<path d="M12 3l7 3v6c0 4.5-3 8-7 9-4-1-7-4.5-7-9V6l7-3Z"/>',
     menu: '<path d="M3 6h18M3 12h18M3 18h18"/>',
+    graph: '<circle cx="6" cy="6" r="2.5"/><circle cx="18" cy="8" r="2.5"/><circle cx="9" cy="18" r="2.5"/><path d="M8.3 7.2l7.4.6M7 8.3l1.4 7.3M16.6 10l-5.7 6.4"/>',
+    chat: '<path d="M4 5h16v11H9l-5 4V5Z"/>',
+    bell: '<path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4l2-2Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   };
   const icon = (n) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
   const mark = `<svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="var(--accent-ink)"/></svg>`;
 
   function banner() {
-    return `<div class="banner"><span><b>Interactive preview.</b> The production engine running in your browser — rule packs, scoring and agents in rule-engine mode. Changes stay in this browser.</span>
-      <span class="row" style="margin-left:auto">
-        <label class="small muted" for="role-switch">Viewing as</label>
-        <select id="role-switch" class="select btn sm" style="height:26px;padding:0 8px">
-          <option value="staff" ${role === 'staff' ? 'selected' : ''}>Hundaol Girma — Managing Partner</option>
-          <option value="client" ${role === 'client' ? 'selected' : ''}>Tigist Alemu — Client (Abyssinia Agro)</option>
-        </select>
+    const who = role === 'client' ? CLIENT_USER : STAFF;
+    return `<div class="banner"><span><b>Interactive preview.</b> The production engine running in your browser — rule packs, scoring, agents, knowledge graph, assistant and PDF typesetting. Company data is fictional; changes stay in this browser.</span>
+      <span class="row" style="margin-left:auto"><span class="small muted">Signed in as <b>${esc(who.name)}</b> · ${role === 'client' ? 'client portal' : 'firm'}</span>
+        <button class="btn sm" data-act="signout">Sign out</button>
         <button class="btn sm" data-act="reset">Reset demo</button>
       </span></div>`;
   }
@@ -103,7 +103,7 @@
     const engs = repo.listEngagements(ORG.id);
     const clients = new Map(repo.listClients(ORG.id).map((c) => [c.id, c.name]));
     const unread = notify.unreadCount(STAFF.id);
-    const nav = [['dashboard', 'Dashboard', 'grid'], ['engagements', 'Engagements', 'folder'], ['clients', 'Clients', 'users'], ['agents', 'Agents', 'cpu'], ['rules', 'Rule packs', 'book'], ['audit', 'Audit trail', 'shield']];
+    const nav = [['dashboard', 'Dashboard', 'grid'], ['graph', 'Knowledge graph', 'graph'], ['assistant', 'Ask the OS', 'chat'], ['engagements', 'Engagements', 'folder'], ['clients', 'Clients', 'users'], ['agents', 'Agents', 'cpu'], ['rules', 'Rule packs', 'book'], ['audit', 'Audit trail', 'shield'], ['integrations', 'Telegram & Slack', 'bell']];
     return `<div class="root">
       <aside class="side" data-open="${sideOpen}">
         <div class="brand">${mark}<div><b>${esc(ORG.name)}</b><small>Advisor OS</small></div></div>
@@ -112,8 +112,8 @@
           ${engs.map((e) => `<a href="#/e/${e.id}" ${path[1] === e.id ? 'aria-current="page"' : ''}><div class="mono xs" style="color:${path[1] === e.id ? 'var(--accent)' : 'var(--ink-faint)'}">${esc(e.reference)}</div><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(clients.get(e.clientId))}</div></a>`).join('')}
         </div>
         <div style="padding:10px;border-top:1px solid var(--hairline);display:flex;gap:8px;align-items:center">
-          <span style="width:26px;height:26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">HG</span>
-          <div><div class="small" style="font-weight:500">${esc(STAFF.name)}</div><div class="xs faint">Managing Partner</div></div>
+          <span style="width:26px;height:26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:inline-flex;align-items:center;justify-content:center;font-size:11px;font-weight:600">${esc(STAFF.name.split(" ").map((x) => x[0]).join("").slice(0, 2))}</span>
+          <div><div class="small" style="font-weight:500">${esc(STAFF.name)}</div><div class="xs faint">${esc(STAFF.title || STAFF.role)}</div></div>
         </div>
       </aside>
       <button class="scrim" data-open="${sideOpen}" data-act="close-side" aria-label="Close navigation"></button>
@@ -142,8 +142,8 @@
     const audit = repo.listAudit(ORG.id, { limit: 10 });
 
     return `<div class="stack">
-      <header><div class="eyebrow">Practice overview</div><h1 class="h1">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, Hundaol</h1>
-      <p class="sub">${active.length} active engagements across ${repo.listClients(ORG.id).length} clients.</p></header>
+      <header><div class="eyebrow">Practice overview</div><h1 class="h1">Good ${new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening'}, <span class="shine">${esc(STAFF.name.split(' ')[0])}</span></h1>
+      <p class="sub">${active.length} active engagements across ${repo.listClients(ORG.id).length} clients, worth ${D.fmtMoney(active.reduce((a, s) => a + (s.engagement.targetRaise || 0), 0))} in target raises.${crit ? ` <b style="color:var(--critical)">${crit} critical finding${crit === 1 ? ' needs' : 's need'} attention.</b>` : ''} ${attention.length} items are blocking progress.</p></header>
       <div class="stats">
         ${stat('Active engagements', active.length)}
         ${stat('Pipeline value', D.fmtMoney(active.reduce((a, s) => a + (s.engagement.targetRaise || 0), 0)), 'Target raise across active mandates')}
@@ -151,6 +151,8 @@
         ${stat('Open findings', open, `${crit} critical`, crit ? 'critical' : 'medium')}
         ${stat('Fees outstanding', D.fmtMoney(snaps.reduce((a, s) => a + s.fees.outstanding, 0)), 'Invoiced, not yet received')}
       </div>
+      ${panel('Knowledge graph', 'Every client, engagement, gap, finding, risk, person and agent — and how they connect', `<div class="pb">${graphBlock(440, 'dash')}</div>`, '<a class="btn sm" href="#/graph">Full screen</a>')}
+      ${dashCharts(snaps)}
       <div class="cols">
         ${panel('Engagements', 'Health across the active book', `<div class="tw"><table style="min-width:540px"><thead><tr><th>Engagement</th><th>Stage</th><th style="width:130px">Documents</th><th class="num">Findings</th><th class="num">Health</th></tr></thead><tbody>
           ${active.map((s) => `<tr><td><a href="#/e/${s.engagement.id}"><div style="font-weight:500">${esc(s.client.name)}</div><div class="mono faint" style="white-space:nowrap">${esc(s.engagement.reference)} · ${esc(txLabel(s.engagement.transactionType))}</div></a></td>
@@ -239,7 +241,10 @@
     const body = {
       '': overview, documents, findings, agents, reports, risks, prospectus, contract, meetings,
     }[tab || ''];
-    return `<div class="stack">${head}${body ? body(s, pack) : empty('Unknown tab')}</div>`;
+    const dataroom = tab === 'documents' && s.client.name === COMPANY.name
+      ? panel(`Sample data room — ${COMPANY.name}`, `${ABYSSINIA_DATAROOM.length} fictional source documents the agents analysed, typeset as PDFs. Every page is marked fictional.`, `<div class="pb">${pdfCards(ABYSSINIA_DATAROOM.map((d, i) => ({ key: 'DR-' + i, title: d.title, sub: d.code || 'Supporting document' })))}</div>`)
+      : '';
+    return `<div class="stack">${head}${body ? body(s, pack) : empty('Unknown tab')}${dataroom}</div>`;
   }
 
   function overview(s) {
@@ -325,10 +330,14 @@
   let reportId = null, editSection = null;
   function reports(s) {
     const list = repo.listReports(s.engagement.id);
-    if (!list.length) return panel('Reports', '', empty('No reports yet', 'Run the Legal, Financial or Risk agent to produce a draft for expert review.'));
+    if (!list.length) return panel('Reports', '', empty('No reports yet', 'Run the Legal, Financial or Risk agent to produce a draft for expert review.')) + `<div style="margin-top:16px">${panel('Due diligence reports (PDF)', 'Available even before the agents run — gaps are shown as gaps', `<div class="pb">${pdfCards([{ key: 'LEGAL', eid: s.engagement.id, title: 'Legal due diligence', sub: '30+ pages' }, { key: 'FINANCIAL', eid: s.engagement.id, title: 'Financial due diligence', sub: '30+ pages' }, { key: 'COMBINED', eid: s.engagement.id, title: 'Combined DD & risk report', sub: '50+ pages' }])}</div>`)}</div>`;
     const r = list.find((x) => x.id === reportId) || list[0];
     let sections = []; try { sections = JSON.parse(r.sections); } catch { /* ignore */ }
-    return `<div class="split">
+    const pdfs = panel('Due diligence reports (PDF)', 'Typeset in your browser from the live engagement — findings, ratios, covenants, charts and the review trail', `<div class="pb">${pdfCards([
+      { key: 'LEGAL', eid: s.engagement.id, title: 'Legal due diligence', sub: '30+ pages · corporate, licences, contracts, litigation' },
+      { key: 'FINANCIAL', eid: s.engagement.id, title: 'Financial due diligence', sub: '30+ pages · QoE, ratios, working capital, IFRS' },
+      { key: 'COMBINED', eid: s.engagement.id, title: 'Combined DD & risk report', sub: '50+ pages · legal, financial and risk register' }])}</div>`);
+    return `${pdfs}<div class="split" style="margin-top:16px">
       <section class="panel"><div class="ph"><h2>Reports</h2></div><div class="idx">${list.map((x) => `<button data-act="report" data-k="${x.id}" ${x.id === r.id ? 'aria-current="true"' : ''}><div class="row" style="gap:6px;margin-bottom:3px">${chip(tc(x.kind))}<span class="mono faint">v${x.version}</span>${st(x.status)}</div><div class="small" style="font-weight:${x.id === r.id ? 600 : 450};line-height:1.4">${esc(x.title)}</div></button>`).join('')}</div></section>
       <div class="stack" style="gap:12px">
         <section class="panel"><div class="ph"><div><h2>${esc(r.title)}</h2><p>Version ${r.version} · ${tc(r.status)}</p></div><div class="row">${r.status === 'DRAFT' ? `<button class="btn sm" data-act="rstatus" data-id="${r.id}" data-k="IN_REVIEW">Take for review</button>` : ''}${!['APPROVED', 'SUPERSEDED'].includes(r.status) ? `<button class="btn sm primary" data-act="rstatus" data-id="${r.id}" data-k="APPROVED">Approve</button>` : ''}</div></div>
@@ -351,7 +360,7 @@
     const secs = s.prospectus;
     const sec = secs.find((x) => x.id === sectionId) || secs[0];
     const spec = pack.prospectus.find((p) => p.code === sec.code);
-    return `<div class="stats">${stat(pack.outputLabel + ' complete', pct(s.prospectusProgress.percent), pack.name)}${stat('Sections drafted', `${s.prospectusProgress.drafted}/${s.prospectusProgress.total}`)}${stat('Approved', s.prospectusProgress.approved)}</div>
+    return `${panel(pack.outputLabel + ' (PDF)', 'Cover, offer summary, contents, every drafted section, financial tables and charts. Unfinished sections are flagged, not invented.', `<div class="pb">${pdfCards([{ key: 'PROSPECTUS', eid: s.engagement.id, title: `${s.client.name} — draft ${pack.outputLabel.toLowerCase()}`, sub: '30 pages · ECMA section order' }])}</div>`)}<div class="stats" style="margin-top:16px">${stat(pack.outputLabel + ' complete', pct(s.prospectusProgress.percent), pack.name)}${stat('Sections drafted', `${s.prospectusProgress.drafted}/${s.prospectusProgress.total}`)}${stat('Approved', s.prospectusProgress.approved)}</div>
       <div class="split">
         <section class="panel"><div class="ph"><div><h2>Contents</h2><p>${secs.length} prescribed sections</p></div></div><div class="idx" style="max-height:620px;overflow-y:auto">${secs.map((x) => `<button data-act="section" data-k="${x.id}" ${x.id === sec.id ? 'aria-current="true"' : ''}><div class="row" style="gap:6px;margin-bottom:3px"><span class="mono faint">${x.code}</span>${st(x.status)}</div><div class="small" style="margin-bottom:5px;line-height:1.4">${esc(x.heading)}</div>${meter(x.completeness, false)}</button>`).join('')}</div></section>
         <section class="panel"><div class="ph"><div><h2>${esc(sec.code)} — ${esc(sec.heading)}</h2><p>${sec.wordCount} words of ~${spec?.minWords ?? 350} target</p></div><div class="row"><button class="btn sm" data-act="draft" data-id="${s.engagement.id}" data-k="${sec.code}" ${busy ? 'disabled' : ''}>${busy ? 'Drafting…' : 'Draft with agent'}</button><select class="select btn sm" style="height:26px;padding:0 8px" data-act="secstatus" data-id="${sec.id}" aria-label="Section status">${['NOT_STARTED', 'DRAFTING', 'DRAFTED', 'IN_REVIEW', 'APPROVED'].map((x) => `<option value="${x}" ${x === sec.status ? 'selected' : ''}>${tc(x)}</option>`).join('')}</select></div></div>
@@ -390,6 +399,7 @@
       <header><div class="eyebrow">Client portal · <span class="mono">${esc(s.engagement.reference)}</span></div><h1 class="h1">${esc(s.engagement.name)}</h1><p class="sub">${esc(txLabel(s.engagement.transactionType))} · ${D.fmtMoney(s.engagement.targetRaise)} · target filing ${D.fmtDate(s.engagement.targetFilingDate)}</p></header>
       <div class="stats">${stat('Overall progress', pct(s.completeness.percent), 'Of the documents your advisor needs', s.completeness.percent >= 75 ? 'good' : 'medium')}${stat('Still needed', outstanding.length, `${outstanding.filter((r) => r.mandatory).length} required by the regulator`, outstanding.length ? 'high' : 'good')}${stat('Being reviewed', inReview.length, '', 'low')}${stat('Accepted', accepted.length, `of ${s.requirements.length} items`, 'good')}</div>
       <div class="cols">
+        ${panel('Your document checklist', 'Status of every item your advisor has requested', `<div class="pb">${chartBox(donut({ theme: SCREEN_THEME, width: 420, height: 190, centre: s.completeness.percent + '%', sub: 'complete', items: [{ label: 'Accepted', value: accepted.length, color: 'var(--good)' }, { label: 'Being reviewed', value: inReview.length, color: 'var(--low)' }, { label: 'Still needed', value: outstanding.length, color: 'var(--high)' }] }), 'Donut of checklist status')}<p class="small muted" style="margin:10px 0 0;line-height:1.55">${outstanding.length ? `${outstanding.length} item${outstanding.length === 1 ? '' : 's'} still needed — upload below, or ask the assistant what each should contain.` : 'Nothing outstanding from you right now. Your advisor is reviewing what you submitted.'}${shared.length ? ` ${shared.length} point${shared.length === 1 ? '' : 's'} shared with you by your advisor.` : ''}</p></div>`)}
         ${panel('Where your transaction stands', D.STAGE_META[s.engagement.stage].blurb, `<div class="pb"><ol class="steps">${D.STAGES.map((x, i) => `<li class="${i < idx ? 'done' : i === idx ? 'cur' : ''}"><span class="b">${i < idx ? '✓' : ''}</span><div><div class="small" style="font-weight:${i === idx ? 600 : 450};color:${i <= idx ? 'var(--ink)' : 'var(--ink-faint)'}">${esc(D.STAGE_META[x].label)}${i === idx ? ' <span class="xs" style="color:var(--accent);font-weight:700;margin-left:6px">IN PROGRESS</span>' : ''}</div><div class="xs faint">${esc(D.STAGE_META[x].blurb)}</div></div></li>`).join('')}</ol></div>`)}
         ${panel('Documents we still need from you', `${outstanding.length} outstanding`, `<div class="pb" style="border-bottom:1px solid var(--hairline)">${meter(s.completeness.percent, 'Document completeness')}</div>${outstanding.length ? `<div class="list">${outstanding.map((r) => `<div class="row" style="align-items:flex-start;gap:12px"><div style="flex:1 1 240px"><div class="row" style="gap:6px;margin-bottom:4px">${r.mandatory ? chip('Required', 'high', true) : chip('Optional', 'info')}${st(r.status)}</div><div style="font-weight:500">${esc(r.title)}</div><div class="small muted" style="line-height:1.55;margin-top:2px">${esc(r.description)}</div></div><label class="btn sm primary" for="pup-${r.id}">Upload</label><input id="pup-${r.id}" type="file" accept=".txt,.md,.csv,.json" hidden data-up="${r.id}" data-eid="${eng.id}"></div>`).join('')}</div>` : empty('Everything we asked for is in')}`)}
       </div>
@@ -400,15 +410,373 @@
     return `<div class="main">${banner()}<header class="top">${mark}<div><b class="small">${esc(ORG.name)}</b><div class="xs faint">Client portal — ${esc(CLIENT_USER.name)}</div></div><div style="flex:1"></div><span class="small muted">${notify.unreadCount(CLIENT_USER.id)} unread</span></header><main class="content" style="max-width:1180px">${body}</main></div>`;
   }
 
+  // ============================================================ additions
+  // Login sequence, knowledge graph, charts, assistant (built-in + Claude),
+  // PDF outputs and messaging previews.
+  const { buildGraph, NODE_META, GraphView, answerLocally, buildCorpus, search, engagementBrief, portfolioBrief, assistantPrompt,
+    stackedBars, donut, hbar, SCREEN_THEME, compact: compactNum, buildDDReport, buildProspectus, dataRoomPdf, TABLE_LAYOUTS,
+    toTelegramHtml, toSlackMrkdwn, alertText, ABYSSINIA_DATAROOM, COMPANY } = AOS;
+  const SESSION_KEY = 'advisoros-preview-session';
+  let session = null; // { side: 'firm'|'client', userId }
+  const reduced = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const capability = (name) => (window.claude && typeof window.claude.use === 'function' ? window.claude.use(name).catch(() => null) : Promise.resolve(null));
+  let SAMPLE = null, DOWNLOADS = null;
+  capability('sample').then((s) => { SAMPLE = s; renderDock(); });
+  capability('downloads').then((d) => { DOWNLOADS = d; });
+
+  // ---------------------------------------------------------------- login
+  const DEMO = {
+    firm: [['hundaol@raphaconsult.et', 'Hundaol Girma', 'Managing Partner'], ['meron@raphaconsult.et', 'Meron Tadesse', 'Transaction Advisor'], ['dawit@raphaconsult.et', 'Dawit Bekele', 'Analyst']],
+    client: [['finance@abyssiniaagro.et', 'Tigist Alemu', 'Abyssinia Agro · CFO'], ['yohannes@lalibelacement.et', 'Yohannes Girma', 'Lalibela Cement · FD']],
+  };
+  const CHECKS = {
+    firm: ['Credentials verified', 'Firm workspace & role loaded', 'Agent queue and review inbox synced', 'Opening dashboard'],
+    client: ['Credentials verified', 'Engagement scope isolated to your company', 'Shared findings & document checklist loaded', 'Opening your portal'],
+  };
+  const L = { side: 'firm', step: 'email', email: '', password: '', err: null, errSwitch: false, done: 0, name: '' };
+
+  function loginCard() {
+    const si = ['email', 'password', 'verify', 'welcome'].indexOf(L.step);
+    let inner = '';
+    if (L.step === 'email') inner = `<form data-form="login-email" class="step-in" style="display:grid;gap:12px">
+        <div><h2 style="font-size:18px;font-weight:600;letter-spacing:-.02em;margin:0 0 3px">${L.side === 'firm' ? 'Sign in to your firm' : 'Sign in to your client portal'}</h2>
+        <p class="small faint" style="margin:0">${L.side === 'firm' ? 'Advisors, reviewers and analysts.' : 'See your progress, missing documents and shared findings.'}</p></div>
+        <div><label class="label" for="l-email">Work email</label><input id="l-email" class="input" type="email" autocomplete="username" required value="${esc(L.email)}" placeholder="${L.side === 'firm' ? 'you@firm.et' : 'you@company.et'}"></div>
+        ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px">${esc(L.err)}</div>` : ''}
+        <button class="btn primary" style="height:40px" type="submit">Continue →</button>
+        <div style="margin-top:6px;padding-top:14px;border-top:1px solid var(--hairline)"><div class="eyebrow" style="margin-bottom:8px">Demo accounts · password <span class="mono">demo1234</span></div>
+          <div style="display:grid;gap:5px">${DEMO[L.side].map(([em, n, r]) => `<button type="button" class="btn sm lift" style="justify-content:space-between;width:100%;height:32px" data-act="l-demo" data-k="${em}"><span>${esc(n)}</span><span class="xs faint">${esc(r)}</span></button>`).join('')}</div></div>
+      </form>`;
+    else if (L.step === 'password') inner = `<form data-form="login-pw" class="step-in" style="display:grid;gap:12px">
+        <button type="button" data-act="l-back" style="display:flex;align-items:center;gap:10px;border:1px solid var(--hairline);background:var(--surface-2);border-radius:99px;padding:5px 12px 5px 5px;cursor:pointer;justify-self:start">
+          <span style="width:26px;height:26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:12px;font-weight:700">${esc(L.email.slice(0, 1).toUpperCase())}</span><span class="small">${esc(L.email)}</span><span class="xs faint">change</span></button>
+        <div><label class="label" for="l-pw">Password</label><input id="l-pw" class="input" type="password" autocomplete="current-password" required value="${esc(L.password)}"></div>
+        ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px;display:flex;justify-content:space-between;gap:8px;align-items:center"><span>${esc(L.err)}</span>${L.errSwitch ? '<button type="button" class="btn sm" data-act="l-switch">Switch</button>' : ''}</div>` : ''}
+        <button class="btn primary" style="height:40px" type="submit">Sign in</button></form>`;
+    else inner = `<div class="step-in" style="display:grid;gap:14px" aria-live="polite">
+        ${L.step === 'welcome' ? `<div style="text-align:center;padding:10px 0 4px"><div class="welcome-badge" aria-hidden="true">✓</div><h2 style="font-size:20px;font-weight:600;margin:12px 0 4px">Welcome, ${esc(L.name.split(' ')[0])}</h2><p class="small faint" style="margin:0">${L.side === 'firm' ? 'Taking you to the firm dashboard…' : 'Taking you to your portal…'}</p></div>` : '<h2 style="font-size:16px;font-weight:600;margin:0">Securing your session</h2>'}
+        <ul class="verify" style="list-style:none;padding:0;margin:0">${CHECKS[L.side].map((c, i) => `<li class="${i < L.done ? 'done' : i === L.done ? 'run' : ''}"><span class="tick">${i < L.done ? '✓' : ''}</span>${esc(c)}</li>`).join('')}</ul></div>`;
+    return `<div class="panel login-card" id="login-card">
+      <div class="side-toggle" role="tablist" aria-label="Sign-in side" style="margin-bottom:20px"><span class="thumb" style="transform:${L.side === 'client' ? 'translateX(100%)' : 'none'}" aria-hidden="true"></span>
+        <button role="tab" type="button" aria-selected="${L.side === 'firm'}" data-act="l-side" data-k="firm">Advisory firm</button><button role="tab" type="button" aria-selected="${L.side === 'client'}" data-act="l-side" data-k="client">Client</button></div>
+      <div class="row" style="justify-content:space-between;margin-bottom:14px"><div class="steps-dots" aria-hidden="true">${[0, 1, 2, 3].map((i) => `<i class="${i <= si ? 'on' : ''}"></i>`).join('')}</div><span class="xs faint">Step ${Math.min(si + 1, 4)} of 4</span></div>
+      ${inner}</div>`;
+  }
+  function loginView() {
+    return `<main class="login-stage"><section class="login-art"><canvas id="login-canvas" aria-hidden="true"></canvas>
+      <div class="row" style="gap:10px"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2fb57f"/><path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="#07140f"/></svg><div><div style="font-size:15px;font-weight:600">Advisor OS</div><div class="xs" style="opacity:.7">Ethiopian Transaction Advisory</div></div></div>
+      <div style="max-width:480px"><h1 class="login-title" style="font-size:34px;font-weight:600;letter-spacing:-.035em;line-height:1.12;margin:0 0 14px">One workspace from mandate to ECMA filing.</h1>
+        <p style="font-size:14px;opacity:.78;line-height:1.65;margin:0 0 22px">Advisors run six specialised agents over the data room and review every draft. Clients see live progress, missing documents and the findings their advisor chose to share.</p>
+        <div class="login-feats">${[['Firm side', 'Engagements, agents, review inbox, 30+ page due diligence PDFs'], ['Client side', 'Checklist, uploads, milestones, shared findings only'], ['Connected', 'Email, Telegram and Slack alerts on compliance gaps']].map(([t, d], i) => `<div class="login-feat" style="animation-delay:${0.15 + i * 0.12}s"><div style="font-size:12.5px;font-weight:600">${t}</div><div class="xs" style="opacity:.7;line-height:1.5">${d}</div></div>`).join('')}</div></div>
+      <div class="xs" style="opacity:.55">Interactive preview — all company data is fictional. Changes stay in this browser.</div></section>
+      <section class="login-pane">${loginCard()}</section></main>`;
+  }
+  function paintLogin() { const c = document.getElementById('login-card'); if (c) c.outerHTML = loginCard(); focusLogin(); }
+  function focusLogin() { setTimeout(() => document.getElementById(L.step === 'password' ? 'l-pw' : 'l-email')?.focus(), 30); }
+  function findUser(email) { return AOS.one('SELECT * FROM users WHERE lower(email) = lower(?) AND active = 1', [email]); }
+  async function loginSubmit() {
+    L.err = null; L.errSwitch = false;
+    const u = findUser(L.email);
+    if (!u || L.password !== 'demo1234') { L.err = 'Those credentials were not recognised.'; paintLogin(); return; }
+    const isClient = u.role === 'CLIENT';
+    if (L.side === 'firm' && isClient) { L.err = 'This is a client-portal account. Switch to “Client” to continue.'; L.errSwitch = true; paintLogin(); return; }
+    if (L.side === 'client' && !isClient) { L.err = 'This is a firm account. Switch to “Advisory firm” to continue.'; L.errSwitch = true; paintLogin(); return; }
+    L.name = u.name; L.step = 'verify'; L.done = 0; paintLogin();
+    const gap = reduced() ? 60 : 420;
+    for (let i = 1; i <= CHECKS[L.side].length; i++) { await new Promise((r) => setTimeout(r, gap)); L.done = i; paintLogin(); }
+    L.step = 'welcome'; paintLogin();
+    await new Promise((r) => setTimeout(r, reduced() ? 150 : 900));
+    session = { side: L.side, userId: u.id };
+    try { sessionStorage.setItem(SESSION_KEY, JSON.stringify(session)); } catch { /* ignore */ }
+    applySession();
+    repo.audit({ orgId: ORG.id, actorId: u.id, actorName: u.name, action: 'auth.login', entityType: 'User', entityId: u.id });
+    save();
+    location.hash = isClient ? '#/portal' : '#/dashboard';
+    chat.msgs = []; render();
+  }
+  function applySession() {
+    if (!session) return;
+    const u = AOS.one('SELECT * FROM users WHERE id = ?', [session.userId]);
+    if (!u) { session = null; return; }
+    if (u.role === 'CLIENT') { CLIENT_USER = u; role = 'client'; } else { STAFF = u; role = 'staff'; }
+  }
+  function signOut() {
+    session = null; try { sessionStorage.removeItem(SESSION_KEY); } catch { /* ignore */ }
+    Object.assign(L, { step: 'email', email: '', password: '', err: null, done: 0 });
+    chat.open = false; chat.msgs = []; location.hash = ''; render();
+  }
+  let artStop = null;
+  function startLoginArt() {
+    const canvas = document.getElementById('login-canvas'); if (!canvas) return;
+    const ctx = canvas.getContext('2d'); let w = 0, h = 0, raf = 0; const mouse = { x: -999, y: -999 };
+    const pts = Array.from({ length: 70 }, () => ({ x: Math.random(), y: Math.random(), vx: (Math.random() - 0.5) * 0.0006, vy: (Math.random() - 0.5) * 0.0006, r: 1 + Math.random() * 2.2 }));
+    const resize = () => { const d = Math.min(devicePixelRatio || 1, 2); w = canvas.clientWidth; h = canvas.clientHeight; canvas.width = w * d; canvas.height = h * d; ctx.setTransform(d, 0, 0, d, 0, 0); };
+    const draw = () => {
+      if (!canvas.isConnected) return;
+      ctx.clearRect(0, 0, w, h);
+      for (const p of pts) if (!reduced()) { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1; }
+      for (let i = 0; i < pts.length; i++) { const a = pts[i], ax = a.x * w, ay = a.y * h;
+        for (let j = i + 1; j < pts.length; j++) { const b = pts[j], d = Math.hypot(ax - b.x * w, ay - b.y * h); if (d < 120) { ctx.strokeStyle = `rgba(47,181,127,${(1 - d / 120) * 0.35})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); } }
+        const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90; ctx.fillStyle = near ? '#f5c451' : 'rgba(170,230,200,.85)'; ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, 7); ctx.fill(); }
+      if (!reduced()) raf = requestAnimationFrame(draw);
+    };
+    const move = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; if (reduced()) draw(); };
+    resize(); draw(); addEventListener('resize', resize); canvas.parentElement.addEventListener('pointermove', move);
+    artStop = () => { cancelAnimationFrame(raf); removeEventListener('resize', resize); };
+  }
+
+  // ------------------------------------------------------ graph + charts
+  let graphViews = [];
+  const G = { hidden: new Set(['DOCUMENT']), q: '', sel: null };
+  function allSnaps() { return repo.listEngagements(ORG.id).map((e) => repo.snapshot(ORG.id, e.id)).filter(Boolean); }
+  function staffList() { return AOS.all("SELECT id, orgId, email, name, role, title, clientId, avatarColor, active FROM users WHERE orgId = ? AND role != 'CLIENT'", [ORG.id]); }
+  function graphBlock(height, key) {
+    const graph = buildGraph(ORG, staffList(), allSnaps());
+    return `<div style="display:grid;gap:10px">
+      <div class="row" style="gap:8px;flex-wrap:wrap"><div class="graph-legend" role="group" aria-label="Show or hide node types">${Object.keys(NODE_META).filter((t) => graph.counts[t]).map((t) => `<button type="button" data-act="g-toggle" data-k="${t}" aria-pressed="${!G.hidden.has(t)}"><i style="background:${NODE_META[t].color}"></i>${esc(NODE_META[t].label)} <span class="faint">${graph.counts[t]}</span></button>`).join('')}</div>
+        <div style="flex:1"></div><input class="input" style="width:200px" placeholder="Find a node…" aria-label="Search the graph" data-gq="${key}" value="${esc(G.q)}"><button class="btn sm" data-act="g-reset">Reset view</button></div>
+      <div class="graph-wrap" style="height:${height}px"><canvas data-graph="${key}" tabindex="0" aria-label="Knowledge graph of the operation. Drag to move, scroll to zoom, click a node for details."></canvas><div data-gcard="${key}"></div></div></div>`;
+  }
+  function graphCard(sel) {
+    if (!sel) return `<div class="xs faint" style="position:absolute;left:12px;bottom:10px;pointer-events:none">Drag nodes · scroll to zoom · click for details · pulsing nodes are critical</div>`;
+    const { node, nb } = sel;
+    const link = node.link ? previewLink(node.link) : null;
+    return `<div class="panel graph-card fade-up" style="box-shadow:var(--shadow-md)"><div style="padding:12px 14px;border-bottom:1px solid var(--hairline)">
+      <div class="row" style="gap:7px;margin-bottom:4px"><i style="width:9px;height:9px;border-radius:99px;background:${NODE_META[node.type].color}"></i><span class="eyebrow">${esc(NODE_META[node.type].label)}</span><button class="btn ghost sm" style="margin-left:auto" data-act="g-close" aria-label="Close">✕</button></div>
+      <div style="font-size:14px;font-weight:600;line-height:1.35">${esc(node.label)}</div><div class="xs faint">${esc(node.sub || '')}</div></div>
+      <dl style="margin:0;padding:10px 14px;display:grid;grid-template-columns:auto 1fr;gap:6px 10px;font-size:12px">${node.detail.map(([k, v]) => `<dt class="faint">${esc(k)}</dt><dd style="margin:0">${esc(v)}</dd>`).join('')}</dl>
+      <div style="padding:8px 14px 12px"><div class="eyebrow" style="margin-bottom:6px">Connected to ${nb.length}</div><div style="display:flex;flex-wrap:wrap;gap:4px">${nb.slice(0, 14).map((n) => `<button class="chip" style="cursor:pointer;border:0" data-act="g-focus" data-k="${esc(n.id)}"><i style="width:6px;height:6px;border-radius:9px;background:${NODE_META[n.type].color}"></i>${esc(n.label.length > 26 ? n.label.slice(0, 25) + '…' : n.label)}</button>`).join('')}</div>
+      ${link ? `<a class="btn primary sm" style="margin-top:10px;width:100%" href="${link}">Open</a>` : ''}</div></div>`;
+  }
+  // Map production routes onto the preview's hash routes.
+  function previewLink(link) {
+    const m = link.match(/^\/engagements\/([^/?#]+)(?:\/([a-z]+))?/);
+    if (m) return `#/e/${m[1]}${m[2] ? '/' + m[2] : ''}`;
+    if (link.startsWith('/clients')) return '#/clients';
+    if (link.startsWith('/agents')) return '#/agents';
+    if (link.startsWith('/rules')) return '#/rules';
+    if (link.startsWith('/portal')) return '#/portal';
+    return '#/dashboard';
+  }
+  function mountGraphs() {
+    graphViews.forEach((v) => v.destroy()); graphViews = [];
+    document.querySelectorAll('canvas[data-graph]').forEach((canvas) => {
+      const key = canvas.dataset.graph;
+      const graph = buildGraph(ORG, staffList(), allSnaps());
+      const card = document.querySelector(`[data-gcard="${key}"]`);
+      const v = new GraphView(canvas, graph, {
+        onSelect: (node, nb) => { G.sel = node ? { node, nb } : null; card.innerHTML = graphCard(G.sel); },
+        dark: () => document.documentElement.getAttribute('data-theme') === 'dark' || (document.documentElement.getAttribute('data-theme') !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches),
+        reducedMotion: reduced(),
+      });
+      v.setHidden([...G.hidden]); if (G.q) v.setQuery(G.q);
+      card.innerHTML = graphCard(null);
+      graphViews.push(v);
+    });
+  }
+  const chartBox = (svg, label) => `<div class="chart" role="img" aria-label="${esc(label)}">${svg}</div>`;
+  function dashCharts(snaps) {
+    const active = snaps.filter((s) => s.engagement.status === 'ACTIVE');
+    const sevs = ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'];
+    const fees = snaps.reduce((a, x) => ({ paid: a.paid + x.fees.paid, out: a.out + x.fees.outstanding, unb: a.unb + x.fees.unbilled, tot: a.tot + (x.contract?.totalFee ?? 0) }), { paid: 0, out: 0, unb: 0, tot: 0 });
+    const c1 = stackedBars({ theme: SCREEN_THEME, width: 520,
+      rows: active.map((s) => ({ label: s.engagement.reference, parts: sevs.map((k) => ({ key: k, value: s.findings.filter((f) => f.severity === k && ['OPEN', 'ACKNOWLEDGED', 'IN_REMEDIATION'].includes(f.status)).length })) })),
+      colors: { CRITICAL: 'var(--critical)', HIGH: 'var(--high)', MEDIUM: 'var(--medium)', LOW: 'var(--low)' } });
+    const c2 = donut({ theme: SCREEN_THEME, width: 440, height: 180, centre: compactNum(fees.tot), sub: 'ETB contracted',
+      items: [{ label: 'Received', value: fees.paid, color: 'var(--good)' }, { label: 'Invoiced, unpaid', value: fees.out, color: 'var(--high)' }, { label: 'Not yet billed', value: fees.unb, color: 'var(--low)' }] });
+    const c3 = hbar({ theme: SCREEN_THEME, width: 520, max: 100, format: (v) => `${v}%`,
+      items: active.map((s) => ({ label: `${s.engagement.reference} ${s.client.name}`, value: s.completeness.percent, color: s.completeness.percent >= 75 ? 'var(--good)' : s.completeness.percent >= 40 ? 'var(--high)' : 'var(--critical)' })) });
+    return `<div class="charts">${panel('Open findings by engagement', 'Severity mix', `<div class="pb">${chartBox(c1, 'Stacked bars of open findings by severity')}</div>`)}${panel('Fee position', 'Across all contracts', `<div class="pb">${chartBox(c2, 'Donut of fees')}</div>`)}${panel('Document completeness', 'Weighted against each rule pack', `<div class="pb">${chartBox(c3, 'Bars of completeness')}</div>`)}</div>`;
+  }
+  function graphPage() {
+    return `<div class="stack"><header class="reveal"><div class="eyebrow">Operation map</div><h1 class="h1">Knowledge graph</h1><p class="sub">Every client, engagement, document, finding, risk, milestone, agent and team member — and how they connect. Click a node to focus its neighbourhood; filter by type with the legend.</p></header>
+      <section class="panel reveal"><div class="pb">${graphBlock(640, 'full')}</div></section></div>`;
+  }
+
+  // -------------------------------------------------------------- motion
+  let io = null;
+  function motion() {
+    if (io) io.disconnect();
+    const els = [...document.querySelectorAll('.panel, .reveal')].filter((e) => !e.closest('.login-stage'));
+    els.forEach((e) => e.classList.add('reveal'));
+    if (reduced() || !('IntersectionObserver' in window)) { els.forEach((e) => e.classList.add('in')); return; }
+    io = new IntersectionObserver((en) => en.forEach((x) => { if (x.isIntersecting) { x.target.classList.add('in'); io.unobserve(x.target); } }), { threshold: 0.05 });
+    els.forEach((e, i) => { if (!e.classList.contains('in')) { io.observe(e); setTimeout(() => e.classList.add('in'), 2000 + i * 10); } });
+    document.querySelectorAll('[data-count]').forEach((el) => {
+      const target = Number(el.dataset.count), suffix = el.dataset.suffix || '', t0 = performance.now();
+      const step = () => { const k = Math.min(1, (performance.now() - t0) / 900); el.textContent = Math.round(target * (1 - Math.pow(1 - k, 3))).toLocaleString('en-US') + suffix; if (k < 1) requestAnimationFrame(step); };
+      step();
+    });
+  }
+  document.addEventListener('pointerdown', (ev) => {
+    if (reduced()) return;
+    const btn = ev.target.closest('.btn'); if (!btn || btn.disabled) return;
+    const r = btn.getBoundingClientRect(), d = Math.max(r.width, r.height), s = document.createElement('span');
+    s.className = 'ripple'; s.style.width = s.style.height = d + 'px'; s.style.left = ev.clientX - r.left - d / 2 + 'px'; s.style.top = ev.clientY - r.top - d / 2 + 'px';
+    btn.appendChild(s); setTimeout(() => s.remove(), 600);
+  });
+
+  // ----------------------------------------------------------- assistant
+  const chat = { open: false, msgs: [], busy: false, engine: 'local', abort: null };
+  function clientView(s) { return { ...s, findings: s.findings.filter((f) => f.visibleToClient), risks: [], runs: [], tasks: [], meetings: [], prospectus: s.prospectus.map((p) => ({ ...p, body: '' })), documents: s.documents.map((d) => ({ ...d, extractedText: null })) }; }
+  function scope() {
+    if (role === 'client') { const snaps = repo.listEngagementsForClient(CLIENT_USER.clientId).map((e) => repo.snapshot(ORG.id, e.id)).filter(Boolean).map(clientView); return { snaps, staff: [] }; }
+    return { snaps: allSnaps(), staff: staffList() };
+  }
+  const SUGGEST = {
+    staff: ['What is blocking each engagement?', 'Which documents are still missing for Abyssinia?', 'Show critical findings', 'What is the covenant headroom?', 'Summarise fees outstanding', 'Who is on the Abyssinia team?'],
+    client: ['What do you still need from us?', 'Where does our transaction stand?', 'What points has our advisor raised?', 'When is the next milestone?'],
+  };
+  function msgHtml(m) {
+    if (m.role === 'me') return `<div class="msg me">${esc(m.text)}</div>`;
+    if (m.pending && !m.text) return `<div class="msg ai"><span class="typing"><span></span><span></span><span></span></span>${m.status ? ` <span class="xs faint">${esc(m.status)}</span>` : ''}</div>`;
+    return `<div class="msg ai"><div class="prose">${renderMarkdown(m.text)}</div>${(m.sources || []).length ? `<div>${m.sources.slice(0, 6).map((s) => `<a class="src-chip" href="${previewLink(s.link)}">↗ ${esc(s.title)}</a>`).join('')}</div>` : ''}<div class="xs faint" style="margin-top:6px">${m.engine === 'claude' ? 'Claude, from the records' : 'Answered from the records'}</div></div>`;
+  }
+  function chatPanel(inline) {
+    const aud = role === 'client' ? 'client' : 'staff';
+    return `<div class="dock ${inline ? 'inline' : ''}" role="dialog" aria-label="Assistant">
+      <div class="dock-head"><span class="pulse-dot"></span><div style="flex:1"><div class="small" style="font-weight:600">${aud === 'client' ? 'Ask about your transaction' : 'Ask Advisor OS'}</div><div class="xs faint">${aud === 'client' ? 'Only what your advisor has shared with you' : 'Answers from every engagement, document and finding'}</div></div>
+        ${SAMPLE ? `<div class="engine-toggle" role="group" aria-label="Answer engine"><button type="button" data-act="c-engine" data-k="local" aria-pressed="${chat.engine === 'local'}">Built-in</button><button type="button" data-act="c-engine" data-k="claude" aria-pressed="${chat.engine === 'claude'}">Claude</button></div>` : ''}
+        ${inline ? '' : '<button class="btn ghost sm" data-act="c-close" aria-label="Close assistant">✕</button>'}</div>
+      <div class="msgs" id="chat-msgs">${msgsInner()}</div>
+      <form class="dock-form" data-form="chat"><label for="chat-in" style="position:absolute;left:-9999px">Question</label><input id="chat-in" class="input" autocomplete="off" placeholder="Ask about any client, document, finding or fee…" ${chat.busy ? 'disabled' : ''}><button class="btn primary" ${chat.busy ? 'disabled' : ''}>${chat.busy ? '…' : 'Ask'}</button></form></div>`;
+  }
+  function msgsInner() {
+    const aud = role === 'client' ? 'client' : 'staff';
+    return chat.msgs.length ? chat.msgs.map(msgHtml).join('') : `<div class="small muted" style="line-height:1.6">Ask about missing documents, findings, covenants, ratios, milestones, fees or people.${SAMPLE ? ' Switch to <b>Claude</b> for reasoning over the same records.' : ''}</div><div class="suggest">${SUGGEST[aud].map((q) => `<button type="button" data-act="c-ask" data-k="${esc(q)}">${esc(q)}</button>`).join('')}</div>`;
+  }
+  function paintChat() {
+    const box = document.getElementById('chat-msgs');
+    if (!box) return;
+    box.innerHTML = msgsInner();
+    box.scrollTop = box.scrollHeight;
+    document.querySelectorAll('[data-form=chat] input, [data-form=chat] button').forEach((e) => { e.disabled = chat.busy; });
+  }
+  function renderDock() {
+    let host = document.getElementById('dock-root');
+    if (!host) { host = document.createElement('div'); host.id = 'dock-root'; document.body.appendChild(host); }
+    if (!session || route()[0] === 'assistant') { host.innerHTML = ''; return; }
+    host.innerHTML = (chat.open ? chatPanel(false) : '') + `<button class="dock-btn" data-act="c-toggle" aria-expanded="${chat.open}">💬 ${chat.open ? 'Close' : 'Ask'}</button>`;
+    if (chat.open) { paintChat(); setTimeout(() => document.getElementById('chat-in')?.focus(), 30); }
+  }
+  function assistantPage() {
+    return `<div class="stack"><header class="reveal"><div class="eyebrow">Portfolio assistant</div><h1 class="h1">Ask the OS</h1><p class="sub">Questions across every engagement — missing documents, critical findings, covenant headroom, ratios, fees, milestones, who owns what. Answers cite the records they came from.${SAMPLE ? ' Toggle <b>Claude</b> to have Claude reason over the same records with search tools.' : ''}</p></header>
+      <section class="panel" style="height:min(680px, calc(100vh - 230px));display:flex;flex-direction:column;overflow:hidden">${chatPanel(true)}</section></div>`;
+  }
+  async function ask(q) {
+    q = q.trim(); if (!q || chat.busy) return;
+    chat.msgs.push({ role: 'me', text: q });
+    const { snaps, staff } = scope();
+    const corpus = buildCorpus(snaps);
+    const local = answerLocally(q, snaps, staff, corpus);
+    if (chat.engine !== 'claude' || !SAMPLE) {
+      chat.msgs.push({ role: 'ai', text: local.text, sources: local.sources, engine: 'local' });
+      paintChat(); return;
+    }
+    const m = { role: 'ai', text: '', pending: true, status: 'Thinking…', sources: local.sources, engine: 'claude' };
+    chat.msgs.push(m); chat.busy = true; paintChat();
+    const byRef = (ref) => snaps.find((s) => s.engagement.reference.toLowerCase() === String(ref).toLowerCase() || s.client.name.toLowerCase().includes(String(ref).toLowerCase()));
+    const tools = [
+      { name: 'search_records', description: 'Full-text search over engagement records (documents, findings, requirements, risks, milestones, fees, people). Returns the best matching records with their text.',
+        inputSchema: { type: 'object', properties: { query: { type: 'string' } }, required: ['query'] },
+        execute: ({ query }) => { m.status = `Searching “${query}”…`; paintChat(); return search(corpus, String(query), 6).map((c) => ({ title: c.title, ref: c.ref, text: c.text.slice(0, 900) })); } },
+      { name: 'engagement_brief', description: 'Structured brief of one engagement by reference (e.g. EQ-2026-001) or client name: stage, completeness, missing documents, findings, milestones, fees.',
+        inputSchema: { type: 'object', properties: { reference: { type: 'string' } }, required: ['reference'] },
+        execute: ({ reference }) => { const s = byRef(reference); if (!s) throw new Error('No engagement matches ' + reference); m.status = `Reading ${s.engagement.reference}…`; paintChat(); return { brief: engagementBrief(s, staff) }; } },
+      { name: 'portfolio_brief', description: 'One-paragraph-per-engagement overview of the whole book.', inputSchema: { type: 'object', properties: {} },
+        execute: () => ({ brief: portfolioBrief(snaps, staff) }) },
+    ];
+    const history = chat.msgs.slice(0, -2).filter((x) => x.text).slice(-6).map((x) => ({ role: x.role === 'me' ? 'user' : 'assistant', content: x.text }));
+    const prompt = `${assistantPrompt(q, snaps, staff, corpus)}\n\n${role === 'client' ? 'You are answering the CLIENT. Only discuss what is in these records; never mention internal notes, risks or unreleased drafts.' : 'You are answering a member of the advisory firm.'}\nUse the tools when the records above are not enough. Reply in concise Markdown with the engagement references you relied on.`;
+    try {
+      chat.abort = new AbortController();
+      const res = await SAMPLE([...history, { role: 'user', content: prompt }], { tools, cache: false, signal: chat.abort.signal, onText: ({ text }) => { m.text = text; m.pending = true; paintChat(); } });
+      m.text = res.text || local.text; m.pending = false;
+    } catch (e) {
+      m.pending = false;
+      if (e && e.code === 'not_granted') { SAMPLE = null; }
+      m.text = (e && e.text) || `${local.text}\n\n_Claude was unavailable (${esc((e && e.code) || 'error')}); this is the built-in answer._`; m.engine = 'local';
+    }
+    chat.busy = false; paintChat();
+  }
+
+  // ------------------------------------------------------------ PDFs
+  function pdfCards(items) {
+    return `<div class="charts" style="grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr))">${items.map((it) => `<button type="button" class="pdf-card lift" data-act="pdf" data-k="${it.key}" data-id="${it.eid || ''}"><span class="pdf-ico" aria-hidden="true">PDF</span><span style="display:grid;gap:2px;text-align:left"><span class="small" style="font-weight:600">${esc(it.title)}</span><span class="xs faint" data-pdfinfo="${it.key}">${esc(it.sub)}</span></span></button>`).join('')}</div>`;
+  }
+  const fileSlug = (s) => s.replace(/[^A-Za-z0-9]+/g, '_').replace(/_+$/, '');
+  async function makePdf(key, eid, btn) {
+    const info = document.querySelector(`[data-pdfinfo="${key}"]`);
+    const ico = btn.querySelector('.pdf-ico');
+    btn.disabled = true; ico.innerHTML = '<span class="spinner"></span>'; if (info) info.textContent = 'Typesetting…';
+    await new Promise((r) => setTimeout(r, 30));
+    try {
+      let def, name;
+      if (key.startsWith('DR-')) {
+        const d = ABYSSINIA_DATAROOM[Number(key.slice(3))];
+        def = dataRoomPdf(d.title, d.body, COMPANY.name); name = `${d.code || 'OTHER'}_${d.fileName.replace(/\.txt$/, '.pdf')}`;
+      } else {
+        const s = repo.snapshot(ORG.id, eid);
+        const lead = AOS.one('SELECT name FROM users WHERE id = ?', [s.engagement.leadAdvisorId]);
+        if (key === 'PROSPECTUS') { def = buildProspectus(s, { firmName: ORG.name }); name = `${fileSlug(s.client.name)}_Prospectus.pdf`; }
+        else {
+          const report = repo.listReports(eid).find((r) => r.kind === key && r.status !== 'SUPERSEDED');
+          def = buildDDReport(s, key, { firmName: ORG.name, preparedBy: lead?.name || STAFF.name,
+            reviewer: report?.reviewerId ? AOS.one('SELECT name FROM users WHERE id = ?', [report.reviewerId])?.name : null, approved: report?.status === 'APPROVED',
+            auditLog: repo.listAudit(ORG.id, { engagementId: eid, limit: 40 }).map((a) => ({ at: a.createdAt, actor: a.actorName, action: a.action })),
+            agentRuns: s.runs.map((r) => ({ agent: r.agent, at: r.createdAt, summary: r.summary, engine: r.engine })) });
+          name = `${fileSlug(s.client.name)}_${{ LEGAL: 'Legal', FINANCIAL: 'Financial', COMBINED: 'Combined' }[key]}_DD.pdf`;
+        }
+      }
+      const bytes = await new Promise((resolve, reject) => { try { pdfMake.createPdf(def, TABLE_LAYOUTS).getBuffer((b) => resolve(b)); } catch (e) { reject(e); } });
+      let latin = ''; for (let i = 0; i < bytes.length; i += 0x8000) latin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+      const pages = (latin.match(/\/Type\s*\/Page[^s]/g) || []).length;
+      const label = `${pages} pages · ${(bytes.length / 1024).toFixed(0)} KB`;
+      if (info) info.textContent = `${label} · saving…`;
+      if (DOWNLOADS) {
+        try { await DOWNLOADS.save({ filename: name, data: new Blob([bytes], { type: 'application/pdf' }) }); if (info) info.textContent = `${label} · saved`; }
+        catch (e) { if (info) info.textContent = e && e.code === 'declined' ? `${label} · not saved` : `${label} · ${e && e.code || 'save failed'}`; }
+      } else {
+        const url = URL.createObjectURL(new Blob([bytes], { type: 'application/pdf' }));
+        const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        setTimeout(() => URL.revokeObjectURL(url), 8000); if (info) info.textContent = `${label} · downloaded`;
+      }
+    } catch (e) { if (info) info.textContent = 'Failed: ' + e.message; }
+    btn.disabled = false; ico.textContent = 'PDF';
+  }
+
+  // -------------------------------------------------------- integrations
+  function integrationsPage() {
+    const recent = AOS.all('SELECT * FROM notifications WHERE userId = ? ORDER BY createdAt DESC LIMIT 4', [STAFF.id]);
+    const n = recent[0] || { title: 'Critical finding raised on EQ-2026-001', body: 'The share register does not identify beneficial owners.', severity: 'CRITICAL', link: '/engagements' };
+    const sevOf = (x) => (x.severity === 'CRITICAL' ? 'CRITICAL' : x.severity === 'WARNING' || x.severity === 'HIGH' ? 'WARNING' : 'INFO');
+    const { md } = alertText({ ...n, severity: sevOf(n) }, 'https://advisor.example.et');
+    return `<div class="stack"><header class="reveal"><div class="eyebrow">Configuration</div><h1 class="h1">Telegram &amp; Slack</h1><p class="sub">In the deployed app, alerts on compliance gaps, missing documents and agent completions are pushed to a Telegram group and a Slack channel, and both answer questions (<span class="mono">/ask</span> in Telegram, <span class="mono">/advisor</span> in Slack) with the same assistant. This preview cannot reach external services, so below is exactly what would be sent.</p></header>
+      <div class="cols">
+        ${panel('Telegram', 'Bot token + chat ID · webhook registered from Settings', `<div class="pb" style="display:grid;gap:12px"><div class="tg-bubble">${toTelegramHtml(md).replace(/\n/g, '<br>')}</div>
+          <div class="xs faint">Setup: create a bot with @BotFather, add it to the deal-team group, paste the token and chat ID in Settings → Telegram, press <b>Save &amp; register webhook</b>. Incoming updates are verified with Telegram's secret-token header.</div></div>`)}
+        ${panel('Slack', 'Incoming webhook + signed slash command', `<div class="pb" style="display:grid;gap:12px"><pre class="mono xs" style="margin:0;white-space:pre-wrap;background:var(--surface-2);border:1px solid var(--hairline);border-radius:8px;padding:10px">${esc(toSlackMrkdwn(md))}</pre>
+          <div class="xs faint">Setup: create a Slack app, enable Incoming Webhooks and add one to the channel, add a <span class="mono">/advisor</span> slash command pointing at the request URL shown in Settings, paste the webhook URL and signing secret. Requests are verified with Slack's v0 HMAC signature and a 5-minute replay window.</div></div>`)}
+      </div>
+      ${panel('Recent alerts that would be broadcast', 'Only alerts at or above the configured minimum severity are sent', recent.length ? `<div class="list">${recent.map((x) => `<div><div class="row" style="gap:6px;margin-bottom:3px">${sev(sevOf(x))}<b class="small">${esc(x.title)}</b></div><div class="small muted">${esc(x.body)}</div></div>`).join('')}</div>` : empty('No alerts yet', 'Run an agent to generate some.'))}
+    </div>`;
+  }
+
   // ----------------------------------------------------------------- render
   function render() {
     const app = document.getElementById('app');
-    if (role === 'client') { app.innerHTML = portal(); return; }
+    if (artStop) { artStop(); artStop = null; }
+    if (!session) { app.innerHTML = loginView(); renderDock(); startLoginArt(); focusLogin(); return; }
     const p = route();
-    let body;
-    if (p[0] === 'e' && p[1]) body = engagement(p[1], p[2] || '');
-    else body = ({ dashboard, engagements: engagementsList, clients: clientsList, agents: agentsOverview, rules, audit: auditView }[p[0]] || dashboard)();
-    app.innerHTML = staffShell(p, body);
+    if (role === 'client') { app.innerHTML = portal(); }
+    else {
+      let body;
+      if (p[0] === 'e' && p[1]) body = engagement(p[1], p[2] || '');
+      else body = ({ dashboard, engagements: engagementsList, clients: clientsList, agents: agentsOverview, rules, audit: auditView, graph: graphPage, assistant: assistantPage, integrations: integrationsPage }[p[0]] || dashboard)();
+      app.innerHTML = staffShell(p, body);
+    }
+    if (p[0] === 'assistant' && role !== 'client') paintChat();
+    renderDock(); mountGraphs(); motion();
   }
 
   // ---------------------------------------------------------------- actions
@@ -446,6 +814,23 @@
     reader.readAsText(file);
   }
 
+  document.addEventListener('submit', (e) => {
+    const f = e.target.closest('[data-form]'); if (!f) return;
+    e.preventDefault();
+    if (f.dataset.form === 'login-email') {
+      L.email = document.getElementById('l-email').value.trim(); L.err = null;
+      if (!/^\S+@\S+\.\S+$/.test(L.email)) { L.err = 'Enter a valid email address.'; paintLogin(); return; }
+      L.step = 'password'; paintLogin(); return;
+    }
+    if (f.dataset.form === 'login-pw') { L.password = document.getElementById('l-pw').value; loginSubmit(); return; }
+    if (f.dataset.form === 'chat') { const inp = f.querySelector('input'); const q = inp.value; inp.value = ''; ask(q); }
+  });
+  let gqTimer = null;
+  document.addEventListener('input', (e) => {
+    const el = e.target;
+    if (el.dataset && el.dataset.gq !== undefined) { clearTimeout(gqTimer); gqTimer = setTimeout(() => { G.q = el.value; graphViews.forEach((v) => v.setQuery(G.q)); }, 250); }
+  });
+
   document.addEventListener('change', (e) => {
     const el = e.target;
     if (el.id === 'role-switch') { role = el.value; render(); return; }
@@ -470,6 +855,20 @@
     if (!el || el.tagName === 'SELECT' || el.type === 'checkbox') return;
     const a = el.dataset.act, id = el.dataset.id, k = el.dataset.k;
     switch (a) {
+      case 'l-side': if (L.step === 'verify' || L.step === 'welcome') return; Object.assign(L, { side: k, step: 'email', err: null, email: '', password: '' }); paintLogin(); break;
+      case 'l-demo': Object.assign(L, { email: k, password: 'demo1234', err: null, step: 'password' }); paintLogin(); break;
+      case 'l-back': Object.assign(L, { step: 'email', err: null }); paintLogin(); break;
+      case 'l-switch': Object.assign(L, { side: L.side === 'firm' ? 'client' : 'firm', err: null, errSwitch: false, step: 'password' }); paintLogin(); break;
+      case 'signout': signOut(); break;
+      case 'g-toggle': G.hidden.has(k) ? G.hidden.delete(k) : G.hidden.add(k); el.setAttribute('aria-pressed', String(!G.hidden.has(k))); graphViews.forEach((v) => v.setHidden([...G.hidden])); break;
+      case 'g-reset': G.q = ''; document.querySelectorAll('[data-gq]').forEach((i) => { i.value = ''; }); graphViews.forEach((v) => { v.setQuery(''); v.reset(); }); break;
+      case 'g-close': G.sel = null; graphViews.forEach((v) => v.reset()); document.querySelectorAll('[data-gcard]').forEach((c) => { c.innerHTML = graphCard(null); }); break;
+      case 'g-focus': { const card = el.closest('[data-gcard]'); const v = graphViews[[...document.querySelectorAll('[data-gcard]')].indexOf(card)]; if (v) v.focus(k); break; }
+      case 'c-toggle': chat.open = !chat.open; renderDock(); break;
+      case 'c-close': chat.open = false; renderDock(); break;
+      case 'c-ask': ask(k); break;
+      case 'c-engine': chat.engine = k; document.querySelectorAll('[data-act=c-engine]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.k === k))); break;
+      case 'pdf': makePdf(k, id, el); break;
       case 'toggle-side': sideOpen = !sideOpen; render(); break;
       case 'close-side': sideOpen = false; render(); break;
       case 'reset':
@@ -537,6 +936,9 @@
     ORG = AOS.one('SELECT * FROM orgs LIMIT 1');
     STAFF = AOS.one("SELECT * FROM users WHERE role = 'OWNER' LIMIT 1");
     CLIENT_USER = AOS.one("SELECT * FROM users WHERE role = 'CLIENT' AND email LIKE '%abyssinia%' LIMIT 1");
+    if (fresh) session = null;
+    else { try { session = JSON.parse(sessionStorage.getItem(SESSION_KEY) || 'null'); } catch { session = null; } }
+    applySession();
     render();
   }
   boot(false).catch((e) => { document.getElementById('app').innerHTML = `<div class="loading">Could not start the preview: ${esc(e.message)}</div>`; });

@@ -367,3 +367,18 @@ CREATE TABLE IF NOT EXISTS audit_events (
   createdAt TEXT NOT NULL
 );
 CREATE INDEX IF NOT EXISTS idx_audit_org ON audit_events(orgId, createdAt);
+
+CREATE TABLE IF NOT EXISTS integrations (
+  id TEXT PRIMARY KEY,
+  orgId TEXT NOT NULL REFERENCES orgs(id) ON DELETE CASCADE,
+  kind TEXT NOT NULL,                 -- TELEGRAM | SLACK
+  enabled INTEGER NOT NULL DEFAULT 0,
+  config TEXT NOT NULL DEFAULT '{}',  -- JSON; secrets never leave the server unmasked
+  minSeverity TEXT NOT NULL DEFAULT 'WARNING',
+  lastDeliveryAt TEXT,
+  lastError TEXT,
+  deliveries INTEGER NOT NULL DEFAULT 0,
+  createdAt TEXT NOT NULL,
+  updatedAt TEXT NOT NULL,
+  UNIQUE(orgId, kind)
+);

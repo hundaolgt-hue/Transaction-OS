@@ -10,7 +10,8 @@
     "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed.ts",
     "setup": "npm run seed",
     "test": "vitest run",
-    "preview:build": "node preview/build.mjs && node preview/assemble.mjs"
+    "preview:build": "node preview/build.mjs && node preview/assemble.mjs",
+    "dataroom:export": "NODE_OPTIONS=--conditions=react-server tsx scripts/export-dataroom.ts"
   },
   "dependencies": {
     "bcryptjs": "3.0.2",
@@ -19,6 +20,8 @@
     "jose": "6.1.0",
     "next": "15.5.4",
     "nodemailer": "7.0.6",
+    "pdfjs-dist": "^4.10.38",
+    "pdfmake": "^0.2.20",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "server-only": "0.0.1",
@@ -30,6 +33,7 @@
     "@types/better-sqlite3": "7.6.13",
     "@types/node": "22.18.1",
     "@types/nodemailer": "6.4.17",
+    "@types/pdfmake": "^0.2.11",
     "@types/react": "19.1.13",
     "@types/react-dom": "19.1.9",
     "esbuild": "^0.25.9",

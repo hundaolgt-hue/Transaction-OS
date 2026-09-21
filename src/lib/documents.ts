@@ -48,7 +48,7 @@ export async function extractText(fileName: string, mimeType: string, bytes: Buf
     return { text: bytes.toString('utf8').slice(0, 400_000), pages: null };
   }
   if (ext === '.pdf' || mimeType === 'application/pdf') {
-    return extractPdf(bytes);
+    return await extractPdf(bytes);
   }
   if (ext === '.docx' || mimeType.includes('officedocument.wordprocessingml')) {
     return { text: await extractDocx(bytes), pages: null };
@@ -56,8 +56,91 @@ export async function extractText(fileName: string, mimeType: string, bytes: Buf
   return { text: '', pages: null };
 }
 
-/** Pull uncompressed and Flate-compressed text streams out of a PDF. */
-function extractPdf(bytes: Buffer): { text: string; pages: number | null } {
+/**
+ * PDF text via pdf.js, which resolves font encodings properly. Lines are
+ * rebuilt from glyph positions; wide horizontal gaps become column breaks, so
+ * tables survive as pipe rows the extractors can read.
+ */
+async function extractPdf(bytes: Buffer): Promise<{ text: string; pages: number | null }> {
+  try {
+    const pdfjs = await import('pdfjs-dist/legacy/build/pdf.mjs');
+    const doc = await pdfjs.getDocument({ data: new Uint8Array(bytes), useSystemFonts: false, isEvalSupported: false, disableFontFace: true }).promise;
+    const pages: string[] = [];
+    for (let i = 1; i <= Math.min(doc.numPages, 300); i++) {
+      const page = await doc.getPage(i);
+      const tc = await page.getTextContent();
+      pages.push(layoutText(tc.items as { str: string; transform: number[]; width: number }[]));
+    }
+    return { text: pages.join('\n\n').slice(0, 400_000), pages: doc.numPages };
+  } catch {
+    return extractPdfFallback(bytes);
+  }
+}
+
+export function layoutText(items: { str: string; transform: number[]; width: number }[]): string {
+  const rows = new Map<number, { x: number; w: number; s: string }[]>();
+  for (const it of items) {
+    if (!it.str) continue;
+    const y = Math.round(it.transform[5] / 2) * 2;
+    const r = rows.get(y) ?? [];
+    r.push({ x: it.transform[4], w: it.width, s: it.str });
+    rows.set(y, r);
+  }
+  const lines: { cells: string[]; table: boolean }[] = [];
+  for (const y of [...rows.keys()].sort((a, b) => b - a)) {
+    const r = rows.get(y)!.sort((a, b) => a.x - b.x);
+    const cells: string[] = [];
+    let cur = '';
+    let end = -1;
+    for (const it of r) {
+      // Whitespace glyphs are often stretched across a column gap; they carry no position.
+      if (!it.s.trim()) { if (cur && !cur.endsWith(' ')) cur += ' '; continue; }
+      const gap = end < 0 ? 0 : it.x - end;
+      if (end >= 0 && gap > 14) { cells.push(cur.trim()); cur = ''; }
+      else if (end >= 0 && gap > 0.8 && !cur.endsWith(' ') && !it.s.startsWith(' ')) cur += ' ';
+      cur += it.s;
+      end = it.x + it.w;
+    }
+    cells.push(cur.trim());
+    lines.push({ cells: cells.filter(Boolean), table: cells.filter(Boolean).length >= 3 });
+  }
+  const out: string[] = [];
+  let cols = 0; // column count of the table being emitted, 0 when outside one
+  let lastRow: string[] | null = null;
+  const flushRow = () => { if (lastRow) { out.push(`| ${lastRow.join(' | ')} |`); lastRow = null; } };
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i];
+    if (l.table) {
+      if (cols && l.cells.length === cols) { flushRow(); lastRow = [...l.cells]; continue; }
+      flushRow();
+      cols = l.cells.length;
+      out.push(`| ${l.cells.join(' | ')} |`, `|${l.cells.map(() => '---').join('|')}|`);
+      continue;
+    }
+    // A short line between two rows of the same table is a wrapped cell.
+    const next = lines[i + 1];
+    if (cols && lastRow && l.cells.join(' ').length < 48 && next?.table && next.cells.length === cols) {
+      lastRow[0] = `${lastRow[0]} ${l.cells.join(' ')}`.trim();
+      continue;
+    }
+    if (cols && lastRow && l.cells.join(' ').length < 48 && l.cells.length === 1 && (!next || !next.table)) {
+      // Wrapped cell on the table's last row.
+      lastRow[0] = `${lastRow[0]} ${l.cells[0]}`.trim();
+      flushRow();
+      cols = 0;
+      continue;
+    }
+    flushRow();
+    cols = 0;
+    out.push(l.cells.join(' '));
+  }
+  flushRow();
+  return out.join('\n').replace(/\n{3,}/g, '\n\n');
+}
+
+/** Legacy fallback: literal text strings in uncompressed or Flate streams. */
+function extractPdfFallback(bytes: Buffer): { text: string; pages: number | null } {
+
   const zlib = require('node:zlib') as typeof import('node:zlib');
   const raw = bytes.toString('latin1');
   const pages = (raw.match(/\/Type\s*\/Page[^s]/g) ?? []).length || null;

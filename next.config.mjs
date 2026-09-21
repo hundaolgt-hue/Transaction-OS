@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
-  serverExternalPackages: ['@prisma/client', 'bcryptjs', 'nodemailer'],
+  serverExternalPackages: ['better-sqlite3', 'bcryptjs', 'nodemailer', 'pdfmake', 'pdfjs-dist'],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
 };

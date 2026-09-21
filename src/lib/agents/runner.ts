@@ -7,6 +7,8 @@ import { notify, audienceFor, clientUsersFor } from '../notify';
 import { complete, extractJson, LlmUnavailable } from './anthropic';
 import { systemPrompt, FINDINGS_SCHEMA, RISK_SCHEMA, REPORT_SCHEMA } from './prompts';
 import { evaluateRules, type RuleHit } from './ruleEngine';
+import { draftSection, buildDraftContext } from '../drafting/prospectus';
+import { extractFinancials, computeRatios, extractCovenants, analyticalFindings } from '../finance/analyze';
 import type { AgentRun, Document, Finding, ReportSection, Requirement } from '../types';
 import type { EngagementSnapshot } from '../repo/core';
 
@@ -159,6 +161,29 @@ async function analysisAgent(
   repo.logAgent(run.id, `Rule engine evaluated ${pack.rules.filter((r) => r.agent === agent).length} rules across ${snap.documents.length} documents and raised ${hits.length} candidate finding(s).${collecting ? ' Missing-document gaps were not raised as findings: the engagement is still in document collection, where the checklist is the record.' : ''}`);
 
   let created = persistHits(hits, snap.engagement.id, run.id, agent);
+
+  // Financial Agent: analytical review of the extracted statements.
+  if (agent === 'FINANCIAL') {
+    const fin = extractFinancials(snap.documents, snap.requirements);
+    if (fin) {
+      const ratios = computeRatios(fin);
+      const cov = extractCovenants(snap.documents, snap.requirements);
+      const flags = analyticalFindings(fin, ratios, cov);
+      const statementDoc = snap.documents.find((d) => d.title === fin.source) ?? null;
+      for (const a of flags) {
+        const f = repo.createFinding({
+          engagementId: snap.engagement.id, documentId: statementDoc?.id ?? null,
+          requirementId: statementDoc?.requirementId ?? null, agentRunId: run.id, agent,
+          gapType: 'FINANCIAL', severity: a.severity, title: a.title, detail: a.detail,
+          citation: a.citation, recommendation: a.recommendation, confidence: 0.9, dedupeKey: a.key,
+        });
+        if (f) created++;
+      }
+      repo.logAgent(run.id, `Extracted ${fin.years.length} years of statements from "${fin.source}", computed ${Object.keys(ratios[0]).length - 1} ratios per year and raised ${flags.length} analytical flag(s).`);
+    } else {
+      repo.logAgent(run.id, 'No parseable statement tables were found; analytical review skipped.', 'WARN');
+    }
+  }
 
   // 2. LLM pass adds judgement-based findings the rules cannot express.
   let llmNotes = '';
@@ -574,13 +599,18 @@ async function prospectusAgent(
   const untouched = candidates.filter((x) => x.row!.status === 'NOT_STARTED');
   const skeletons = candidates.filter((x) => x.row!.status === 'DRAFTING' && x.row!.generatedBy === 'RULES');
   const todo = (targetCode ? candidates : [...untouched, ...(useLlm ? skeletons : [])])
-    .slice(0, targetCode ? 1 : 4); // batch so a single run stays responsive
+    .slice(0, targetCode ? 1 : useLlm ? 4 : 100); // the reasoning pass is slow, so it works in batches
 
   if (!todo.length) {
     return { run, findingsCreated: 0, summary: `Prospectus Agent: every ${pack.outputLabel.toLowerCase()} section already has a draft. Nothing to do.`, artifacts: {} };
   }
 
-  const reqByCode = new Map(snap.requirements.map((r) => [r.code, r]));
+  // Editorial review of the data room before drafting from it.
+  const editorial = evaluateRules({ pack, agent: 'PROSPECTUS', documents: snap.documents, requirements: snap.requirements, raiseMissing: false });
+  const editorialCreated = persistHits(editorial, snap.engagement.id, run.id, 'PROSPECTUS');
+  repo.logAgent(run.id, `Editorial review of ${snap.documents.length} documents raised ${editorial.length} candidate issue(s), ${editorialCreated} new.`);
+
+  const ctx = buildDraftContext(snap);
   const docsFor = (codes: string[]) =>
     snap.documents.filter((d) => {
       const req = snap.requirements.find((r) => r.id === d.requirementId);
@@ -592,7 +622,8 @@ async function prospectusAgent(
 
   for (const [i, { spec, row }] of todo.entries()) {
     repo.updateAgentRun(run.id, { progress: 10 + Math.round((i / todo.length) * 80) });
-    let body = '';
+    const base = draftSection(snap, spec, ctx);
+    let body = base.body;
     let by = 'RULES';
 
     if (useLlm) {
@@ -600,7 +631,7 @@ async function prospectusAgent(
         const sourceDocs = docsFor(spec.sourceRequirements);
         const res = await complete({
           system: systemPrompt('PROSPECTUS', pack),
-          maxTokens: 4000,
+          maxTokens: 5000,
           messages: [{
             role: 'user',
             content: `${contextHeader(snap)}
@@ -611,76 +642,46 @@ Required by: ${spec.requiredBy}
 Drafting guidance: ${spec.guidance}
 Minimum length: ${spec.minWords} words.
 
+## Structured first draft (built from the data room by the drafting engine — improve it, keep every figure)
+${base.body.slice(0, 12000)}
+
 ## Source documents for this section
-${sourceDocs.length ? docDigest(sourceDocs, snap.requirements, 6) : '(no documents on file for this section — say so explicitly where information is missing and mark it [INFORMATION REQUIRED])'}
+${sourceDocs.length ? docDigest(sourceDocs, snap.requirements, 6) : '(none on file)'}
 
-## Risks to reflect where relevant
-${snap.risks.slice(0, 12).map((r) => `- ${r.code} ${r.title} (inherent ${r.inherentScore}): ${r.disclosureStrategy ?? ''}`).join('\n') || '(none yet)'}
-
-Write the section body in markdown. Use [INFORMATION REQUIRED: …] wherever a fact is not supported by the documents. Do not invent figures, dates or names. Return the section body only, with no preamble.`,
+Rewrite the draft into polished offering-document prose. Keep every table and figure exactly. Keep [INFORMATION REQUIRED: …] markers where the documents are silent. Do not invent facts. Return the section body in markdown only.`,
           }],
         });
-        body = res.text.trim();
-        by = 'ANTHROPIC';
-        engine = 'ANTHROPIC';
+        if (res.text.trim().length > base.body.length * 0.5) {
+          body = res.text.trim();
+          by = 'ANTHROPIC';
+          engine = 'ANTHROPIC';
+        }
         repo.updateAgentRun(run.id, {
           tokensIn: (repo.getAgentRun(run.id)?.tokensIn ?? 0) + res.tokensIn,
           tokensOut: (repo.getAgentRun(run.id)?.tokensOut ?? 0) + res.tokensOut,
           model: res.model,
         });
       } catch (e) {
-        repo.logAgent(run.id, `Reasoning pass unavailable for ${spec.code}; skeleton used. ${String(e).slice(0, 140)}`, 'WARN');
+        repo.logAgent(run.id, `Reasoning pass unavailable for ${spec.code}; structured draft used. ${String(e).slice(0, 140)}`, 'WARN');
       }
     }
 
-    if (!body) {
-      body = skeletonSection(spec, snap, reqByCode);
-      by = 'RULES';
-    }
-
-    const words = body.trim().split(/\s+/).length;
+    const w = body.trim().split(/\s+/).length;
+    const gaps = (body.match(/\[INFORMATION REQUIRED/g) ?? []).length;
     repo.updateProspectusSection(row!.id, {
       body,
-      status: by === 'ANTHROPIC' ? 'DRAFTED' : 'DRAFTING',
+      status: gaps === 0 && w >= spec.minWords * 0.8 ? 'DRAFTED' : 'DRAFTING',
       generatedBy: by,
-      completeness: Math.min(100, Math.round((words / spec.minWords) * 100)),
+      completeness: by === 'ANTHROPIC' ? Math.min(100, Math.round((w / spec.minWords) * 100) - gaps * 3) : base.completeness,
     });
-    repo.logAgent(run.id, `Drafted ${spec.code} — ${spec.heading} (${words} words, ${by}).`);
+    repo.logAgent(run.id, `Drafted ${spec.code} — ${spec.heading} (${w} words, ${gaps} open item${gaps === 1 ? '' : 's'}, ${by}).`);
     drafted++;
   }
 
   const progress = repo.listProspectus(snap.engagement.id);
   const pct = Math.round(progress.reduce((a, s) => a + s.completeness, 0) / (progress.length || 1));
-  const summary = `Prospectus Agent: ${drafted} section(s) drafted. The ${pack.outputLabel.toLowerCase()} is ${pct}% complete across ${progress.length} sections and awaits expert review.`;
-  return { run, findingsCreated: 0, summary, artifacts: { drafted, engine, percent: pct } };
-}
-
-function skeletonSection(
-  spec: { code: string; heading: string; requiredBy: string; guidance: string; sourceRequirements: string[]; minWords: number },
-  snap: EngagementSnapshot,
-  reqByCode: Map<string, Requirement>,
-): string {
-  const sources = spec.sourceRequirements.map((c) => reqByCode.get(c)).filter(Boolean) as Requirement[];
-  const available = sources.filter((r) => ['ACCEPTED', 'SUBMITTED', 'UNDER_REVIEW'].includes(r.status));
-  const missing = sources.filter((r) => !['ACCEPTED', 'SUBMITTED', 'UNDER_REVIEW'].includes(r.status));
-
-  return `> **Drafting note.** This is a structured skeleton produced by the deterministic engine. Configure an Anthropic API key to have the Prospectus Agent draft the narrative, or draft it here directly.
-
-**Required by:** ${spec.requiredBy}
-
-**What this section must cover.** ${spec.guidance}
-
-**Source documents on file.**
-${available.length ? available.map((r) => `- ${r.code} — ${r.title} (${titleCase(r.status)})`).join('\n') : '- None yet.'}
-
-${missing.length ? `**Information required before this section can be completed.**\n${missing.map((r) => `- [INFORMATION REQUIRED: ${r.code} — ${r.title}]`).join('\n')}\n` : ''}
-**Draft.**
-
-[INFORMATION REQUIRED: narrative for "${spec.heading}" — target length ${spec.minWords} words.]
-
-${spec.code === 'P-13' || spec.heading.toLowerCase().includes('risk')
-  ? `**Risks to be disclosed in this section.**\n${snap.risks.slice(0, 15).map((r) => `- **${r.title}** (inherent ${r.inherentScore}, residual ${r.residualScore}) — ${r.disclosureStrategy ?? 'disclosure strategy to be set'}`).join('\n') || '- Risk register is empty; run the Risk Agent first.'}`
-  : ''}`;
+  const summary = `Prospectus Agent: ${drafted} section(s) drafted and ${editorialCreated} editorial issue(s) raised. The ${pack.outputLabel.toLowerCase()} is ${pct}% complete across ${progress.length} sections and awaits expert review.`;
+  return { run, findingsCreated: editorialCreated, summary, artifacts: { drafted, engine, percent: pct } };
 }
 
 // ------------------------------------------------------------ secretary agent

@@ -3,6 +3,12 @@ import { requireStaff } from '@/lib/auth';
 import { listEngagements, listClients, snapshot, listAudit, listStaff } from '@/lib/repo/core';
 import { Panel, PanelHead, Stat, Meter, Chip, StatusChip, SeverityChip, Empty, Grid, Avatar } from '@/components/ui';
 import { STAGE_META, TRANSACTION_LABEL, fmtMoney, fmtDate, relTime, titleCase, type Stage, type TransactionType } from '@/lib/domain';
+import { getOrg } from '@/lib/repo/core';
+import { buildGraph } from '@/lib/knowledge/graph';
+import { stackedBars, donut, hbar, SCREEN_THEME, compact } from '@/lib/charts/svg';
+import KnowledgeGraph from '@/components/KnowledgeGraph';
+import Chart from '@/components/Chart';
+import { CountUp } from '@/components/Motion';
 
 export const dynamic = 'force-dynamic';
 
@@ -36,6 +42,7 @@ export default async function DashboardPage() {
     .slice(0, 8);
 
   const recent = listAudit(session.orgId, { limit: 12 });
+  const graph = buildGraph(getOrg(session.orgId)!, staff, snaps);
   const stageCounts = Object.keys(STAGE_META).map((k) => ({
     stage: k as Stage,
     count: active.filter((s) => s.engagement.stage === k).length,
@@ -45,28 +52,74 @@ export default async function DashboardPage() {
     <div style={{ display: 'grid', gap: 16 }}>
       <header>
         <div className="eyebrow">Practice overview</div>
-        <h1 style={{ fontSize: 22, fontWeight: 600, letterSpacing: '-0.03em', margin: '3px 0 0' }}>
-          Good {greeting()}, {session.name.split(' ')[0]}
+        <h1 style={{ fontSize: 26, fontWeight: 650, letterSpacing: '-0.035em', margin: '3px 0 0' }}>
+          Good {greeting()}, <span className="shine">{session.name.split(' ')[0]}</span>
         </h1>
-        <p style={{ fontSize: 13, color: 'var(--ink-subtle)', margin: '4px 0 0' }}>
-          {active.length} active engagement{active.length === 1 ? '' : 's'} across {clients.length} client{clients.length === 1 ? '' : 's'}.
+        <p style={{ fontSize: 13.5, color: 'var(--ink-subtle)', margin: '6px 0 0', maxWidth: '78ch', lineHeight: 1.6 }}>
+          {active.length} active engagement{active.length === 1 ? '' : 's'} across {clients.length} client{clients.length === 1 ? '' : 's'}, worth {fmtMoney(pipeline)} in target raises.{' '}
+          {criticalFindings ? <strong style={{ color: 'var(--critical)' }}>{criticalFindings} critical finding{criticalFindings === 1 ? ' needs' : 's need'} attention. </strong> : 'No critical findings are open. '}
+          {attention.length ? `${attention.length} item${attention.length === 1 ? '' : 's'} are blocking progress.` : 'Nothing is blocked.'}
         </p>
       </header>
 
       <Grid min={185}>
-        <Stat label="Active engagements" value={active.length} sub={`${engagements.length - active.length} closed or paused`} />
+        <Stat label="Active engagements" value={<CountUp value={active.length} />} sub={`${engagements.length - active.length} closed or paused`} />
         <Stat label="Pipeline value" value={fmtMoney(pipeline)} sub="Target raise across active mandates" />
-        <Stat label="Avg. document completeness" value={`${avgCompleteness}%`}
+        <Stat label="Avg. document completeness" value={<CountUp value={avgCompleteness} suffix="%" />}
           tone={avgCompleteness >= 75 ? 'good' : avgCompleteness >= 40 ? 'medium' : 'high'}
           sub="Weighted against the ECMA checklist" />
-        <Stat label="Open findings" value={openFindings}
+        <Stat label="Open findings" value={<CountUp value={openFindings} />}
           tone={criticalFindings > 0 ? 'critical' : openFindings > 0 ? 'medium' : 'good'}
           sub={`${criticalFindings} critical`} />
         <Stat label="Fees outstanding" value={fmtMoney(feesOutstanding)} sub="Invoiced, not yet received" />
       </Grid>
 
+      <Panel className="reveal">
+        <PanelHead title="Knowledge graph" sub="Every client, engagement, document, gap, finding, risk, person and agent — and how they connect"
+          actions={<Link className="btn btn-sm" href="/graph">Full screen</Link>} />
+        <div className="panel-body">
+          <KnowledgeGraph graph={graph} height={460} compact />
+        </div>
+      </Panel>
+
+      <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(min(280px, 100%), 1fr))' }}>
+        <Panel className="reveal lift" data-delay="1">
+          <PanelHead title="Open findings by engagement" sub="Severity mix" />
+          <div className="panel-body">
+            <Chart label="Stacked bars of open findings by severity for each engagement" svg={stackedBars({
+              theme: SCREEN_THEME, width: 520,
+              rows: active.map((s2) => ({ label: s2.engagement.reference, parts: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW'].map((k) => ({ key: k, value: s2.findings.filter((f) => f.severity === k && ['OPEN', 'ACKNOWLEDGED', 'IN_REMEDIATION'].includes(f.status)).length })) })),
+              colors: { CRITICAL: 'var(--critical)', HIGH: 'var(--high)', MEDIUM: 'var(--medium)', LOW: 'var(--low)' },
+            })} />
+          </div>
+        </Panel>
+        <Panel className="reveal lift" data-delay="2">
+          <PanelHead title="Fee position" sub="Across all contracts" />
+          <div className="panel-body">
+            <Chart label="Donut of fees received, invoiced and unbilled" svg={donut({
+              theme: SCREEN_THEME, width: 440, height: 180,
+              items: [
+                { label: 'Received', value: snaps.reduce((a, x) => a + x.fees.paid, 0), color: 'var(--good)' },
+                { label: 'Invoiced, unpaid', value: snaps.reduce((a, x) => a + x.fees.outstanding, 0), color: 'var(--high)' },
+                { label: 'Not yet billed', value: snaps.reduce((a, x) => a + x.fees.unbilled, 0), color: 'var(--low)' },
+              ],
+              centre: compact(snaps.reduce((a, x) => a + (x.contract?.totalFee ?? 0), 0)), sub: 'ETB contracted',
+            })} />
+          </div>
+        </Panel>
+        <Panel className="reveal lift" data-delay="3">
+          <PanelHead title="Document completeness" sub="Weighted against each rule pack" />
+          <div className="panel-body">
+            <Chart label="Horizontal bars of document completeness per engagement" svg={hbar({
+              theme: SCREEN_THEME, width: 520, max: 100, format: (v) => `${v}%`,
+              items: active.map((s2) => ({ label: `${s2.engagement.reference} ${s2.client.name}`, value: s2.completeness.percent, color: s2.completeness.percent >= 75 ? 'var(--good)' : s2.completeness.percent >= 40 ? 'var(--high)' : 'var(--critical)' })),
+            })} />
+          </div>
+        </Panel>
+      </div>
+
       <div style={{ display: 'grid', gap: 16, gridTemplateColumns: 'repeat(auto-fit, minmax(min(360px, 100%), 1fr))' }}>
-        <Panel>
+        <Panel className="reveal">
           <PanelHead title="Engagements" sub="Health across the active book"
             actions={<Link className="btn btn-sm" href="/engagements">View all</Link>} />
           {active.length === 0 ? (
@@ -113,7 +166,7 @@ export default async function DashboardPage() {
           )}
         </Panel>
 
-        <Panel>
+        <Panel className="reveal" data-delay="1">
           <PanelHead title="Needs attention" sub="Blockers, overdue items and critical findings" />
           {attention.length === 0 ? (
             <Empty title="Nothing blocked" body="Every active engagement can progress to its next stage." />

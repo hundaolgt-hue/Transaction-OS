@@ -4,7 +4,7 @@ import clsx from 'clsx';
 // ------------------------------------------------------------------- panel
 
 export function Panel({ children, className, ...rest }: React.HTMLAttributes<HTMLDivElement>) {
-  return <section className={clsx('panel', className)} {...rest}>{children}</section>;
+  return <section className={clsx('panel reveal', className)} {...rest}>{children}</section>;
 }
 
 export function PanelHead({ title, sub, actions }: { title: React.ReactNode; sub?: React.ReactNode; actions?: React.ReactNode }) {

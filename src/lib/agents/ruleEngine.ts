@@ -253,3 +253,38 @@ export function suggestRequirement(
   }
   return best && best.score >= 3 ? best : null;
 }
+
+export interface RuleTestResult {
+  ruleId: string; agent: string; title: string; severity: string; citation: string;
+  requirementCode: string; documentTitle: string | null; result: 'PASS' | 'FAIL' | 'NOT TESTED';
+}
+
+/** Every rule against every document it targets, passes included — the audit trail of a review. */
+export function ruleTestResults(opts: { pack: RulePack; documents: Document[]; requirements: Requirement[]; agents?: string[]; asOf?: Date }): RuleTestResult[] {
+  const { pack, documents, requirements } = opts;
+  const byCode = new Map(requirements.map((r) => [r.code, r]));
+  const hitKeys = new Set<string>();
+  for (const agent of ['LEGAL', 'FINANCIAL', 'PROSPECTUS']) {
+    for (const h of evaluateRules({ pack, agent, documents, requirements, asOf: opts.asOf, raiseMissing: false })) hitKeys.add(h.dedupeKey);
+  }
+  const out: RuleTestResult[] = [];
+  for (const rule of pack.rules) {
+    if (opts.agents && !opts.agents.includes(rule.agent)) continue;
+    if (rule.appliesTo.includes('*')) continue; // editorial rules are summarised separately
+    for (const code of rule.appliesTo) {
+      const req = byCode.get(code);
+      const docs = req ? documents.filter((d) => d.requirementId === req.id) : [];
+      if (!docs.length) {
+        out.push({ ruleId: rule.id, agent: rule.agent, title: rule.title, severity: rule.severity, citation: rule.citation, requirementCode: code, documentTitle: null, result: 'NOT TESTED' });
+        continue;
+      }
+      for (const d of docs) {
+        out.push({
+          ruleId: rule.id, agent: rule.agent, title: rule.title, severity: rule.severity, citation: rule.citation,
+          requirementCode: code, documentTitle: d.title, result: hitKeys.has(`${rule.id}:${d.id}`) ? 'FAIL' : 'PASS',
+        });
+      }
+    }
+  }
+  return out;
+}

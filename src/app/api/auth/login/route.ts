@@ -5,7 +5,7 @@ import { audit } from '@/lib/repo/core';
 
 export const runtime = 'nodejs';
 
-const schema = z.object({ email: z.string().email(), password: z.string().min(1) });
+const schema = z.object({ email: z.string().email(), password: z.string().min(1), side: z.enum(['firm', 'client']).optional() });
 
 export async function POST(req: NextRequest) {
   const parsed = schema.safeParse(await req.json().catch(() => ({})));
@@ -15,6 +15,16 @@ export async function POST(req: NextRequest) {
   if (!user || !user.active || !(await verifyPassword(parsed.data.password, user.passwordHash))) {
     // Uniform message — do not disclose whether the account exists.
     return NextResponse.json({ error: 'Those credentials were not recognised.' }, { status: 401 });
+  }
+
+  // Two-sided sign-in: the credential is already verified here, so naming the
+  // correct side does not disclose anything the caller does not already hold.
+  const side = parsed.data.side;
+  if (side === 'firm' && user.role === 'CLIENT') {
+    return NextResponse.json({ error: 'This is a client-portal account. Switch to “Client” to continue.', wrongSide: 'client' }, { status: 409 });
+  }
+  if (side === 'client' && user.role !== 'CLIENT') {
+    return NextResponse.json({ error: 'This is a firm account. Switch to “Advisory firm” to continue.', wrongSide: 'firm' }, { status: 409 });
   }
 
   const token = await createSessionToken({

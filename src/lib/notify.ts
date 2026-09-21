@@ -69,6 +69,15 @@ export async function notify(input: NotifyInput): Promise<Notification[]> {
     }
     created.push(n);
   }
+  // Fan out once per event (not per recipient) to the firm's chat channels.
+  if (created.length && input.engagementId) {
+    const eng = one<Engagement>('SELECT * FROM engagements WHERE id = ?', [input.engagementId]);
+    if (eng) {
+      import('./integrations')
+        .then(({ broadcast }) => broadcast(eng.orgId, { title: input.title, body: input.body, severity: input.severity, link: input.link }))
+        .catch((e) => console.warn('[integrations]', e));
+    }
+  }
   return created;
 }
 

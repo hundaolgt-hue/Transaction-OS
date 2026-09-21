@@ -5,6 +5,8 @@ import { readOutbox } from '@/lib/notify';
 import { Panel, PanelHead, Chip, Defs, Empty, Avatar } from '@/components/ui';
 import { ROLE_LABEL, relTime, type Role } from '@/lib/domain';
 import UserManager from '@/components/UserManager';
+import IntegrationsPanel from '@/components/IntegrationsPanel';
+import { publicView } from '@/lib/integrations';
 
 export const dynamic = 'force-dynamic';
 
@@ -13,6 +15,7 @@ export default async function SettingsPage() {
   const org = getOrg(session.orgId);
   const users = listOrgUsers(session.orgId);
   const clients = listClients(session.orgId);
+  const channels = publicView(session.orgId) as Parameters<typeof IntegrationsPanel>[0]['initial'];
   const outbox = env.mailEnabled ? [] : readOutbox().slice(0, 12);
 
   return (
@@ -64,6 +67,14 @@ export default async function SettingsPage() {
           </div>
         </Panel>
       </div>
+
+      <section style={{ display: 'grid', gap: 10 }}>
+        <div>
+          <div className="eyebrow">Messaging</div>
+          <h2 style={{ fontSize: 16, fontWeight: 600, margin: '2px 0 0' }}>Telegram &amp; Slack</h2>
+        </div>
+        <IntegrationsPanel initial={channels} canManage={session.role === 'OWNER'} />
+      </section>
 
       <UserManager
         users={users.map((u) => ({
