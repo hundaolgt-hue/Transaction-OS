@@ -16,7 +16,8 @@ const html = `<meta charset="utf-8">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap">
 <style>${css}</style>
-<div id="app"><div class="loading">Loading the practice…</div></div>
+<div id="app"><div class="loading">Loading the practice…<br><small id="slow-hint" style="display:none">Still loading? This preview needs JavaScript. Open the file in Chrome, Edge, Safari or Firefox — not in a phone file viewer, email or chat preview.</small><noscript><br><small>JavaScript is turned off, so the preview cannot start. Open this file in Chrome, Edge, Safari or Firefox.</small></noscript></div></div>
+<script>setTimeout(function(){var h=document.getElementById("slow-hint");if(h)h.style.display="inline";},6000);</script>
 <script type="text/plain" id="seed-db">${db}</script>
 <script>${sql}</script>
 <script>${pdfmake}</script>

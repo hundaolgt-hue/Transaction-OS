@@ -446,6 +446,7 @@
         <div><label class="label" for="l-email">Work email</label><input id="l-email" class="input" type="email" autocomplete="username" required value="${esc(L.email)}" placeholder="${L.side === 'firm' ? 'you@siinqee-ib.demo' : 'you@company.et'}"></div>
         ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px">${esc(L.err)}</div>` : ''}
         <button class="btn primary" style="height:40px" type="submit">Continue →</button>
+        <button type="button" class="btn" style="height:36px" data-act="l-quick" data-k="${L.side === 'firm' ? 'hundaol@siinqee-ib.demo' : 'finance@abyssiniaagro.et'}">Skip typing — enter the demo as ${L.side === 'firm' ? 'bank staff' : 'the client'}</button>
         <div style="margin-top:6px;padding-top:14px;border-top:1px solid var(--hairline)"><div class="eyebrow" style="margin-bottom:8px">Demo accounts · password <span class="mono">demo1234</span></div>
           <div style="display:grid;gap:5px">${DEMO[L.side].map(([em, n, r]) => `<button type="button" class="btn sm lift" style="justify-content:space-between;width:100%;height:32px" data-act="l-demo" data-k="${em}"><span>${esc(n)}</span><span class="xs faint">${esc(r)}</span></button>`).join('')}</div></div>
       </form>`;
@@ -478,11 +479,14 @@
   function findUser(email) { return AOS.one('SELECT * FROM users WHERE lower(email) = lower(?) AND active = 1', [email]); }
   async function loginSubmit() {
     L.err = null; L.errSwitch = false;
-    const u = findUser(L.email);
-    if (!u || L.password !== 'demo1234') { L.err = 'Those credentials were not recognised.'; paintLogin(); return; }
+    // Forgiving demo sign-in: trims input, ignores case, accepts the older
+    // @raphaconsult.et demo addresses, and switches side automatically.
+    const email = L.email.trim().toLowerCase().replace(/@raphaconsult\.et$/, '@siinqee-ib.demo');
+    const u = findUser(email);
+    if (!u) { L.err = 'That email is not a demo account. Use one of the buttons below, or hundaol@siinqee-ib.demo.'; L.step = 'email'; paintLogin(); return; }
+    if (L.password.trim().toLowerCase() !== 'demo1234') { L.err = 'Wrong password — the demo password is demo1234.'; paintLogin(); return; }
     const isClient = u.role === 'CLIENT';
-    if (L.side === 'firm' && isClient) { L.err = 'This is a client-portal account. Switch to “Client” to continue.'; L.errSwitch = true; paintLogin(); return; }
-    if (L.side === 'client' && !isClient) { L.err = 'This is a firm account. Switch to “Bank staff” to continue.'; L.errSwitch = true; paintLogin(); return; }
+    L.side = isClient ? 'client' : 'firm';
     L.name = u.name; L.step = 'verify'; L.done = 0; paintLogin();
     const gap = reduced() ? 60 : 420;
     for (let i = 1; i <= CHECKS[L.side].length; i++) { await new Promise((r) => setTimeout(r, gap)); L.done = i; paintLogin(); }
@@ -860,6 +864,7 @@
     switch (a) {
       case 'l-side': if (L.step === 'verify' || L.step === 'welcome') return; Object.assign(L, { side: k, step: 'email', err: null, email: '', password: '' }); paintLogin(); break;
       case 'l-demo': Object.assign(L, { email: k, password: 'demo1234', err: null, step: 'password' }); paintLogin(); break;
+      case 'l-quick': Object.assign(L, { email: k, password: 'demo1234', err: null }); loginSubmit(); break;
       case 'l-back': Object.assign(L, { step: 'email', err: null }); paintLogin(); break;
       case 'l-switch': Object.assign(L, { side: L.side === 'firm' ? 'client' : 'firm', err: null, errSwitch: false, step: 'password' }); paintLogin(); break;
       case 'signout': signOut(); break;
