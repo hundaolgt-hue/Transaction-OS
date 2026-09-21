@@ -138,7 +138,7 @@ export class GraphView {
       if (t === 'critical') return '#e05663';
       if (t === 'high') return '#e08a3c';
       if (t === 'medium') return '#cfae4a';
-      if (t === 'good' && n.type !== 'ENGAGEMENT') return '#2bc23b';
+      if (t === 'good' && n.type !== 'ENGAGEMENT') return '#34c16b';
       if (n.type === 'DOCUMENT') return NODE_META.DOCUMENT.color;
     }
     return NODE_META[n.type].color;

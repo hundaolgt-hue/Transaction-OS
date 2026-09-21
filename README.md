@@ -170,12 +170,12 @@ adding a pack needs no code changes elsewhere, and the test suite enforces their
 
 ### Branding
 
-The deployment is branded for **Siinqee Investment Bank S.C.** Everything brand-specific lives in
-`src/lib/brand.ts` (name, legal name, descriptor, colours) plus the theme tokens at the top of
-`src/app/globals.css`. The official logo is not bundled: place the approved file at
-`public/brand/logo.svg` (or `.png`) and it appears in the sidebar, client portal, login page and on
-every PDF cover. The firm's ECMA licence number, TIN and contact details are left blank in the seed
-so that only official values are ever shown.
+The deployment is branded for **Siinqee Investment Bank S.C.** ("Make it count"). Names and the
+palette sampled from the bank's logo — royal blue `#012DE6`, bright blue `#3E5DFF`, yellow `#E9D001` —
+live in `src/lib/brand.ts`, with theme tokens at the top of `src/app/globals.css`. The bank's logo files
+are in `public/brand/`: `logo.png` (dark text, light surfaces), `logo-dark.png` (white text, dark
+surfaces and PDF covers) and `mark.png` (symbol only, sidebar and favicon). The firm's ECMA licence
+number, TIN and contact details are left blank in the seed so that only official values are shown.
 
 
 All optional — the app runs fully without any of it. See `.env.example`.

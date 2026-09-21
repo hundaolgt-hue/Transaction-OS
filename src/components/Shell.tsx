@@ -25,8 +25,8 @@ const NAV = [
   { href: '/settings', label: 'Settings', icon: 'cog' },
 ];
 
-export default function Shell({ session, orgName, logo, unread, engagements, children }: {
-  session: Session; orgName: string; logo?: string | null; unread: number; engagements: EngSummary[]; children: React.ReactNode;
+export default function Shell({ session, orgName, unread, engagements, children }: {
+  session: Session; orgName: string; unread: number; engagements: EngSummary[]; children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -59,7 +59,7 @@ export default function Shell({ session, orgName, logo, unread, engagements, chi
         <div className="brand-bar" aria-hidden />
         <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid var(--hairline)' }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <BrandMark logo={logo} />
+            <BrandMark size={30} />
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.015em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{orgName}</div>
               <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>{BRAND.product} · {BRAND.descriptor.split(' · ')[0]}</div>

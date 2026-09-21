@@ -6,9 +6,12 @@ const pdfmake = fs.readFileSync('node_modules/pdfmake/build/pdfmake.min.js', 'ut
 const vfs = fs.readFileSync('node_modules/pdfmake/build/vfs_fonts.js', 'utf8').replace(/<\/script/gi, '<\\/script');
 const css = fs.readFileSync('preview/app.css', 'utf8');
 const db = fs.readFileSync('data/preview.db').toString('base64');
+const img = (f) => 'data:image/png;base64,' + fs.readFileSync('public/brand/' + f).toString('base64');
+const brandImg = JSON.stringify({ light: img('logo.png'), dark: img('logo-dark.png'), mark: img('mark.png') });
 const html = `<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Siinqee Advisor OS</title>
+<link rel="icon" href="${img('mark.png')}">
 <meta name="description" content="Siinqee Investment Bank transaction advisory workspace (preview)">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap">
@@ -19,6 +22,7 @@ const html = `<meta charset="utf-8">
 <script>${pdfmake}</script>
 <script>${vfs}</script>
 <script>${aos}</script>
+<script>window.BRAND_IMG=${brandImg};</script>
 <script>${app}</script>
 `;
 fs.mkdirSync('preview/dist', { recursive: true });

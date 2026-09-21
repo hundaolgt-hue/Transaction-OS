@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import { BRAND } from '@/lib/brand';
-import { brandLogoUrl } from '@/lib/brandLogo';
 import { getOrg, listEngagements, listClients } from '@/lib/repo/core';
 import { unreadCount } from '@/lib/notify';
 import Shell from '@/components/Shell';
@@ -22,7 +21,6 @@ export default async function AppLayout({ children }: { children: React.ReactNod
     <Shell
       session={session}
       orgName={org?.name ?? BRAND.name}
-      logo={brandLogoUrl()}
       unread={unreadCount(session.userId)}
       engagements={engagements.slice(0, 8).map((e) => ({
         id: e.id, reference: e.reference, name: e.name,

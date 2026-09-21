@@ -12,14 +12,14 @@ export interface ChartTheme {
 
 export const PRINT_THEME: ChartTheme = {
   ink: '#16201c', muted: '#4a5652', faint: '#8a938f', grid: '#e3e7e5', ground: '#ffffff',
-  series: ['#D97F0E', '#0A7F1A', '#2d5f9e', '#7a5aa8', '#96751a', '#3f8fa8'],
-  good: '#0A7F1A', high: '#c73e1d', critical: '#c0392f', medium: '#96751a', low: '#2d5f9e',
+  series: ['#012DE6', '#B39A00', '#3E5DFF', '#1f7383', '#7a5aa8', '#b95a0f'],
+  good: '#0a7f3a', high: '#b95a0f', critical: '#c42b36', medium: '#8a7600', low: '#1f7383',
   font: 'Roboto, Helvetica, Arial, sans-serif',
 };
 
 export const SCREEN_THEME: ChartTheme = {
   ink: 'var(--ink)', muted: 'var(--ink-muted)', faint: 'var(--ink-faint)', grid: 'var(--hairline)', ground: 'transparent',
-  series: ['var(--accent)', 'var(--good)', 'var(--low)', '#8a5fc0', 'var(--medium)', '#3f8fa8'],
+  series: ['var(--accent)', 'var(--brand-2)', 'var(--low)', '#8a5fc0', 'var(--high)', '#3f8fa8'],
   good: 'var(--good)', high: 'var(--high)', critical: 'var(--critical)', medium: 'var(--medium)', low: 'var(--low)',
   font: 'inherit',
 };

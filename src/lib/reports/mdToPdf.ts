@@ -74,7 +74,7 @@ export function mdToPdf(src: string, opts: { headingBase?: number; tocPrefix?: s
       i--;
       out.push({
         table: { widths: ['*'], body: [[{ text: inline(q.join(' ')), style: 'quote' }]] },
-        layout: { hLineWidth: () => 0, vLineWidth: (k: number) => (k === 0 ? 2 : 0), vLineColor: () => '#B35C00', paddingLeft: () => 10, paddingTop: () => 6, paddingBottom: () => 6, fillColor: () => '#f2f7f5' },
+        layout: { hLineWidth: () => 0, vLineWidth: (k: number) => (k === 0 ? 2 : 0), vLineColor: () => '#012DE6', paddingLeft: () => 10, paddingTop: () => 6, paddingBottom: () => 6, fillColor: () => '#f2f7f5' },
         margin: [0, 4, 0, 10],
       });
       continue;

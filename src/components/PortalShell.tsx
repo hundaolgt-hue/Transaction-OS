@@ -9,8 +9,8 @@ import Motion from './Motion';
 import AssistantDock from './AssistantDock';
 import type { Session } from '@/lib/types';
 
-export default function PortalShell({ session, advisorName, logo, unread, children }: {
-  session: Session; advisorName: string; logo?: string | null; unread: number; children: React.ReactNode;
+export default function PortalShell({ session, advisorName, unread, children }: {
+  session: Session; advisorName: string; unread: number; children: React.ReactNode;
 }) {
   const router = useRouter();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -37,11 +37,8 @@ export default function PortalShell({ session, advisorName, logo, unread, childr
       <div className="brand-bar" aria-hidden />
       <header className="portal-topbar">
         <Link href="/portal" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <BrandMark logo={logo} />
-          <div>
-            <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.015em' }}>{advisorName}</div>
-            <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>Client portal · Advisor OS</div>
-          </div>
+          <BrandMark variant="lockup" size={46} />
+          <span className="portal-tag">Client portal</span>
         </Link>
         <div style={{ flex: 1 }} />
         <span style={{ fontSize: 12.5, color: 'var(--ink-subtle)' }} className="portal-name">{session.name}</span>

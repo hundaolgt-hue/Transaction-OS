@@ -3,7 +3,7 @@ import type { Node } from './mdToPdf';
 
 export const COLORS = {
   ink: '#16201c', muted: '#4a5652', faint: '#8a938f', rule: '#d4d9d7', accent: PRINT_BRAND.accent, accentSoft: PRINT_BRAND.accentSoft,
-  critical: '#c0392f', high: '#b5651d', medium: '#96751a', low: '#2d5f9e', info: '#6b7377', good: PRINT_BRAND.good,
+  critical: '#c42b36', high: '#b95a0f', medium: '#8a7600', low: '#1f7383', info: '#6b7377', good: PRINT_BRAND.good,
 };
 
 export const SEV_COLOR: Record<string, string> = {
@@ -68,7 +68,7 @@ export function shell(opts: {
     background: (page: number) => (page === 1 ? { canvas: [
       { type: 'rect', x: 0, y: 0, w: 595.28, h: 262, color: PRINT_BRAND.coverBand },
       { type: 'rect', x: 0, y: 262, w: 372, h: 4, color: PRINT_BRAND.coverRule },
-      { type: 'rect', x: 372, y: 262, w: 223.28, h: 4, color: BRAND.colors.green },
+      { type: 'rect', x: 372, y: 262, w: 223.28, h: 4, color: PRINT_BRAND.coverRule2 },
     ] } : null),
     content: opts.content,
     styles: STYLES,

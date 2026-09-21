@@ -4,25 +4,19 @@ import LoginForm from './LoginForm';
 import LoginArt from './LoginArt';
 import BrandMark from '@/components/BrandMark';
 import { BRAND } from '@/lib/brand';
-import { brandLogoUrl } from '@/lib/brandLogo';
 
 export const dynamic = 'force-dynamic';
 
 export default async function LoginPage() {
   const session = await getSession();
   if (session) redirect(session.role === 'CLIENT' ? '/portal' : '/dashboard');
-  const logo = brandLogoUrl();
 
   return (
     <main className="login-stage">
       <section className="login-art">
         <LoginArt />
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <BrandMark logo={logo} size={34} />
-          <div>
-            <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em' }}>{BRAND.name}</div>
-            <div style={{ fontSize: 11.5, opacity: 0.7 }}>{BRAND.product} · {BRAND.descriptor}</div>
-          </div>
+          <BrandMark variant="lockup" size={84} on="dark" />
         </div>
         <div style={{ maxWidth: 480 }}>
           <h1 className="login-title" style={{ fontSize: 34, fontWeight: 600, letterSpacing: '-0.035em', lineHeight: 1.12, margin: '0 0 14px' }}>

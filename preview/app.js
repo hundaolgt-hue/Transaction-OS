@@ -4,7 +4,7 @@
 (function () {
   const { repo, progress, domain, RULE_PACKS, getRulePack, runAgent, suggestRequirement, renderMarkdown, notify } = AOS;
   const D = domain;
-  const STORE_KEY = 'advisoros-preview-db-v3';
+  const STORE_KEY = 'advisoros-preview-db-v4';
   let SQLDB, ORG, STAFF, CLIENT_USER, role = 'staff', sideOpen = false, busy = null;
 
   // ---------------------------------------------------------------- helpers
@@ -88,7 +88,9 @@
     bell: '<path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4l2-2Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   };
   const icon = (n) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
-  const mark = `<span class="brand-monogram" style="width:26px;height:26px;font-size:15px" aria-hidden="true">S</span>`;
+  const BI = window.BRAND_IMG || {};
+  const mark = `<img src="${BI.mark}" alt="" aria-hidden="true" width="28" height="28" style="flex:none">`;
+  const lockup = (h) => `<span class="brand-lockup"><img class="on-light" src="${BI.light}" alt="Siinqee Investment Bank — Make it count" style="height:${h}px;width:auto"><img class="on-dark" src="${BI.dark}" alt="Siinqee Investment Bank — Make it count" style="height:${h}px;width:auto"></span>`;
 
   function banner() {
     const who = role === 'client' ? CLIENT_USER : STAFF;
@@ -106,7 +108,7 @@
     const nav = [['dashboard', 'Dashboard', 'grid'], ['graph', 'Knowledge graph', 'graph'], ['assistant', 'Ask the OS', 'chat'], ['engagements', 'Engagements', 'folder'], ['clients', 'Clients', 'users'], ['agents', 'Agents', 'cpu'], ['rules', 'Rule packs', 'book'], ['audit', 'Audit trail', 'shield'], ['integrations', 'Telegram & Slack', 'bell']];
     return `<div class="root">
       <aside class="side" data-open="${sideOpen}"><div class="brand-bar" aria-hidden="true"></div>
-        <div class="brand">${mark}<div><b>${esc(ORG.name)}</b><small>Advisor OS</small></div></div>
+        <div class="brand">${mark}<div><b>${esc(ORG.name)}</b><small>Advisor OS · Investment Banking</small></div></div>
         <nav class="nav">${nav.map(([k, l, i]) => `<a href="#/${k}" ${path[0] === k || (k === 'engagements' && path[0] === 'e') ? 'aria-current="page"' : ''}>${icon(i)}${l}</a>`).join('')}</nav>
         <div class="side-eng"><div class="eyebrow" style="padding:8px 9px 6px">Active engagements</div>
           ${engs.map((e) => `<a href="#/e/${e.id}" ${path[1] === e.id ? 'aria-current="page"' : ''}><div class="mono xs" style="color:${path[1] === e.id ? 'var(--accent)' : 'var(--ink-faint)'}">${esc(e.reference)}</div><div class="small" style="white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${esc(clients.get(e.clientId))}</div></a>`).join('')}
@@ -407,7 +409,7 @@
       ${panel('Milestones', 'The plan agreed in your engagement letter', `<div class="tw"><table><thead><tr><th>#</th><th>Milestone</th><th>Target date</th><th>Status</th></tr></thead><tbody>${s.milestones.map((m) => `<tr><td class="mono faint">${m.sequence}</td><td style="font-weight:500">${esc(m.name)}</td><td class="small muted">${D.fmtDate(m.dueDate)}</td><td class="small">${tc(m.status)}</td></tr>`).join('')}</tbody></table></div>`)}
       <p class="xs faint" style="text-align:center">Internal review notes and draft reports are not shown here until ${esc(ORG.name)} releases them.</p>
     </div>`;
-    return `<div class="main">${banner()}<header class="top">${mark}<div><b class="small">${esc(ORG.name)}</b><div class="xs faint">Client portal — ${esc(CLIENT_USER.name)}</div></div><div style="flex:1"></div><span class="small muted">${notify.unreadCount(CLIENT_USER.id)} unread</span></header><main class="content" style="max-width:1180px">${body}</main></div>`;
+    return `<div class="main">${banner()}<header class="top">${lockup(42)}<span class="portal-tag">Client portal · ${esc(CLIENT_USER.name)}</span><div style="flex:1"></div><span class="small muted">${notify.unreadCount(CLIENT_USER.id)} unread</span></header><main class="content" style="max-width:1180px">${body}</main></div>`;
   }
 
   // ============================================================ additions
@@ -464,7 +466,7 @@
   }
   function loginView() {
     return `<main class="login-stage"><section class="login-art"><canvas id="login-canvas" aria-hidden="true"></canvas>
-      <div class="row" style="gap:10px"><span class="brand-monogram" style="width:34px;height:34px;font-size:19px" aria-hidden="true">S</span><div><div style="font-size:15px;font-weight:600">Siinqee Investment Bank</div><div class="xs" style="opacity:.7">Advisor OS · Investment Banking · Transaction Advisory</div></div></div>
+      <div class="row" style="gap:10px"><img src="${BI.dark}" alt="Siinqee Investment Bank — Make it count" style="height:84px;width:auto"></div>
       <div style="max-width:480px"><h1 class="login-title" style="font-size:34px;font-weight:600;letter-spacing:-.035em;line-height:1.12;margin:0 0 14px">One workspace from mandate to ECMA filing.</h1>
         <p style="font-size:14px;opacity:.78;line-height:1.65;margin:0 0 22px">Advisors run six specialised agents over the data room and review every draft. Clients see live progress, missing documents and the findings their advisor chose to share.</p>
         <div class="login-feats">${[['Firm side', 'Engagements, agents, review inbox, 30+ page due diligence PDFs'], ['Client side', 'Checklist, uploads, milestones, shared findings only'], ['Connected', 'Email, Telegram and Slack alerts on compliance gaps']].map(([t, d], i) => `<div class="login-feat" style="animation-delay:${0.15 + i * 0.12}s"><div style="font-size:12.5px;font-weight:600">${t}</div><div class="xs" style="opacity:.7;line-height:1.5">${d}</div></div>`).join('')}</div></div>
@@ -516,8 +518,8 @@
       ctx.clearRect(0, 0, w, h);
       for (const p of pts) if (!reduced()) { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1; }
       for (let i = 0; i < pts.length; i++) { const a = pts[i], ax = a.x * w, ay = a.y * h;
-        for (let j = i + 1; j < pts.length; j++) { const b = pts[j], d = Math.hypot(ax - b.x * w, ay - b.y * h); if (d < 120) { ctx.strokeStyle = `rgba(244,148,28,${(1 - d / 120) * 0.32})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); } }
-        const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90; ctx.fillStyle = near ? '#00B415' : i % 5 === 0 ? 'rgba(0,180,21,.8)' : 'rgba(248,184,102,.85)'; ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, 7); ctx.fill(); }
+        for (let j = i + 1; j < pts.length; j++) { const b = pts[j], d = Math.hypot(ax - b.x * w, ay - b.y * h); if (d < 120) { ctx.strokeStyle = `rgba(112,137,255,${(1 - d / 120) * 0.38})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); } }
+        const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90; ctx.fillStyle = near ? '#E9D001' : i % 6 === 0 ? 'rgba(233,208,1,.85)' : 'rgba(150,170,255,.85)'; ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, 7); ctx.fill(); }
       if (!reduced()) raf = requestAnimationFrame(draw);
     };
     const move = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; if (reduced()) draw(); };
@@ -728,6 +730,7 @@
           name = `${fileSlug(s.client.name)}_${{ LEGAL: 'Legal', FINANCIAL: 'Financial', COMBINED: 'Combined' }[key]}_DD.pdf`;
         }
       }
+      if (!key.startsWith('DR-') && BI.dark && Array.isArray(def.content)) def.content.unshift({ image: BI.dark, fit: [150, 44], absolutePosition: { x: 397, y: 30 } });
       const bytes = await new Promise((resolve, reject) => { try { pdfMake.createPdf(def, TABLE_LAYOUTS).getBuffer((b) => resolve(b)); } catch (e) { reject(e); } });
       let latin = ''; for (let i = 0; i < bytes.length; i += 0x8000) latin += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
       const pages = (latin.match(/\/Type\s*\/Page[^s]/g) || []).length;

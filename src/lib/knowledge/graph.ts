@@ -19,7 +19,7 @@ export interface GEdge { source: string; target: string; kind: string }
 export interface Graph { nodes: GNode[]; edges: GEdge[]; counts: Record<NodeType, number> }
 
 export const NODE_META: Record<NodeType, { label: string; color: string }> = {
-  FIRM: { label: 'Firm', color: '#F4941C' },
+  FIRM: { label: 'Firm', color: '#3E5DFF' },
   PERSON: { label: 'People', color: '#3f8fa8' },
   CLIENT: { label: 'Clients', color: '#5b8fd4' },
   ENGAGEMENT: { label: 'Engagements', color: '#8a5fc0' },
