@@ -445,7 +445,7 @@
         <p class="small faint" style="margin:0">${L.side === 'firm' ? 'Investment banking and transaction advisory staff.' : 'See your progress, missing documents and shared findings.'}</p></div>
         <div><label class="label" for="l-email">Work email</label><input id="l-email" class="input" type="email" autocomplete="username" required value="${esc(L.email)}" placeholder="${L.side === 'firm' ? 'you@siinqee-ib.demo' : 'you@company.et'}"></div>
         ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px">${esc(L.err)}</div>` : ''}
-        <button class="btn primary" style="height:40px" type="submit">Continue →</button>
+        <button class="btn primary" style="height:40px" type="button" data-submit>Continue →</button>
         <button type="button" class="btn" style="height:36px" data-act="l-quick" data-k="${L.side === 'firm' ? 'hundaol@siinqee-ib.demo' : 'finance@abyssiniaagro.et'}">Skip typing — enter the demo as ${L.side === 'firm' ? 'bank staff' : 'the client'}</button>
         <div style="margin-top:6px;padding-top:14px;border-top:1px solid var(--hairline)"><div class="eyebrow" style="margin-bottom:8px">Demo accounts · password <span class="mono">demo1234</span></div>
           <div style="display:grid;gap:5px">${DEMO[L.side].map(([em, n, r]) => `<button type="button" class="btn sm lift" style="justify-content:space-between;width:100%;height:32px" data-act="l-demo" data-k="${em}"><span>${esc(n)}</span><span class="xs faint">${esc(r)}</span></button>`).join('')}</div></div>
@@ -455,7 +455,7 @@
           <span style="width:26px;height:26px;border-radius:99px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-size:12px;font-weight:700">${esc(L.email.slice(0, 1).toUpperCase())}</span><span class="small">${esc(L.email)}</span><span class="xs faint">change</span></button>
         <div><label class="label" for="l-pw">Password</label><input id="l-pw" class="input" type="password" autocomplete="current-password" required value="${esc(L.password)}"></div>
         ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px;display:flex;justify-content:space-between;gap:8px;align-items:center"><span>${esc(L.err)}</span>${L.errSwitch ? '<button type="button" class="btn sm" data-act="l-switch">Switch</button>' : ''}</div>` : ''}
-        <button class="btn primary" style="height:40px" type="submit">Sign in</button></form>`;
+        <button class="btn primary" style="height:40px" type="button" data-submit>Sign in</button></form>`;
     else inner = `<div class="step-in" style="display:grid;gap:14px" aria-live="polite">
         ${L.step === 'welcome' ? `<div style="text-align:center;padding:10px 0 4px"><div class="welcome-badge" aria-hidden="true">✓</div><h2 style="font-size:20px;font-weight:600;margin:12px 0 4px">Welcome, ${esc(L.name.split(' ')[0])}</h2><p class="small faint" style="margin:0">${L.side === 'firm' ? 'Taking you to the bank dashboard…' : 'Taking you to your portal…'}</p></div>` : '<h2 style="font-size:16px;font-weight:600;margin:0">Securing your session</h2>'}
         <ul class="verify" style="list-style:none;padding:0;margin:0">${CHECKS[L.side].map((c, i) => `<li class="${i < L.done ? 'done' : i === L.done ? 'run' : ''}"><span class="tick">${i < L.done ? '✓' : ''}</span>${esc(c)}</li>`).join('')}</ul></div>`;
@@ -645,7 +645,7 @@
         ${SAMPLE ? `<div class="engine-toggle" role="group" aria-label="Answer engine"><button type="button" data-act="c-engine" data-k="local" aria-pressed="${chat.engine === 'local'}">Built-in</button><button type="button" data-act="c-engine" data-k="claude" aria-pressed="${chat.engine === 'claude'}">Claude</button></div>` : ''}
         ${inline ? '' : '<button class="btn ghost sm" data-act="c-close" aria-label="Close assistant">✕</button>'}</div>
       <div class="msgs" id="chat-msgs">${msgsInner()}</div>
-      <form class="dock-form" data-form="chat"><label for="chat-in" style="position:absolute;left:-9999px">Question</label><input id="chat-in" class="input" autocomplete="off" placeholder="Ask about any client, document, finding or fee…" ${chat.busy ? 'disabled' : ''}><button class="btn primary" ${chat.busy ? 'disabled' : ''}>${chat.busy ? '…' : 'Ask'}</button></form></div>`;
+      <form class="dock-form" data-form="chat"><label for="chat-in" style="position:absolute;left:-9999px">Question</label><input id="chat-in" class="input" autocomplete="off" placeholder="Ask about any client, document, finding or fee…" ${chat.busy ? 'disabled' : ''}><button type="button" data-submit class="btn primary" ${chat.busy ? 'disabled' : ''}>${chat.busy ? '…' : 'Ask'}</button></form></div>`;
   }
   function msgsInner() {
     const aud = role === 'client' ? 'client' : 'staff';
@@ -821,9 +821,9 @@
     reader.readAsText(file);
   }
 
-  document.addEventListener('submit', (e) => {
-    const f = e.target.closest('[data-form]'); if (!f) return;
-    e.preventDefault();
+  // Forms are handled without native submission: sandboxed viewers (file
+  // previews, embedded frames) silently block form submits.
+  function handleForm(f) {
     if (f.dataset.form === 'login-email') {
       L.email = document.getElementById('l-email').value.trim(); L.err = null;
       if (!/^\S+@\S+\.\S+$/.test(L.email)) { L.err = 'Enter a valid email address.'; paintLogin(); return; }
@@ -831,6 +831,13 @@
     }
     if (f.dataset.form === 'login-pw') { L.password = document.getElementById('l-pw').value; loginSubmit(); return; }
     if (f.dataset.form === 'chat') { const inp = f.querySelector('input'); const q = inp.value; inp.value = ''; ask(q); }
+  }
+  document.addEventListener('submit', (e) => { const f = e.target.closest('[data-form]'); if (!f) return; e.preventDefault(); handleForm(f); });
+  document.addEventListener('click', (e) => { const b = e.target.closest('[data-submit]'); if (!b || b.disabled) return; const f = b.closest('[data-form]'); if (f) { e.preventDefault(); handleForm(f); } });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || e.isComposing) return;
+    const el = e.target; if (!el.matches || !el.matches('[data-form] input')) return;
+    e.preventDefault(); handleForm(el.closest('[data-form]'));
   });
   let gqTimer = null;
   document.addEventListener('input', (e) => {
