@@ -4,7 +4,7 @@ export const ROLES = ['OWNER', 'ADVISOR', 'ANALYST', 'CLIENT'] as const;
 export type Role = (typeof ROLES)[number];
 
 export const ROLE_LABEL: Record<Role, string> = {
-  OWNER: 'Managing Partner',
+  OWNER: 'Managing Director',
   ADVISOR: 'Transaction Advisor',
   ANALYST: 'Analyst',
   CLIENT: 'Client',

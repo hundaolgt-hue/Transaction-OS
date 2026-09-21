@@ -2,14 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import BrandMark from './BrandMark';
 import { useRouter } from 'next/navigation';
 import NotificationBell from './NotificationBell';
 import Motion from './Motion';
 import AssistantDock from './AssistantDock';
 import type { Session } from '@/lib/types';
 
-export default function PortalShell({ session, advisorName, unread, children }: {
-  session: Session; advisorName: string; unread: number; children: React.ReactNode;
+export default function PortalShell({ session, advisorName, logo, unread, children }: {
+  session: Session; advisorName: string; logo?: string | null; unread: number; children: React.ReactNode;
 }) {
   const router = useRouter();
   const [theme, setTheme] = useState<'dark' | 'light'>('dark');
@@ -33,15 +34,13 @@ export default function PortalShell({ session, advisorName, unread, children }: 
 
   return (
     <div style={{ minHeight: '100dvh', display: 'flex', flexDirection: 'column' }}>
+      <div className="brand-bar" aria-hidden />
       <header className="portal-topbar">
         <Link href="/portal" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-          <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden>
-            <rect width="32" height="32" rx="8" fill="var(--accent)" />
-            <path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="var(--accent-ink)" />
-          </svg>
+          <BrandMark logo={logo} />
           <div>
             <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.015em' }}>{advisorName}</div>
-            <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>Client portal</div>
+            <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>Client portal · Advisor OS</div>
           </div>
         </Link>
         <div style={{ flex: 1 }} />

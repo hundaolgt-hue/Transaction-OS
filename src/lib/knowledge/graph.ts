@@ -19,7 +19,7 @@ export interface GEdge { source: string; target: string; kind: string }
 export interface Graph { nodes: GNode[]; edges: GEdge[]; counts: Record<NodeType, number> }
 
 export const NODE_META: Record<NodeType, { label: string; color: string }> = {
-  FIRM: { label: 'Firm', color: '#34a382' },
+  FIRM: { label: 'Firm', color: '#F4941C' },
   PERSON: { label: 'People', color: '#3f8fa8' },
   CLIENT: { label: 'Clients', color: '#5b8fd4' },
   ENGAGEMENT: { label: 'Engagements', color: '#8a5fc0' },
@@ -40,7 +40,7 @@ export function buildGraph(org: Org, staff: SafeUser[], snaps: EngagementSnapsho
   const add = (n: GNode) => { if (!seen.has(n.id)) { seen.add(n.id); nodes.push(n); } };
   const link = (source: string, target: string, kind: string) => edges.push({ source, target, kind });
 
-  add({ id: `firm`, type: 'FIRM', label: org.name, sub: 'Advisory firm', size: 22, detail: [['Licence', org.licenseNo ?? '—'], ['City', org.city], ['Engagements', String(snaps.length)]] });
+  add({ id: `firm`, type: 'FIRM', label: org.name, sub: 'Investment bank · transaction adviser', size: 22, detail: [['Licence', org.licenseNo ?? '—'], ['City', org.city], ['Engagements', String(snaps.length)]] });
 
   for (const u of staff) {
     add({ id: `p:${u.id}`, type: 'PERSON', label: u.name, sub: u.title ?? titleCase(u.role), size: 9, detail: [['Role', titleCase(u.role)], ['Email', u.email]] });

@@ -2,7 +2,7 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Advisor OS — Ethiopian Transaction Advisory',
+  title: 'Siinqee Investment Bank — Advisor OS',
   description:
     'Operating system for licensed transaction advisors in Ethiopia: client onboarding, document compliance against ECMA rules, AI-drafted due diligence, risk assessment and prospectus drafting, with a shared client dashboard.',
 };
@@ -11,8 +11,8 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   themeColor: [
-    { media: '(prefers-color-scheme: dark)', color: '#08090a' },
-    { media: '(prefers-color-scheme: light)', color: '#fbfbfa' },
+    { media: '(prefers-color-scheme: dark)', color: '#0b0907' },
+    { media: '(prefers-color-scheme: light)', color: '#fcfaf7' },
   ],
 };
 

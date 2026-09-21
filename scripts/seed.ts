@@ -12,6 +12,7 @@ import { storeFile } from '../src/lib/documents';
 import { runAgent } from '../src/lib/agents/runner';
 import { ABYSSINIA_DATAROOM } from '../src/lib/dataroom/abyssinia';
 import { SYNTHETIC } from '../src/lib/dataroom/format';
+import { BRAND } from '../src/lib/brand';
 
 async function main() {
   // Remove any previous database so the seed is deterministic.
@@ -30,33 +31,36 @@ async function main() {
   const orgId = id('org');
   insert('orgs', {
     id: orgId,
-    name: 'Rapha Capital Advisors',
-    legalName: 'Rapha Engineering and Consulting One Member PLC',
-    tin: '0061234567',
-    licenseNo: 'ECMA/TA/0042/2025',
-    addressLine: 'Bole Sub-city, Woreda 03, Africa Avenue',
-    city: 'Addis Ababa',
+    // Firm identity comes from src/lib/brand.ts. Registration, licence and
+    // contact details are left blank on purpose — enter the bank's official
+    // values rather than shipping invented ones.
+    name: BRAND.name,
+    legalName: BRAND.legalName,
+    tin: null,
+    licenseNo: null,
+    addressLine: null,
+    city: BRAND.city,
     country: 'Ethiopia',
-    phone: '+251 11 667 2200',
-    email: 'advisory@raphaconsult.et',
+    phone: null,
+    email: null,
     createdAt: now(),
   });
 
   const owner = await createUser({
-    orgId, email: 'hundaol@raphaconsult.et', name: 'Hundaol Girma',
-    password: 'demo1234', role: 'OWNER', title: 'Managing Partner',
+    orgId, email: 'hundaol@siinqee-ib.demo', name: 'Hundaol Girma',
+    password: 'demo1234', role: 'OWNER', title: 'Managing Director, Investment Banking',
     phone: '+251 91 123 4567',
   });
   const advisor = await createUser({
-    orgId, email: 'meron@raphaconsult.et', name: 'Meron Tadesse',
+    orgId, email: 'meron@siinqee-ib.demo', name: 'Meron Tadesse',
     password: 'demo1234', role: 'ADVISOR', title: 'Senior Transaction Advisor',
   });
   const analyst = await createUser({
-    orgId, email: 'dawit@raphaconsult.et', name: 'Dawit Bekele',
+    orgId, email: 'dawit@siinqee-ib.demo', name: 'Dawit Bekele',
     password: 'demo1234', role: 'ANALYST', title: 'Analyst — Financial Due Diligence',
   });
   await createUser({
-    orgId, email: 'selam@raphaconsult.et', name: 'Selamawit Hailu',
+    orgId, email: 'selam@siinqee-ib.demo', name: 'Selamawit Hailu',
     password: 'demo1234', role: 'ANALYST', title: 'Analyst — Legal Due Diligence',
   });
 
@@ -430,7 +434,7 @@ async function main() {
     title: 'Trustee selection and structuring session',
     scheduledAt: iso(days(-11)),
     durationMin: 90,
-    location: 'Rapha offices, Bole',
+    location: `${BRAND.shortName} offices`,
     attendees: JSON.stringify(['Hundaol Girma', 'Yohannes Girma', 'Counsel — Abebe & Partners']),
     agenda: '1. Trustee candidates\n2. Security package\n3. Coverage covenant level\n4. Going concern disclosure',
     minutes: `Three trustee candidates reviewed. Counsel to confirm licensing status of each.
@@ -490,9 +494,9 @@ async function main() {
   console.log(`    risks ${snap.risks.length}  ·  prospectus ${snap.prospectusProgress.percent}%  ·  health ${snap.health.score}`);
   console.log('');
   console.log('  Sign in with password  demo1234');
-  console.log('    hundaol@raphaconsult.et        Managing Partner');
-  console.log('    meron@raphaconsult.et          Transaction Advisor');
-  console.log('    dawit@raphaconsult.et          Analyst');
+  console.log('    hundaol@siinqee-ib.demo        Managing Director');
+  console.log('    meron@siinqee-ib.demo          Transaction Advisor');
+  console.log('    dawit@siinqee-ib.demo          Analyst');
   console.log('    finance@abyssiniaagro.et       Client portal');
   console.log('─────────────────────────────────────────────────────────');
 

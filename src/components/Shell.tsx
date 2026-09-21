@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import BrandMark from './BrandMark';
+import { BRAND } from '@/lib/brand';
 import { usePathname, useRouter } from 'next/navigation';
 import clsx from 'clsx';
 import type { Session } from '@/lib/types';
@@ -23,8 +25,8 @@ const NAV = [
   { href: '/settings', label: 'Settings', icon: 'cog' },
 ];
 
-export default function Shell({ session, orgName, unread, engagements, children }: {
-  session: Session; orgName: string; unread: number; engagements: EngSummary[]; children: React.ReactNode;
+export default function Shell({ session, orgName, logo, unread, engagements, children }: {
+  session: Session; orgName: string; logo?: string | null; unread: number; engagements: EngSummary[]; children: React.ReactNode;
 }) {
   const pathname = usePathname();
   const router = useRouter();
@@ -54,15 +56,13 @@ export default function Shell({ session, orgName, unread, engagements, children 
   return (
     <div className="app-root">
       <aside className="app-sidebar" data-open={open ? 'true' : 'false'}>
+        <div className="brand-bar" aria-hidden />
         <div style={{ padding: '14px 14px 12px', borderBottom: '1px solid var(--hairline)' }}>
           <Link href="/dashboard" style={{ display: 'flex', alignItems: 'center', gap: 9 }}>
-            <svg width="26" height="26" viewBox="0 0 32 32" fill="none" aria-hidden>
-              <rect width="32" height="32" rx="8" fill="var(--accent)" />
-              <path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="var(--accent-ink)" />
-            </svg>
+            <BrandMark logo={logo} />
             <div style={{ minWidth: 0 }}>
               <div style={{ fontSize: 13, fontWeight: 600, letterSpacing: '-0.015em', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{orgName}</div>
-              <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>Advisor OS</div>
+              <div style={{ fontSize: 10.5, color: 'var(--ink-faint)' }}>{BRAND.product} · {BRAND.descriptor.split(' · ')[0]}</div>
             </div>
           </Link>
         </div>

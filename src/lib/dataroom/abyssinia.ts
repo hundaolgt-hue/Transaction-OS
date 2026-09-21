@@ -179,7 +179,7 @@ const boardResolution = doc('Extract of Board Resolution of 18 April 2026', [
   'RESOLVED:',
   `1. That, subject to the approval of an extraordinary general meeting, the Company offer ${n(OFFER.newShares)} new ordinary shares of Birr ${OFFER.parValue} par value to the public and apply for their admission, together with the existing ${n(OFFER.existingShares)} shares, to the Ethiopian Securities Exchange.`,
   `2. That the offer price be set within a price range of Birr ${OFFER.priceLow} to Birr ${OFFER.priceHigh} per share, the final offer price to be fixed by the board on the recommendation of the transaction adviser after book-building, and that the number of shares may not exceed ${n(OFFER.newShares)}.`,
-  '3. That Rapha Capital Advisors be appointed transaction adviser, and that the Chief Executive Officer negotiate the appointment of a licensed underwriter, a registrar and legal counsel.',
+  '3. That Siinqee Investment Bank S.C. be appointed transaction adviser, and that the Chief Executive Officer negotiate the appointment of a licensed underwriter, a registrar and legal counsel.',
   '4. That the board approve the use of proceeds set out in the paper tabled at the meeting.',
   '5. That the Chief Executive Officer and the Chief Finance Officer be jointly authorised to execute all documents necessary to give effect to these resolutions.',
   '',
@@ -633,7 +633,7 @@ const registrar = doc('Registrar and Depository Appointment', [
 ]);
 
 const marketStudy = doc('Industry and Market Study — Ethiopian Edible Oil', [
-  ['Prepared by', 'Rapha Capital Advisors research desk (synthetic study)'],
+  ['Prepared by', 'Transaction adviser research desk (synthetic study for demonstration)'],
   ['Date', 'July 2026'],
 ], [
   'Market size. National edible-oil consumption is estimated at 1.1–1.3 million tonnes a year, of which domestic processors supply roughly a quarter; the balance is imported palm and soybean oil.',

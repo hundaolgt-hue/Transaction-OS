@@ -4,7 +4,7 @@
 (function () {
   const { repo, progress, domain, RULE_PACKS, getRulePack, runAgent, suggestRequirement, renderMarkdown, notify } = AOS;
   const D = domain;
-  const STORE_KEY = 'advisoros-preview-db-v2';
+  const STORE_KEY = 'advisoros-preview-db-v3';
   let SQLDB, ORG, STAFF, CLIENT_USER, role = 'staff', sideOpen = false, busy = null;
 
   // ---------------------------------------------------------------- helpers
@@ -88,7 +88,7 @@
     bell: '<path d="M6 16V11a6 6 0 1 1 12 0v5l2 2H4l2-2Z"/><path d="M10 20a2 2 0 0 0 4 0"/>',
   };
   const icon = (n) => `<svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICON[n]}</svg>`;
-  const mark = `<svg width="26" height="26" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="var(--accent)"/><path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="var(--accent-ink)"/></svg>`;
+  const mark = `<span class="brand-monogram" style="width:26px;height:26px;font-size:15px" aria-hidden="true">S</span>`;
 
   function banner() {
     const who = role === 'client' ? CLIENT_USER : STAFF;
@@ -105,7 +105,7 @@
     const unread = notify.unreadCount(STAFF.id);
     const nav = [['dashboard', 'Dashboard', 'grid'], ['graph', 'Knowledge graph', 'graph'], ['assistant', 'Ask the OS', 'chat'], ['engagements', 'Engagements', 'folder'], ['clients', 'Clients', 'users'], ['agents', 'Agents', 'cpu'], ['rules', 'Rule packs', 'book'], ['audit', 'Audit trail', 'shield'], ['integrations', 'Telegram & Slack', 'bell']];
     return `<div class="root">
-      <aside class="side" data-open="${sideOpen}">
+      <aside class="side" data-open="${sideOpen}"><div class="brand-bar" aria-hidden="true"></div>
         <div class="brand">${mark}<div><b>${esc(ORG.name)}</b><small>Advisor OS</small></div></div>
         <nav class="nav">${nav.map(([k, l, i]) => `<a href="#/${k}" ${path[0] === k || (k === 'engagements' && path[0] === 'e') ? 'aria-current="page"' : ''}>${icon(i)}${l}</a>`).join('')}</nav>
         <div class="side-eng"><div class="eyebrow" style="padding:8px 9px 6px">Active engagements</div>
@@ -426,7 +426,7 @@
 
   // ---------------------------------------------------------------- login
   const DEMO = {
-    firm: [['hundaol@raphaconsult.et', 'Hundaol Girma', 'Managing Partner'], ['meron@raphaconsult.et', 'Meron Tadesse', 'Transaction Advisor'], ['dawit@raphaconsult.et', 'Dawit Bekele', 'Analyst']],
+    firm: [['hundaol@siinqee-ib.demo', 'Hundaol Girma', 'Managing Director'], ['meron@siinqee-ib.demo', 'Meron Tadesse', 'Transaction Advisor'], ['dawit@siinqee-ib.demo', 'Dawit Bekele', 'Analyst']],
     client: [['finance@abyssiniaagro.et', 'Tigist Alemu', 'Abyssinia Agro · CFO'], ['yohannes@lalibelacement.et', 'Yohannes Girma', 'Lalibela Cement · FD']],
   };
   const CHECKS = {
@@ -439,9 +439,9 @@
     const si = ['email', 'password', 'verify', 'welcome'].indexOf(L.step);
     let inner = '';
     if (L.step === 'email') inner = `<form data-form="login-email" class="step-in" style="display:grid;gap:12px">
-        <div><h2 style="font-size:18px;font-weight:600;letter-spacing:-.02em;margin:0 0 3px">${L.side === 'firm' ? 'Sign in to your firm' : 'Sign in to your client portal'}</h2>
-        <p class="small faint" style="margin:0">${L.side === 'firm' ? 'Advisors, reviewers and analysts.' : 'See your progress, missing documents and shared findings.'}</p></div>
-        <div><label class="label" for="l-email">Work email</label><input id="l-email" class="input" type="email" autocomplete="username" required value="${esc(L.email)}" placeholder="${L.side === 'firm' ? 'you@firm.et' : 'you@company.et'}"></div>
+        <div><h2 style="font-size:18px;font-weight:600;letter-spacing:-.02em;margin:0 0 3px">${L.side === 'firm' ? 'Sign in — Siinqee Investment Bank' : 'Sign in to your client portal'}</h2>
+        <p class="small faint" style="margin:0">${L.side === 'firm' ? 'Investment banking and transaction advisory staff.' : 'See your progress, missing documents and shared findings.'}</p></div>
+        <div><label class="label" for="l-email">Work email</label><input id="l-email" class="input" type="email" autocomplete="username" required value="${esc(L.email)}" placeholder="${L.side === 'firm' ? 'you@siinqee-ib.demo' : 'you@company.et'}"></div>
         ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px">${esc(L.err)}</div>` : ''}
         <button class="btn primary" style="height:40px" type="submit">Continue →</button>
         <div style="margin-top:6px;padding-top:14px;border-top:1px solid var(--hairline)"><div class="eyebrow" style="margin-bottom:8px">Demo accounts · password <span class="mono">demo1234</span></div>
@@ -454,21 +454,21 @@
         ${L.err ? `<div role="alert" class="shake small" style="color:var(--critical);background:var(--critical-soft);padding:8px 10px;border-radius:8px;display:flex;justify-content:space-between;gap:8px;align-items:center"><span>${esc(L.err)}</span>${L.errSwitch ? '<button type="button" class="btn sm" data-act="l-switch">Switch</button>' : ''}</div>` : ''}
         <button class="btn primary" style="height:40px" type="submit">Sign in</button></form>`;
     else inner = `<div class="step-in" style="display:grid;gap:14px" aria-live="polite">
-        ${L.step === 'welcome' ? `<div style="text-align:center;padding:10px 0 4px"><div class="welcome-badge" aria-hidden="true">✓</div><h2 style="font-size:20px;font-weight:600;margin:12px 0 4px">Welcome, ${esc(L.name.split(' ')[0])}</h2><p class="small faint" style="margin:0">${L.side === 'firm' ? 'Taking you to the firm dashboard…' : 'Taking you to your portal…'}</p></div>` : '<h2 style="font-size:16px;font-weight:600;margin:0">Securing your session</h2>'}
+        ${L.step === 'welcome' ? `<div style="text-align:center;padding:10px 0 4px"><div class="welcome-badge" aria-hidden="true">✓</div><h2 style="font-size:20px;font-weight:600;margin:12px 0 4px">Welcome, ${esc(L.name.split(' ')[0])}</h2><p class="small faint" style="margin:0">${L.side === 'firm' ? 'Taking you to the bank dashboard…' : 'Taking you to your portal…'}</p></div>` : '<h2 style="font-size:16px;font-weight:600;margin:0">Securing your session</h2>'}
         <ul class="verify" style="list-style:none;padding:0;margin:0">${CHECKS[L.side].map((c, i) => `<li class="${i < L.done ? 'done' : i === L.done ? 'run' : ''}"><span class="tick">${i < L.done ? '✓' : ''}</span>${esc(c)}</li>`).join('')}</ul></div>`;
     return `<div class="panel login-card" id="login-card">
       <div class="side-toggle" role="tablist" aria-label="Sign-in side" style="margin-bottom:20px"><span class="thumb" style="transform:${L.side === 'client' ? 'translateX(100%)' : 'none'}" aria-hidden="true"></span>
-        <button role="tab" type="button" aria-selected="${L.side === 'firm'}" data-act="l-side" data-k="firm">Advisory firm</button><button role="tab" type="button" aria-selected="${L.side === 'client'}" data-act="l-side" data-k="client">Client</button></div>
+        <button role="tab" type="button" aria-selected="${L.side === 'firm'}" data-act="l-side" data-k="firm">Bank staff</button><button role="tab" type="button" aria-selected="${L.side === 'client'}" data-act="l-side" data-k="client">Client</button></div>
       <div class="row" style="justify-content:space-between;margin-bottom:14px"><div class="steps-dots" aria-hidden="true">${[0, 1, 2, 3].map((i) => `<i class="${i <= si ? 'on' : ''}"></i>`).join('')}</div><span class="xs faint">Step ${Math.min(si + 1, 4)} of 4</span></div>
       ${inner}</div>`;
   }
   function loginView() {
     return `<main class="login-stage"><section class="login-art"><canvas id="login-canvas" aria-hidden="true"></canvas>
-      <div class="row" style="gap:10px"><svg width="32" height="32" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="8" fill="#2fb57f"/><path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="#07140f"/></svg><div><div style="font-size:15px;font-weight:600">Advisor OS</div><div class="xs" style="opacity:.7">Ethiopian Transaction Advisory</div></div></div>
+      <div class="row" style="gap:10px"><span class="brand-monogram" style="width:34px;height:34px;font-size:19px" aria-hidden="true">S</span><div><div style="font-size:15px;font-weight:600">Siinqee Investment Bank</div><div class="xs" style="opacity:.7">Advisor OS · Investment Banking · Transaction Advisory</div></div></div>
       <div style="max-width:480px"><h1 class="login-title" style="font-size:34px;font-weight:600;letter-spacing:-.035em;line-height:1.12;margin:0 0 14px">One workspace from mandate to ECMA filing.</h1>
         <p style="font-size:14px;opacity:.78;line-height:1.65;margin:0 0 22px">Advisors run six specialised agents over the data room and review every draft. Clients see live progress, missing documents and the findings their advisor chose to share.</p>
         <div class="login-feats">${[['Firm side', 'Engagements, agents, review inbox, 30+ page due diligence PDFs'], ['Client side', 'Checklist, uploads, milestones, shared findings only'], ['Connected', 'Email, Telegram and Slack alerts on compliance gaps']].map(([t, d], i) => `<div class="login-feat" style="animation-delay:${0.15 + i * 0.12}s"><div style="font-size:12.5px;font-weight:600">${t}</div><div class="xs" style="opacity:.7;line-height:1.5">${d}</div></div>`).join('')}</div></div>
-      <div class="xs" style="opacity:.55">Interactive preview — all company data is fictional. Changes stay in this browser.</div></section>
+      <div class="xs" style="opacity:.6"><span class="brand-chip" style="color:inherit"><i></i><i></i>Member of the Siinqee Financial Group</span> · Preview — client data is fictional; changes stay in this browser.</div></section>
       <section class="login-pane">${loginCard()}</section></main>`;
   }
   function paintLogin() { const c = document.getElementById('login-card'); if (c) c.outerHTML = loginCard(); focusLogin(); }
@@ -480,7 +480,7 @@
     if (!u || L.password !== 'demo1234') { L.err = 'Those credentials were not recognised.'; paintLogin(); return; }
     const isClient = u.role === 'CLIENT';
     if (L.side === 'firm' && isClient) { L.err = 'This is a client-portal account. Switch to “Client” to continue.'; L.errSwitch = true; paintLogin(); return; }
-    if (L.side === 'client' && !isClient) { L.err = 'This is a firm account. Switch to “Advisory firm” to continue.'; L.errSwitch = true; paintLogin(); return; }
+    if (L.side === 'client' && !isClient) { L.err = 'This is a firm account. Switch to “Bank staff” to continue.'; L.errSwitch = true; paintLogin(); return; }
     L.name = u.name; L.step = 'verify'; L.done = 0; paintLogin();
     const gap = reduced() ? 60 : 420;
     for (let i = 1; i <= CHECKS[L.side].length; i++) { await new Promise((r) => setTimeout(r, gap)); L.done = i; paintLogin(); }
@@ -516,8 +516,8 @@
       ctx.clearRect(0, 0, w, h);
       for (const p of pts) if (!reduced()) { p.x += p.vx; p.y += p.vy; if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1; }
       for (let i = 0; i < pts.length; i++) { const a = pts[i], ax = a.x * w, ay = a.y * h;
-        for (let j = i + 1; j < pts.length; j++) { const b = pts[j], d = Math.hypot(ax - b.x * w, ay - b.y * h); if (d < 120) { ctx.strokeStyle = `rgba(47,181,127,${(1 - d / 120) * 0.35})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); } }
-        const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90; ctx.fillStyle = near ? '#f5c451' : 'rgba(170,230,200,.85)'; ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, 7); ctx.fill(); }
+        for (let j = i + 1; j < pts.length; j++) { const b = pts[j], d = Math.hypot(ax - b.x * w, ay - b.y * h); if (d < 120) { ctx.strokeStyle = `rgba(244,148,28,${(1 - d / 120) * 0.32})`; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); } }
+        const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90; ctx.fillStyle = near ? '#00B415' : i % 5 === 0 ? 'rgba(0,180,21,.8)' : 'rgba(248,184,102,.85)'; ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, 7); ctx.fill(); }
       if (!reduced()) raf = requestAnimationFrame(draw);
     };
     const move = (e) => { const r = canvas.getBoundingClientRect(); mouse.x = e.clientX - r.left; mouse.y = e.clientY - r.top; if (reduced()) draw(); };

@@ -29,10 +29,10 @@ export default function LoginArt() {
         const a = pts[i]; const ax = a.x * w, ay = a.y * h;
         for (let j = i + 1; j < pts.length; j++) {
           const b = pts[j]; const d = Math.hypot(ax - b.x * w, ay - b.y * h);
-          if (d < 120) { ctx.strokeStyle = `rgba(47,181,127,${(1 - d / 120) * 0.35})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); }
+          if (d < 120) { ctx.strokeStyle = `rgba(244,148,28,${(1 - d / 120) * 0.32})`; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(b.x * w, b.y * h); ctx.stroke(); }
         }
         const near = Math.hypot(ax - mouse.x, ay - mouse.y) < 90;
-        ctx.fillStyle = near ? '#f5c451' : 'rgba(170,230,200,.85)';
+        ctx.fillStyle = near ? '#00B415' : i % 5 === 0 ? 'rgba(0,180,21,.8)' : 'rgba(248,184,102,.85)';
         ctx.beginPath(); ctx.arc(ax, ay, a.r + (near ? 1.5 : 0), 0, Math.PI * 2); ctx.fill();
       }
       if (!reduced) raf = requestAnimationFrame(draw);

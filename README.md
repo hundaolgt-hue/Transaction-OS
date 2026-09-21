@@ -21,9 +21,9 @@ Sign in with password `demo1234`:
 
 | Email | Role | Sees |
 |---|---|---|
-| `hundaol@raphaconsult.et` | Managing Partner | Everything, including approvals and user management |
-| `meron@raphaconsult.et` | Transaction Advisor | Deal team: clients, engagements, stage advances |
-| `dawit@raphaconsult.et` | Analyst | Review and agent runs, no stage advance or approval |
+| `hundaol@siinqee-ib.demo` | Managing Director | Everything, including approvals and user management |
+| `meron@siinqee-ib.demo` | Transaction Advisor | Deal team: clients, engagements, stage advances |
+| `dawit@siinqee-ib.demo` | Analyst | Review and agent runs, no stage advance or approval |
 | `finance@abyssiniaagro.et` | Client | The client portal for Abyssinia Agro only |
 
 `npm run seed` wipes and rebuilds the database. `npm run preview:build` produces
@@ -167,6 +167,16 @@ adding a pack needs no code changes elsewhere, and the test suite enforces their
 ---
 
 ## Configuration
+
+### Branding
+
+The deployment is branded for **Siinqee Investment Bank S.C.** Everything brand-specific lives in
+`src/lib/brand.ts` (name, legal name, descriptor, colours) plus the theme tokens at the top of
+`src/app/globals.css`. The official logo is not bundled: place the approved file at
+`public/brand/logo.svg` (or `.png`) and it appears in the sidebar, client portal, login page and on
+every PDF cover. The firm's ECMA licence number, TIN and contact details are left blank in the seed
+so that only official values are ever shown.
+
 
 All optional — the app runs fully without any of it. See `.env.example`.
 

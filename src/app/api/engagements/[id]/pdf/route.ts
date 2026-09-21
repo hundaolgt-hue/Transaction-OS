@@ -5,6 +5,8 @@ import { buildDDReport, type ReportKind } from '@/lib/reports/ddReport';
 import { buildProspectus } from '@/lib/reports/prospectusPdf';
 import { renderPdf } from '@/lib/reports/render';
 import { apiError } from '@/lib/api';
+import { BRAND } from '@/lib/brand';
+import { brandLogoPdfNode } from '@/lib/brandLogo';
 
 export const runtime = 'nodejs';
 export const maxDuration = 120;
@@ -23,11 +25,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
     let definition;
     if (which === 'PROSPECTUS') {
-      definition = buildProspectus(snap, { firmName: org?.name ?? 'Advisor OS' });
+      definition = buildProspectus(snap, { firmName: org?.name ?? BRAND.name });
     } else if (['LEGAL', 'FINANCIAL', 'COMBINED'].includes(which)) {
       const report = listReports(id).find((r) => r.kind === which && r.status !== 'SUPERSEDED');
       definition = buildDDReport(snap, which as ReportKind, {
-        firmName: org?.name ?? 'Advisor OS',
+        firmName: org?.name ?? BRAND.name,
         preparedBy: lead?.name ?? session.name,
         reviewer: report?.reviewerId ? staff.find((u) => u.id === report.reviewerId)?.name : null,
         approved: report?.status === 'APPROVED',
@@ -37,6 +39,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     } else {
       return NextResponse.json({ error: 'Unknown document' }, { status: 400 });
     }
+    const logo = brandLogoPdfNode();
+    if (logo && Array.isArray(definition.content)) definition.content.unshift(logo);
 
     const { bytes, pages } = await renderPdf(definition);
     audit({

@@ -8,8 +8,8 @@ const css = fs.readFileSync('preview/app.css', 'utf8');
 const db = fs.readFileSync('data/preview.db').toString('base64');
 const html = `<meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Advisor OS</title>
-<meta name="description" content="Operating system for Ethiopian transaction advisers">
+<title>Siinqee Advisor OS</title>
+<meta name="description" content="Siinqee Investment Bank transaction advisory workspace (preview)">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;450;500;600;700&display=swap">
 <style>${css}</style>
@@ -23,4 +23,5 @@ const html = `<meta charset="utf-8">
 `;
 fs.mkdirSync('preview/dist', { recursive: true });
 fs.writeFileSync('preview/dist/advisor-os.html', html);
+fs.writeFileSync('preview/dist/siinqee-advisor-os.html', html);
 console.log('bytes', html.length);

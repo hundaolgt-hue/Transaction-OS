@@ -2,15 +2,16 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { BRAND } from '@/lib/brand';
 
 type Side = 'firm' | 'client';
 type Step = 'email' | 'password' | 'verify' | 'welcome';
 
 const DEMO: Record<Side, { label: string; email: string; role: string }[]> = {
   firm: [
-    { label: 'Hundaol Girma', email: 'hundaol@raphaconsult.et', role: 'Managing Partner' },
-    { label: 'Meron Tadesse', email: 'meron@raphaconsult.et', role: 'Transaction Advisor' },
-    { label: 'Dawit Bekele', email: 'dawit@raphaconsult.et', role: 'Analyst' },
+    { label: 'Hundaol Girma', email: 'hundaol@siinqee-ib.demo', role: 'Managing Director' },
+    { label: 'Meron Tadesse', email: 'meron@siinqee-ib.demo', role: 'Transaction Advisor' },
+    { label: 'Dawit Bekele', email: 'dawit@siinqee-ib.demo', role: 'Analyst' },
   ],
   client: [
     { label: 'Tigist Alemu', email: 'finance@abyssiniaagro.et', role: 'Abyssinia Agro · CFO' },
@@ -91,7 +92,7 @@ export default function LoginForm() {
     <div className="panel" style={{ padding: 26, width: '100%', maxWidth: 420, boxShadow: 'var(--shadow-lg)' }}>
       <div className="side-toggle" role="tablist" aria-label="Sign-in side" style={{ marginBottom: 20 }}>
         <span className="thumb" style={{ transform: side === 'client' ? 'translateX(100%)' : 'none' }} aria-hidden />
-        <button role="tab" aria-selected={side === 'firm'} type="button" onClick={() => switchSide('firm')}>Advisory firm</button>
+        <button role="tab" aria-selected={side === 'firm'} type="button" onClick={() => switchSide('firm')}>Bank staff</button>
         <button role="tab" aria-selected={side === 'client'} type="button" onClick={() => switchSide('client')}>Client</button>
       </div>
 
@@ -104,16 +105,16 @@ export default function LoginForm() {
         <form key={`e-${side}`} className="step-in" onSubmit={nextFromEmail} style={{ display: 'grid', gap: 12 }}>
           <div>
             <h2 style={{ fontSize: 18, fontWeight: 600, letterSpacing: '-0.02em', margin: '0 0 3px' }}>
-              {side === 'firm' ? 'Sign in to your firm' : 'Sign in to your client portal'}
+              {side === 'firm' ? `Sign in — ${BRAND.name}` : 'Sign in to your client portal'}
             </h2>
             <p style={{ fontSize: 12.5, color: 'var(--ink-faint)', margin: 0 }}>
-              {side === 'firm' ? 'Advisors, reviewers and analysts.' : 'See your progress, missing documents and shared findings.'}
+              {side === 'firm' ? 'Investment banking and transaction advisory staff.' : 'See your progress, missing documents and shared findings.'}
             </p>
           </div>
           <div className="field">
             <label className="label" htmlFor="email">Work email</label>
             <input ref={emailRef} id="email" className="input" type="email" autoComplete="username" required
-              value={email} onChange={(e) => setEmail(e.target.value)} placeholder={side === 'firm' ? 'you@firm.et' : 'you@company.et'} />
+              value={email} onChange={(e) => setEmail(e.target.value)} placeholder={side === 'firm' ? 'you@siinqee-ib.demo' : 'you@company.et'} />
           </div>
           {error ? <Alert text={error} /> : null}
           <button className="btn btn-primary btn-lg" type="submit">Continue →</button>
@@ -162,7 +163,7 @@ export default function LoginForm() {
                 Welcome{who?.name ? `, ${who.name.split(' ')[0]}` : ''}
               </h2>
               <p style={{ fontSize: 12.5, color: 'var(--ink-faint)', margin: 0 }}>
-                {side === 'firm' ? 'Taking you to the firm dashboard…' : 'Taking you to your portal…'}
+                {side === 'firm' ? 'Taking you to the bank dashboard…' : 'Taking you to your portal…'}
               </p>
             </div>
           ) : (

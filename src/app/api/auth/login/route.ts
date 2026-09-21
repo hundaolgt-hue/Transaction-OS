@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'This is a client-portal account. Switch to “Client” to continue.', wrongSide: 'client' }, { status: 409 });
   }
   if (side === 'client' && user.role !== 'CLIENT') {
-    return NextResponse.json({ error: 'This is a firm account. Switch to “Advisory firm” to continue.', wrongSide: 'firm' }, { status: 409 });
+    return NextResponse.json({ error: 'This is a firm account. Switch to “Bank staff” to continue.', wrongSide: 'firm' }, { status: 409 });
   }
 
   const token = await createSessionToken({

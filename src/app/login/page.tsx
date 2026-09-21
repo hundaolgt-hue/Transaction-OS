@@ -2,22 +2,26 @@ import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
 import LoginForm from './LoginForm';
 import LoginArt from './LoginArt';
+import BrandMark from '@/components/BrandMark';
+import { BRAND } from '@/lib/brand';
+import { brandLogoUrl } from '@/lib/brandLogo';
 
 export const dynamic = 'force-dynamic';
 
 export default async function LoginPage() {
   const session = await getSession();
   if (session) redirect(session.role === 'CLIENT' ? '/portal' : '/dashboard');
+  const logo = brandLogoUrl();
 
   return (
     <main className="login-stage">
       <section className="login-art">
         <LoginArt />
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <Mark />
+          <BrandMark logo={logo} size={34} />
           <div>
-            <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em' }}>Advisor OS</div>
-            <div style={{ fontSize: 11.5, opacity: 0.7 }}>Ethiopian Transaction Advisory</div>
+            <div style={{ fontSize: 15, fontWeight: 600, letterSpacing: '-0.02em' }}>{BRAND.name}</div>
+            <div style={{ fontSize: 11.5, opacity: 0.7 }}>{BRAND.product} · {BRAND.descriptor}</div>
           </div>
         </div>
         <div style={{ maxWidth: 480 }}>
@@ -41,18 +45,12 @@ export default async function LoginPage() {
             ))}
           </div>
         </div>
-        <div style={{ fontSize: 11, opacity: 0.55 }}>Demo data is fictional. Regulatory references are to ECMA directives as configured in the rule pack.</div>
+        <div style={{ display: 'flex', gap: 14, alignItems: 'center', flexWrap: 'wrap', fontSize: 11, opacity: 0.6 }}>
+          <span className="brand-chip" style={{ color: 'inherit' }}><i /><i />{BRAND.group}</span>
+          <span>Demo client data is fictional. Regulatory references follow the ECMA rule pack.</span>
+        </div>
       </section>
       <section className="login-pane"><LoginForm /></section>
     </main>
-  );
-}
-
-function Mark() {
-  return (
-    <svg width="32" height="32" viewBox="0 0 32 32" fill="none" aria-hidden>
-      <rect width="32" height="32" rx="8" fill="#2fb57f" />
-      <path d="M9 22V10h5.2c2.6 0 4.3 1.5 4.3 3.8 0 1.7-.9 2.9-2.4 3.4L23 22h-3.4l-3.4-4.4h-2V22H9Zm5-6.8c1.2 0 1.9-.6 1.9-1.6s-.7-1.5-1.9-1.5h-1.8v3.1H14Z" fill="#07140f" />
-    </svg>
   );
 }

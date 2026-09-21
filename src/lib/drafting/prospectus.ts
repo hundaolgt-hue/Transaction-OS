@@ -10,6 +10,7 @@ import { financialNarrative } from '../finance/analyze';
 import { fmtDate, titleCase, riskBand } from '../domain';
 import type { EngagementSnapshot } from '../repo/core';
 import type { ProspectusSectionSpec } from '../rulepacks';
+import { BRAND } from '../brand';
 
 type Composer = (c: DraftContext) => string;
 
@@ -38,7 +39,7 @@ const COMPOSERS: Record<string, Composer> = {
         ['Head office', c.fact('ECMA-C-003', 'head office') ?? md.need('head office')],
         ['Securities offered', `${o.shares ? n(o.shares) : '[•]'} new ordinary shares of Birr ${o.par ?? '[•]'}`],
         ['Price range approved', o.priceLow ? `Birr ${o.priceLow} – ${o.priceHigh}` : md.need('price range')],
-        ['Transaction adviser', 'Rapha Capital Advisors'],
+        ['Transaction adviser', BRAND.legalName],
         ['Underwriter', c.fact('ECMA-R-004', 'underwriter') ?? md.need('underwriter')],
         ['Registrar', c.fact('ECMA-R-005', 'registrar') ?? md.need('registrar')],
         ['Auditor', c.fact('ECMA-F-001', 'auditor') ?? md.need('auditor')],
@@ -84,7 +85,7 @@ const COMPOSERS: Record<string, Composer> = {
     md.rows(['Role', 'Name and address'], [
       ['Registered and head office', c.fact('ECMA-C-003', 'head office') ?? md.need('head office')],
       ['Company secretary', 'Mekdes Hailu, Company Secretary and Head of Legal, at the head office'],
-      ['Transaction adviser', 'Rapha Capital Advisors, Bole Sub-city, Addis Ababa — ECMA licence ECMA/TA/0042/2025'],
+      ['Transaction adviser', `${BRAND.legalName}, ${BRAND.city} — ECMA-licensed investment bank (licence number ${md.need('adviser licence number')})`],
       ['Auditor and reporting accountant', `${c.fact('ECMA-F-003', 'auditor') ?? md.need('auditor')} (${c.fact('ECMA-F-003', 'aabe registration') ?? 'AABE registration to be stated'})`],
       ['Legal counsel to the Company', c.fact('ECMA-L-001', 'prepared by') ?? md.need('legal counsel')],
       ['Underwriter', c.fact('ECMA-R-004', 'underwriter') ?? md.need('underwriter')],

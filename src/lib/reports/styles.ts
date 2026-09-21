@@ -1,8 +1,9 @@
+import { BRAND, PRINT_BRAND } from '../brand';
 import type { Node } from './mdToPdf';
 
 export const COLORS = {
-  ink: '#16201c', muted: '#4a5652', faint: '#8a938f', rule: '#d4d9d7', accent: '#1d7d5f', accentSoft: '#e9f3ef',
-  critical: '#c0392f', high: '#b5651d', medium: '#96751a', low: '#2d5f9e', info: '#6b7377', good: '#1d7d5f',
+  ink: '#16201c', muted: '#4a5652', faint: '#8a938f', rule: '#d4d9d7', accent: PRINT_BRAND.accent, accentSoft: PRINT_BRAND.accentSoft,
+  critical: '#c0392f', high: '#b5651d', medium: '#96751a', low: '#2d5f9e', info: '#6b7377', good: PRINT_BRAND.good,
 };
 
 export const SEV_COLOR: Record<string, string> = {
@@ -50,7 +51,7 @@ export function shell(opts: {
   return {
     pageSize: 'A4',
     pageMargins: [48, 58, 48, 54],
-    info: { title: opts.title, author: opts.firm, subject: `${opts.client} — ${opts.reference}`, creator: 'Advisor OS' },
+    info: { title: opts.title, author: opts.firm, subject: `${opts.client} — ${opts.reference}`, creator: `${BRAND.name} — Advisor OS` },
     watermark: opts.draft ? { text: 'DRAFT — FOR EXPERT REVIEW', color: '#c0392f', opacity: 0.045, bold: true, fontSize: 46 } : undefined,
     header: (page: number) => (page === 1 ? null : {
       columns: [
@@ -65,8 +66,9 @@ export function shell(opts: {
       ],
     }),
     background: (page: number) => (page === 1 ? { canvas: [
-      { type: 'rect', x: 0, y: 0, w: 595.28, h: 262, color: '#0f2a22' },
-      { type: 'rect', x: 0, y: 262, w: 595.28, h: 3, color: '#34a382' },
+      { type: 'rect', x: 0, y: 0, w: 595.28, h: 262, color: PRINT_BRAND.coverBand },
+      { type: 'rect', x: 0, y: 262, w: 372, h: 4, color: PRINT_BRAND.coverRule },
+      { type: 'rect', x: 372, y: 262, w: 223.28, h: 4, color: BRAND.colors.green },
     ] } : null),
     content: opts.content,
     styles: STYLES,
@@ -77,9 +79,9 @@ export function shell(opts: {
 /** Cover page shared by every generated document. */
 export function cover(o: { eyebrow: string; title: string; subtitle: string; client: string; reference: string; firm: string; date: string; status: string; lines: [string, string][] }): Node[] {
   return [
-    { text: o.eyebrow.toUpperCase(), color: '#7fd1b4', fontSize: 9, bold: true, characterSpacing: 1.6, margin: [0, 20, 0, 10] },
+    { text: `${o.firm.toUpperCase()}  ·  ${o.eyebrow.toUpperCase()}`, color: PRINT_BRAND.coverEyebrow, fontSize: 9, bold: true, characterSpacing: 1.6, margin: [0, 20, 0, 10] },
     { text: o.title, color: '#ffffff', fontSize: 25, bold: true, lineHeight: 1.1, margin: [0, 0, 0, 8] },
-    { text: o.subtitle, color: '#cfe7de', fontSize: 11.5, margin: [0, 0, 0, 0] },
+    { text: o.subtitle, color: PRINT_BRAND.coverSub, fontSize: 11.5, margin: [0, 0, 0, 0] },
     { text: '', margin: [0, 110, 0, 0] },
     { text: o.client, fontSize: 16, bold: true, margin: [0, 0, 0, 4] },
     { text: `Engagement ${o.reference}`, style: 'small', margin: [0, 0, 0, 22] },
@@ -89,7 +91,7 @@ export function cover(o: { eyebrow: string; title: string; subtitle: string; cli
     },
     { text: '', margin: [0, 26, 0, 0] },
     {
-      table: { widths: ['*'], body: [[{ text: [{ text: `Status: ${o.status}. `, bold: true }, 'This document was prepared with machine assistance by the Advisor OS agents from the documents in the engagement data room. It must be reviewed and approved by the responsible expert before it is issued, relied upon or shared with any third party.'], fontSize: 8.6, color: COLORS.muted, lineHeight: 1.3 }]] },
+      table: { widths: ['*'], body: [[{ text: [{ text: `Status: ${o.status}. `, bold: true }, 'This document was prepared with machine assistance by the Advisor OS agents of ' + o.firm + ' from the documents in the engagement data room. It must be reviewed and approved by the responsible expert before it is issued, relied upon or shared with any third party.'], fontSize: 8.6, color: COLORS.muted, lineHeight: 1.3 }]] },
       layout: 'card',
     },
     { text: `${o.firm}  ·  ${o.date}`, style: 'small', margin: [0, 18, 0, 0], pageBreak: 'after' },

@@ -1,5 +1,7 @@
 import { redirect } from 'next/navigation';
 import { getSession } from '@/lib/auth';
+import { BRAND } from '@/lib/brand';
+import { brandLogoUrl } from '@/lib/brandLogo';
 import { getOrg } from '@/lib/repo/core';
 import { unreadCount } from '@/lib/notify';
 import PortalShell from '@/components/PortalShell';
@@ -13,7 +15,7 @@ export default async function PortalLayout({ children }: { children: React.React
 
   const org = getOrg(session.orgId);
   return (
-    <PortalShell session={session} advisorName={org?.name ?? 'your advisor'} unread={unreadCount(session.userId)}>
+    <PortalShell session={session} advisorName={org?.name ?? BRAND.name} logo={brandLogoUrl()} unread={unreadCount(session.userId)}>
       {children}
     </PortalShell>
   );

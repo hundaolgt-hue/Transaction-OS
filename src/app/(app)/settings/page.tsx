@@ -6,6 +6,9 @@ import { Panel, PanelHead, Chip, Defs, Empty, Avatar } from '@/components/ui';
 import { ROLE_LABEL, relTime, type Role } from '@/lib/domain';
 import UserManager from '@/components/UserManager';
 import IntegrationsPanel from '@/components/IntegrationsPanel';
+import BrandMark from '@/components/BrandMark';
+import { BRAND } from '@/lib/brand';
+import { brandLogoUrl } from '@/lib/brandLogo';
 import { publicView } from '@/lib/integrations';
 
 export const dynamic = 'force-dynamic';
@@ -16,6 +19,7 @@ export default async function SettingsPage() {
   const users = listOrgUsers(session.orgId);
   const clients = listClients(session.orgId);
   const channels = publicView(session.orgId) as Parameters<typeof IntegrationsPanel>[0]['initial'];
+  const logo = brandLogoUrl();
   const outbox = env.mailEnabled ? [] : readOutbox().slice(0, 12);
 
   return (
@@ -39,6 +43,31 @@ export default async function SettingsPage() {
               ['Phone', org?.phone ?? '—'],
               ['Clients', String(clients.length)],
             ]} />
+          </div>
+        </Panel>
+
+        <Panel>
+          <PanelHead title="Brand" sub={`${BRAND.name} · configured in src/lib/brand.ts`} />
+          <div className="panel-body" style={{ display: 'grid', gap: 14 }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
+              <BrandMark logo={logo} size={40} />
+              <div>
+                <div style={{ fontSize: 14, fontWeight: 600 }}>{BRAND.legalName}</div>
+                <div style={{ fontSize: 12, color: 'var(--ink-faint)' }}>{BRAND.group}</div>
+              </div>
+            </div>
+            <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap' }}>
+              {([['Brand orange', BRAND.colors.orange], ['Orange (text)', BRAND.colors.orangeDeep], ['Brand green', BRAND.colors.green], ['Green (text)', BRAND.colors.greenDeep]] as const).map(([label, hex]) => (
+                <div key={hex} style={{ display: 'grid', gap: 4, fontSize: 11.5 }}>
+                  <span style={{ width: 64, height: 36, borderRadius: 8, background: hex, border: '1px solid var(--hairline)' }} />
+                  <span>{label}</span><span className="mono" style={{ color: 'var(--ink-faint)' }}>{hex}</span>
+                </div>
+              ))}
+            </div>
+            <p style={{ fontSize: 12.5, color: 'var(--ink-subtle)', margin: 0, lineHeight: 1.55 }}>
+              {logo ? 'Official logo installed from public/brand/.' : 'Official logo not installed — a neutral monogram is shown. Place the approved file at public/brand/logo.svg (or .png) and it appears in the sidebar, portal, login page and PDFs.'}
+              {' '}Licence number, TIN and contact details are intentionally blank until the bank's official values are entered.
+            </p>
           </div>
         </Panel>
 
