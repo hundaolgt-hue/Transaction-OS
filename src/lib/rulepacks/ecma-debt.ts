@@ -1,0 +1,98 @@
+import type { RulePack, RequirementSpec, RuleSpec } from './types';
+import { ecmaEquityPack } from './ecma-equity';
+
+const keep = (codes: string[]): RequirementSpec[] =>
+  ecmaEquityPack.requirements.filter((r) => codes.includes(r.code));
+
+const debtOnly: RequirementSpec[] = [
+  { code: 'ECMA-D-001', title: 'Trust Deed / Debenture Instrument', category: 'LEGAL', mandatory: true, weight: 5, appliesToStage: 'DOCUMENT_COLLECTION',
+    description: 'Executed trust deed constituting the debt securities, with the covenants and events of default.',
+    authorityRef: 'Commercial Code Proc. 1243/2021, Arts. 428–447; Capital Market Proc. 1248/2021, Art. 48',
+    matchHints: ['trust deed', 'debenture', 'note instrument', 'bond terms'] },
+  { code: 'ECMA-D-002', title: 'Trustee Appointment & Acceptance', category: 'REGULATORY', mandatory: true, weight: 3, appliesToStage: 'DOCUMENT_COLLECTION',
+    description: 'Appointment of a licensed trustee for the holders and the trustee\'s written acceptance.',
+    authorityRef: 'Capital Market Proc. 1248/2021, Art. 48',
+    matchHints: ['trustee', 'trustee appointment', 'acceptance of trust'] },
+  { code: 'ECMA-D-003', title: 'Security & Collateral Documentation', category: 'LEGAL', mandatory: false, weight: 3, appliesToStage: 'DUE_DILIGENCE',
+    description: 'Mortgages, pledges and guarantees securing the issue, with registration evidence.',
+    authorityRef: 'Movable Property Security Right Proc. 1147/2019',
+    matchHints: ['mortgage', 'pledge', 'security agreement', 'guarantee', 'collateral'] },
+  { code: 'ECMA-D-004', title: 'Credit Rating Report', category: 'FINANCIAL', mandatory: false, weight: 3, appliesToStage: 'DUE_DILIGENCE',
+    description: 'Rating report from a recognised rating agency, or the reasoned basis for proceeding unrated.',
+    authorityRef: 'ECMA debt securities directive',
+    matchHints: ['credit rating', 'rating report', 'rating agency'] },
+  { code: 'ECMA-D-005', title: 'Debt Service Coverage Model', category: 'FINANCIAL', mandatory: true, weight: 4, appliesToStage: 'DUE_DILIGENCE',
+    description: 'Model demonstrating coverage of coupon and principal over the life of the instrument.',
+    authorityRef: 'ECMA debt securities directive — repayment capacity',
+    matchHints: ['debt service', 'coverage ratio', 'dscr', 'amortisation schedule'] },
+  { code: 'ECMA-D-006', title: 'Sinking Fund / Redemption Arrangements', category: 'FINANCIAL', mandatory: false, weight: 2, appliesToStage: 'DUE_DILIGENCE',
+    description: 'Terms of any sinking fund, early redemption or call arrangements and their funding.',
+    authorityRef: 'Commercial Code Proc. 1243/2021, Art. 440',
+    matchHints: ['sinking fund', 'redemption', 'call option', 'early repayment'] },
+];
+
+const debtRules: RuleSpec[] = [
+  { id: 'D-001', agent: 'LEGAL', appliesTo: ['ECMA-D-001'], kind: 'MUST_CONTAIN_ANY', gapType: 'REGULATORY', severity: 'CRITICAL',
+    title: 'Trust deed does not specify events of default',
+    detail: 'The instrument must set out the events that entitle holders to accelerate, and the consequences of each. Without them the trustee cannot act for holders.',
+    citation: 'Commercial Code Proc. 1243/2021, Arts. 428–447',
+    recommendation: 'Insert a complete events-of-default clause covering payment default, covenant breach, insolvency and cross-default, with cure periods.',
+    phrases: ['event of default', 'events of default', 'acceleration'] },
+  { id: 'D-002', agent: 'LEGAL', appliesTo: ['ECMA-D-001'], kind: 'MUST_CONTAIN_ANY', gapType: 'COMPLIANCE', severity: 'HIGH',
+    title: 'Ranking of the securities not stated',
+    detail: 'Holders must be told whether the instrument is secured or unsecured and how it ranks against other creditors.',
+    citation: 'ECMA debt securities directive — terms of the securities',
+    recommendation: 'State the ranking expressly (senior secured, senior unsecured or subordinated) and reconcile it to the security documents.',
+    phrases: ['ranking', 'pari passu', 'subordinated', 'senior secured', 'unsecured'] },
+  { id: 'D-003', agent: 'FINANCIAL', appliesTo: ['ECMA-D-005'], kind: 'MUST_CONTAIN_ANY', gapType: 'FINANCIAL', severity: 'HIGH',
+    title: 'Debt service coverage not demonstrated',
+    detail: 'The model must show coverage of coupon and principal in every period of the instrument\'s life, including a downside case.',
+    citation: 'ECMA debt securities directive — repayment capacity',
+    recommendation: 'Require a period-by-period coverage schedule with a stated minimum coverage ratio and a downside sensitivity.',
+    phrases: ['coverage ratio', 'debt service coverage', 'dscr'] },
+  { id: 'D-004', agent: 'FINANCIAL', appliesTo: ['ECMA-D-003'], kind: 'MUST_CONTAIN_ANY', gapType: 'COMPLIANCE', severity: 'HIGH',
+    title: 'Security registration not evidenced',
+    detail: 'A security right is effective against third parties only once registered in the collateral registry.',
+    citation: 'Movable Property Security Right Proc. 1147/2019, Arts. 19–27',
+    recommendation: 'Obtain registration certificates from the collateral registry and a search confirming priority.',
+    phrases: ['registration', 'collateral registry', 'registered'] },
+];
+
+export const ecmaDebtPack: RulePack = {
+  key: 'ECMA-DEBT',
+  name: 'ECMA Debt Securities Offering',
+  version: '2026.1',
+  authority: 'Ethiopian Capital Market Authority',
+  description: 'Checklist, compliance rules and offering-document contents for a public issue of bonds or debentures.',
+  disclaimer: ecmaEquityPack.disclaimer,
+  outputLabel: 'Offering Document',
+  transactionTypes: ['BOND'],
+  requirements: [
+    ...keep([
+      'ECMA-C-001', 'ECMA-C-002', 'ECMA-C-003', 'ECMA-C-004', 'ECMA-C-005',
+      'ECMA-G-001', 'ECMA-G-002', 'ECMA-G-003', 'ECMA-G-004',
+      'ECMA-F-001', 'ECMA-F-002', 'ECMA-F-003', 'ECMA-F-004', 'ECMA-F-005', 'ECMA-F-007',
+      'ECMA-T-001', 'ECMA-T-002',
+      'ECMA-L-001', 'ECMA-L-002', 'ECMA-L-003', 'ECMA-L-005',
+      'ECMA-R-001', 'ECMA-R-003', 'ECMA-R-004', 'ECMA-R-005',
+    ]),
+    ...debtOnly,
+  ],
+  rules: [
+    ...ecmaEquityPack.rules.filter((r) => !['F-009', 'L-001'].includes(r.id)),
+    ...debtRules,
+  ],
+  prospectus: [
+    ...ecmaEquityPack.prospectus.filter((s) => !['P-09', 'P-12'].includes(s.code)),
+    { code: 'P-D1', sequence: 9, heading: 'Terms and Conditions of the Securities', requiredBy: 'ECMA debt securities directive', minWords: 600,
+      guidance: 'Principal amount, coupon and payment dates, tenor, ranking, security, covenants, events of default, trustee powers and the meetings-of-holders provisions.',
+      sourceRequirements: ['ECMA-D-001', 'ECMA-D-002', 'ECMA-D-003'] },
+    { code: 'P-D2', sequence: 12, heading: 'Repayment Capacity and Coverage', requiredBy: 'ECMA debt securities directive', minWords: 400,
+      guidance: 'Period-by-period debt service coverage, the funding plan for redemption, and the downside sensitivity.',
+      sourceRequirements: ['ECMA-D-005', 'ECMA-D-006', 'ECMA-F-004'] },
+    { code: 'P-D3', sequence: 13, heading: 'Credit Rating', requiredBy: 'ECMA debt securities directive', minWords: 200,
+      guidance: 'The rating, its scale and meaning, the agency, and the statement that a rating is not a recommendation to invest.',
+      sourceRequirements: ['ECMA-D-004'] },
+  ].sort((a, b) => a.sequence - b.sequence),
+  milestones: ecmaEquityPack.milestones,
+};

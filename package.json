@@ -1,0 +1,43 @@
+{
+  "name": "et-transactional-advisor-os",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start -p 3000",
+    "typecheck": "tsc --noEmit",
+    "seed": "NODE_OPTIONS=--conditions=react-server tsx scripts/seed.ts",
+    "setup": "npm run seed",
+    "test": "vitest run",
+    "preview:build": "node preview/build.mjs && node preview/assemble.mjs"
+  },
+  "dependencies": {
+    "bcryptjs": "3.0.2",
+    "better-sqlite3": "12.4.1",
+    "clsx": "2.1.1",
+    "jose": "6.1.0",
+    "next": "15.5.4",
+    "nodemailer": "7.0.6",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
+    "server-only": "0.0.1",
+    "zod": "4.1.11"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "4.1.13",
+    "@types/bcryptjs": "2.4.6",
+    "@types/better-sqlite3": "7.6.13",
+    "@types/node": "22.18.1",
+    "@types/nodemailer": "6.4.17",
+    "@types/react": "19.1.13",
+    "@types/react-dom": "19.1.9",
+    "esbuild": "^0.25.9",
+    "postcss": "8.5.6",
+    "sql.js": "^1.13.0",
+    "tailwindcss": "4.1.13",
+    "tsx": "4.20.5",
+    "typescript": "5.9.2",
+    "vitest": "3.2.4"
+  }
+}
