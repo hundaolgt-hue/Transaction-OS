@@ -19,6 +19,7 @@ function getTransport(): nodemailer.Transporter | null {
       port: env.smtpPort,
       secure: env.smtpPort === 465,
       auth: env.smtpUser ? { user: env.smtpUser, pass: env.smtpPass } : undefined,
+      connectionTimeout: 8000, greetingTimeout: 8000, socketTimeout: 12000,
     });
   }
   return transport;
@@ -32,8 +33,16 @@ export async function sendEmail(to: string, subject: string, text: string, html?
     console.info(`[mail:outbox] → ${to} :: ${subject}`);
     return 'queued';
   }
-  await t.sendMail({ from: env.mailFrom, to, subject, text, html: html ?? `<pre>${text}</pre>` });
-  return 'sent';
+  try {
+    await t.sendMail({ from: env.mailFrom, to, subject, text, html: html ?? `<pre>${text}</pre>` });
+    return 'sent';
+  } catch (e) {
+    // A mis-configured SMTP server must never break the action that triggered the email.
+    console.error(`[mail] delivery to ${to} failed: ${(e as Error).message}`);
+    outbox.push({ to, subject, text, at: now() });
+    if (outbox.length > 200) outbox.shift();
+    return 'queued';
+  }
 }
 
 export const readOutbox = () => [...outbox].reverse();

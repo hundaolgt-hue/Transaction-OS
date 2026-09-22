@@ -1,0 +1,19 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+BANK STATEMENTS SUMMARY AND FACILITY AGREEMENTS
+
+Prepared by: Treasury
+Date: 31 July 2026
+
+| Lender | Facility | Limit Birr '000 | Outstanding 7 Jul 2025 | Maturity | Security |
+|---|---|---|---|---|---|
+| Meskel Commercial Bank S.C. | Term loan A | 620,000 | 498,200 | June 2031 | First mortgage, Kality plant |
+| Meskel Commercial Bank S.C. | Term loan B | 300,000 | 256,400 | June 2029 | Second mortgage, Kality plant |
+| Entoto Development Bank | Project loan | 450,000 | 381,600 | March 2033 | Mortgage, Bishoftu plant; pledge of machinery |
+| Meskel Commercial Bank S.C. | Overdraft | 120,000 | 81,598 | Annual renewal | Floating charge on inventory |
+
+Financial covenants (all facilities): total borrowings to equity not to exceed 1.25x; debt service coverage ratio not less than 1.30x; no dividend exceeding 50% of profit after tax without lender consent. At 7 July 2025 the gearing ratio was 1.08x and the debt service coverage ratio 1.41x. Lenders have confirmed in writing that no event of default has occurred.
+
+Principal bank accounts: operating account and capital account with Meskel Commercial Bank S.C.; collection accounts with two other licensed banks. Twelve months of statements are held in the data room sub-folder 4.2.
+
+Signed: Head of Treasury.

@@ -15,7 +15,10 @@ import { SYNTHETIC } from '../src/lib/dataroom/format';
 import { BRAND } from '../src/lib/brand';
 
 async function main() {
+  // Build from scratch — never restore the bundled snapshot while seeding.
+  process.env.ADVISOROS_NO_SNAPSHOT = '1';
   // Remove any previous database so the seed is deterministic.
+  fs.mkdirSync(env.dataDir, { recursive: true });
   for (const suffix of ['', '-wal', '-shm']) {
     const p = `${env.dbPath}${suffix}`;
     if (fs.existsSync(p)) fs.unlinkSync(p);

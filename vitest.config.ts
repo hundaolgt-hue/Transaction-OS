@@ -9,5 +9,5 @@ export default defineConfig({
       'server-only': path.resolve(__dirname, 'tests/stubs/server-only.ts'),
     },
   },
-  test: { environment: 'node', include: ['tests/**/*.test.ts'], pool: 'forks' },
+  test: { environment: 'node', include: ['tests/**/*.test.ts'], pool: 'forks', env: { ADVISOROS_NO_SNAPSHOT: '1' } },
 });

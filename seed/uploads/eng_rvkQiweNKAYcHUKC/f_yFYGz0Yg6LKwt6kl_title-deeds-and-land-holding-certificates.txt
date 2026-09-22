@@ -1,0 +1,14 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+TITLE DEEDS AND LAND HOLDING CERTIFICATES
+
+Prepared by: Head of Legal
+Encumbrance searches dated: 22 June 2026
+
+| Site | Certificate no. | Area (m²) | Lease period | Expires | Encumbrance |
+|---|---|---|---|---|---|
+| Kality plant | AA/LH/KLT/0917 | 48,200 | 60 years from 2018 | 2078 | First and second mortgage in favour of Meskel Commercial Bank S.C. |
+| Bishoftu plant | OR/LH/BSH/2210 | 31,500 | 50 years from 2020 | 2070 | Mortgage in favour of Entoto Development Bank |
+| Adama warehouse | Leased from Kality Holdings PLC | 12,000 | 20-year sublease from 2019 | 2039 | None registered |
+
+Lease payments are current. The Kality lease-hold was acquired at auction; the Bishoftu holding was allotted by the regional investment board. Signed: Head of Legal.

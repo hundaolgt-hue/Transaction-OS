@@ -1,0 +1,30 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+LALIBELA CEMENT MANUFACTURING PLC
+  FINANCIAL STATEMENTS FOR THE YEAR ENDED 7 JULY 2025
+
+  The financial statements have been prepared in accordance with International Financial Reporting Standards.
+
+  STATEMENT OF FINANCIAL POSITION (Birr '000)
+                                     FY2025      FY2024
+  Property, plant and equipment    4,880,220   4,612,880
+  Inventories                        712,440     668,190
+  Trade receivables                  402,118     388,220
+  Cash                                88,440     142,006
+  Total assets                     6,083,218   5,811,296
+  Share capital                    1,250,000   1,250,000
+  Accumulated losses                (188,440)    (96,220)
+  Borrowings                       3,902,118   3,588,440
+  Trade payables                   1,119,540   1,069,076
+
+  STATEMENT OF PROFIT OR LOSS (Birr '000)
+  Revenue                          2,188,440   2,402,118
+  Cost of sales                   (1,902,880) (1,988,440)
+  Gross profit                       285,560     413,678
+  Finance costs                     (402,118)   (366,880)
+  Loss before tax                   (216,558)    (98,442)
+
+  MATERIAL UNCERTAINTY RELATED TO GOING CONCERN
+  The Company incurred a loss before tax of Birr 216,558,000 for the year ended 7 July 2025 and, as at that date, its current liabilities exceeded its current assets by Birr 618,440,000. These events indicate that a material uncertainty exists that may cast significant doubt on the Company's ability to continue as a going concern. The directors have prepared a refinancing plan, the principal element of which is the proposed bond issue.
+
+  STATEMENT OF CASH FLOWS and STATEMENT OF CHANGES IN EQUITY are set out on pages 8 and 9.

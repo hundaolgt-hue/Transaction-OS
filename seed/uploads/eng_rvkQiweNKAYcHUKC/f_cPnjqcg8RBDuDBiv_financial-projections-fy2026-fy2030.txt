@@ -1,0 +1,32 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+FINANCIAL PROJECTIONS FY2026–FY2030 AND ASSUMPTIONS
+
+Prepared by: Management, reviewed by the transaction adviser
+Date: 2 August 2026
+Basis of preparation: Consistent with the accounting policies of the audited financial statements
+
+| Birr '000 | FY2026 | FY2027 | FY2028 | FY2029 | FY2030 |
+|---|---|---|---|---|---|
+| Revenue | 3,346,027 | 4,082,153 | 4,653,654 | 5,072,483 | 5,427,557 |
+| EBITDA | 642,437 | 836,841 | 995,882 | 1,105,801 | 1,194,063 |
+| Depreciation | -87,465 | -108,457 | -113,880 | -119,574 | -125,553 |
+| Finance costs | -160,635 | -150,997 | -141,937 | -133,421 | -125,416 |
+| Profit before tax | 394,337 | 577,387 | 740,065 | 852,806 | 943,094 |
+| Profit after tax | 276,036 | 404,171 | 518,045 | 596,964 | 660,166 |
+| Capital expenditure | 520,000 | 310,000 | 140,000 | 120,000 | 120,000 |
+| Seed crushed (thousand tonnes) | 96 | 118 | 131 | 139 | 145 |
+
+PRINCIPAL ASSUMPTIONS
+Within management's control: (a) the fourth crushing line is commissioned by the end of Q2 FY2027, adding 40,000 tonnes a year of seed capacity; (b) administrative costs grow at 8% a year; (c) capital expenditure as scheduled above; (d) dividend payout of 25% of profit after tax from FY2027.
+Outside management's control: (e) oilseed input prices rise at 9% a year and edible-oil selling prices at 10%; (f) the Birr depreciates against the US dollar at 12% a year, affecting imported spares and chemicals; (g) no change in the corporate income tax rate of 30%; (h) foreign-exchange allocation for machinery imports remains available.
+
+SENSITIVITY ANALYSIS (FY2028 profit after tax)
+| Scenario | Change | PAT Birr '000 | vs base |
+|---|---|---|---|
+| Base case | — | 518,045 | — |
+| Oilseed price +5pp above base | Input cost | 419,616 | -19% |
+| Line commissioning delayed 6 months | Volume | 466,241 | -10% |
+| Birr depreciation +10pp | FX | 486,962 | -6% |
+
+Signed: Bekele Roba, Chief Executive Officer; Tigist Alemu, Chief Finance Officer.

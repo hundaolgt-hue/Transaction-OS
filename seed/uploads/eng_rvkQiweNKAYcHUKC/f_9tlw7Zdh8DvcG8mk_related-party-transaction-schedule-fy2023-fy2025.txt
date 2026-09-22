@@ -1,0 +1,20 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+RELATED-PARTY TRANSACTION SCHEDULE FY2023–FY2025
+
+Prepared by: Chief Finance Officer
+Reviewed by: Bekele, Tessema & Co. (agreed-upon procedures)
+Date: 14 September 2026
+
+| Counterparty | Relationship | Nature | FY2023 | FY2024 | FY2025 |
+|---|---|---|---|---|---|
+| Kality Holdings PLC | Controlled by the Chairman | Purchase of oilseed | 142,300 | 166,900 | 188,440 |
+| Kality Holdings PLC | Controlled by the Chairman | Warehouse rental (Adama) | 6,000 | 6,600 | 7,200 |
+| Rift Valley Investments PLC | Controlled by a director | Transport services | 18,880 | 21,400 | 24,760 |
+| Getachew Mengistu | Chairman | Loan to director — interest-free, repayable on demand | 0 | 12,000 | 12,000 |
+| Key management personnel | Directors and executives | Compensation | 19,200 | 21,600 | 24,118 |
+
+Amounts in Birr '000. The loan to director (Getachew Mengistu) of Birr 12,000,000 was advanced on 3 October 2023 to fund a personal land acquisition and remained outstanding at 7 July 2025 and at the date of this schedule. It was approved by the board on 28 September 2023; no shareholder approval was sought.
+Purchases from Kality Holdings PLC are made at the prevailing Ethiopian Commodity Exchange reference price plus a handling margin of 1.5%.
+
+Signed: Tigist Alemu, Chief Finance Officer.

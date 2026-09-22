@@ -1,0 +1,27 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+CAPITAL SUBSCRIPTION AND PAYMENT EVIDENCE
+
+Prepared by: Company Secretary
+Date: 4 July 2026
+
+Capital history
+| Date | Event | Shares issued | Capital after (Birr) |
+|---|---|---|---|
+| 14 March 2018 | Incorporation | 1,000,000 | 300,000,000 |
+| 2 August 2021 | Rights issue to existing holders | 333,334 | 400,000,200 |
+| 20 June 2023 | Capital increase (EGM of 20 June 2023) | 266,666 | 480,000,000 |
+
+Bank confirmation. Meskel Commercial Bank S.C. (Kality branch) confirms by letter dated 28 June 2023 that Birr 80,000,000 was received into the Company's capital account no. ending 4471 between 21 June and 27 June 2023 from the subscribers listed in the attached subscription list, and that the amount has been released to the Company's operating account on registration of the increase.
+
+Subscription list (June 2023 increase)
+| Subscriber | Shares | Amount (Birr) |
+|---|---|---|
+| Getachew Mengistu | 85,333 | 25,599,900 |
+| Hiwot Assefa | 48,000 | 14,400,000 |
+| Kality Holdings PLC | 40,000 | 12,000,000 |
+| Rift Valley Investments PLC | 29,333 | 8,799,900 |
+| Tigist Alemu | 16,000 | 4,800,000 |
+| Other holders | 48,000 | 14,400,200 |
+
+Signed: Company Secretary. Bank letter signed and sealed by the branch manager.

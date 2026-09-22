@@ -1,0 +1,19 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+REGISTER OF SHAREHOLDERS AS AT 30 JUNE 2026
+
+Company: Abyssinia Agro-Industries Share Company
+Total issued shares: 1,600,000 ordinary shares of Birr 300
+Certified by: Company Secretary, 2 July 2026
+
+| Holder | Nationality | Shares | Per cent | Paid up |
+|---|---|---|---|---|
+| Getachew Mengistu | Ethiopian | 512,000 | 32.0% | Fully paid |
+| Hiwot Assefa | Ethiopian | 288,000 | 18.0% | Fully paid |
+| Kality Holdings PLC | Ethiopian (company) | 240,000 | 15.0% | Fully paid |
+| Rift Valley Investments PLC | Ethiopian (company) | 176,000 | 11.0% | Fully paid |
+| Tigist Alemu | Ethiopian | 96,000 | 6.0% | Fully paid |
+| Abyssinia Agro Employee Share Trust | Ethiopian (trust) | 80,000 | 5.0% | Fully paid |
+| Other holders (41) | Ethiopian | 208,000 | 13.0% | Fully paid |
+
+The register records holders of record only. Transfers registered in the period: 4 (aggregate 14,200 shares), all between existing holders.

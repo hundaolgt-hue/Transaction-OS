@@ -1,0 +1,75 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+AUDITED FINANCIAL STATEMENTS FY2023–FY2025
+
+Entity: Abyssinia Agro-Industries Share Company
+Periods: Years ended 7 July 2023, 2024 and 2025
+Auditor: Bekele, Tessema & Co. Chartered Accountants
+Presentation currency: Ethiopian Birr, thousands
+
+STATEMENT OF COMPLIANCE
+These financial statements have been prepared in accordance with International Financial Reporting Standards (IFRS) as issued by the International Accounting Standards Board and the Financial Reporting Proclamation No. 847/2014. They have been prepared on the historical cost basis and on a going concern basis.
+
+STATEMENT OF PROFIT OR LOSS AND OTHER COMPREHENSIVE INCOME
+| Birr '000 | FY2023 | FY2024 | FY2025 |
+|---|---|---|---|
+| Revenue | 2,095,440 | 2,461,880 | 2,884,506 |
+| Cost of sales | -1,602,173 | -1,861,181 | -2,158,476 |
+| Gross profit | 493,267 | 600,699 | 726,030 |
+| Selling and distribution expenses | -98,400 | -112,300 | -131,900 |
+| Administrative expenses | -123,156 | -139,708 | -156,512 |
+| Other income | 4,200 | 5,100 | 6,800 |
+| Operating profit | 275,911 | 353,791 | 444,418 |
+| Finance costs | -148,220 | -166,900 | -182,540 |
+| Profit before tax | 127,691 | 186,891 | 261,878 |
+| Income tax expense | -38,307 | -56,067 | -78,563 |
+| Profit for the year | 89,384 | 130,824 | 183,315 |
+
+STATEMENT OF FINANCIAL POSITION
+| Birr '000 | FY2023 | FY2024 | FY2025 |
+|---|---|---|---|
+| Property, plant and equipment | 1,388,902 | 1,612,455 | 1,842,110 |
+| Right-of-use assets | 79,650 | 88,220 | 96,400 |
+| Total non-current assets | 1,468,552 | 1,700,675 | 1,938,510 |
+| Inventories | 421,004 | 498,331 | 612,880 |
+| Trade and other receivables | 299,776 | 371,190 | 468,220 |
+| Cash and cash equivalents | 121,338 | 188,402 | 142,655 |
+| Total current assets | 842,118 | 1,057,923 | 1,223,755 |
+| Total assets | 2,310,670 | 2,758,598 | 3,162,265 |
+| Share capital | 400,000 | 480,000 | 480,000 |
+| Retained earnings and reserves | 469,484 | 576,308 | 721,223 |
+| Total equity | 869,484 | 1,056,308 | 1,201,223 |
+| Borrowings — non-current | 765,416 | 917,899 | 1,064,194 |
+| Lease liabilities | 86,350 | 94,500 | 102,750 |
+| Total non-current liabilities | 851,766 | 1,012,399 | 1,166,944 |
+| Borrowings — current portion | 168,018 | 201,490 | 233,604 |
+| Trade and other payables | 407,995 | 468,778 | 532,997 |
+| Current tax payable | 13,407 | 19,623 | 27,497 |
+| Total current liabilities | 589,420 | 689,891 | 794,098 |
+| Total equity and liabilities | 2,310,670 | 2,758,598 | 3,162,265 |
+
+STATEMENT OF CASH FLOWS
+| Birr '000 | FY2023 | FY2024 | FY2025 |
+|---|---|---|---|
+| Net cash from operating activities | 243,680 | 231,715 | 231,106 |
+| Net cash used in investing activities | -118,560 | -295,353 | -312,955 |
+| Net cash from financing activities | -134,120 | 130,702 | 36,102 |
+| Depreciation and amortisation | 62,400 | 71,800 | 83,300 |
+| Capital expenditure | 118,560 | 295,353 | 312,955 |
+| Dividends paid | 0 | 24,000 | 38,400 |
+
+STATEMENT OF CHANGES IN EQUITY
+Share capital increased from Birr 400,000 thousand to Birr 480,000 thousand in FY2024 following the capital increase of June 2023. Dividends of Birr 24,000 thousand (FY2024) and Birr 38,400 thousand (FY2025) were paid. The balance of retained earnings moves by the profit for the year less dividends.
+
+NOTES TO THE FINANCIAL STATEMENTS
+Note 1 — Basis of preparation. Historical cost, except where stated. Functional currency Ethiopian Birr.
+Note 3 — Revenue. Revenue comprises sales of refined edible oil (FY2025: 81%), oilseed cake and meal (16%) and other products (3%). Revenue is recognised on delivery.
+Note 9 — Property, plant and equipment. Additions in FY2025 include advance payments of Birr 186,000 thousand for the fourth crushing line.
+Note 11 — Inventories. Raw oilseed Birr 402,110 thousand; finished goods Birr 148,300 thousand; packaging and spares Birr 62,470 thousand (FY2025).
+Note 12 — Borrowings. Term facilities with Meskel Commercial Bank S.C. and Entoto Development Bank secured by mortgages over the Kality and Bishoftu plants. See note 12.3 for covenants.
+Note 12.3 — Covenants. The facilities require a ratio of total borrowings to equity not exceeding 1.25 and a debt service coverage ratio of not less than 1.30, tested annually. The Company was in compliance at each year end.
+Note 18 — Equity. Movements in share capital and reserves.
+Note 22 — Commitments and contingencies. Capital commitments for the fourth line Birr 226,000 thousand. Contingent liabilities in respect of legal proceedings are described in note 22.2; no provision is recognised where an outflow is not probable.
+Note 24 — Related parties. Related party transactions and balances, including key management personnel compensation of Birr 24,118 thousand (FY2025) and a loan receivable from a director of Birr 12,000 thousand, are disclosed in this note.
+
+Approved by the board on 10 October 2025 and signed on its behalf by the Chairman and the Chief Finance Officer.

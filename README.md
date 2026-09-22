@@ -168,6 +168,18 @@ adding a pack needs no code changes elsewhere, and the test suite enforces their
 
 ## Configuration
 
+### Deploying to Vercel
+
+The project deploys to Vercel as-is (Next.js preset, no build settings to change):
+
+- **Demo data on first boot.** Vercel functions can only write to `/tmp`, so on Vercel the database lives
+  at `/tmp/advisor-os` and is restored from the bundled snapshot in `seed/` on each cold start. The demo
+  works out of the box, but **changes do not persist** between cold starts or across instances. For real
+  use, move the data layer to a hosted database and uploads to object storage.
+- **Refresh the snapshot** after changing the seed: `npm run seed && npm run seed:snapshot`, then commit `seed/`.
+- **Environment variables:** set a long random `AUTH_SECRET`. `APP_URL` defaults to the Vercel production URL.
+  `DATABASE_URL` and `UPLOAD_DIR` are not used. Placeholder values such as `change-me` are ignored.
+
 ### Branding
 
 The deployment is branded for **Siinqee Investment Bank S.C.** ("Make it count"). Names and the

@@ -1,0 +1,23 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+INDEPENDENT VALUATION REPORT
+
+Valuer: Sidama Valuation Partners PLC
+Valuation date: 7 April 2026
+Report date: 12 August 2026
+Standard: International Valuation Standards (IVS 105)
+
+Methods. The valuation applies a discounted cash flow method (weight 60%) and a market approach using comparable listed edible-oil processors in East Africa (weight 40%). A net asset value cross-check is provided.
+
+Discounted cash flow. Free cash flows from the management projections FY2026–FY2030 are discounted at a cost of equity of 24.5% (Ethiopian 10-year government yield proxy 17.0%, equity risk premium 6.0%, beta 1.05, size premium 1.2%). Terminal growth 6.0% in nominal Birr terms.
+
+| Method | Equity value Birr '000 | Per share (Birr) | Weight |
+|---|---|---|---|
+| Discounted cash flow | 2,210,000 | 1,381 | 60% |
+| Market approach (EV/EBITDA 5.4x–6.6x) | 2,020,000 | 1,263 | 40% |
+| Weighted value (pre-money) | 2,134,000 | 1,334 | — |
+| Net asset value cross-check | 1,201,223 | 751 | — |
+
+Conclusion. The weighted pre-money equity value of Birr 2,134 million supports an offer price range of Birr 420–480 per share after a discount for the capital raised, the illiquidity of a newly listed share and an IPO discount of 15%. Note: per-share values above are stated on the existing share count; the offer price reflects the par value of Birr 300 and the premium determined by the board.
+
+Signed: Meseret Alemayehu, MRICS, for Sidama Valuation Partners PLC.

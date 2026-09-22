@@ -1,0 +1,17 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+TRUST DEED
+  constituting ETB 1,500,000,000 secured notes due 2031
+
+  THIS DEED is made between Lalibela Cement Manufacturing PLC (the "Issuer") and [TRUSTEE TO BE CONFIRMED] (the "Trustee").
+
+  1. AMOUNT AND FORM. The Issuer constitutes secured notes in the aggregate principal amount of Birr 1,500,000,000.
+  2. INTEREST. The notes bear interest at 11.75% per annum payable semi-annually in arrear on 30 June and 31 December.
+  3. MATURITY. The notes mature on 30 June 2031.
+  4. SECURITY. The notes are secured by a first-ranking mortgage over the Kombolcha plant and a floating charge over the Issuer's movable assets.
+  5. COVENANTS. The Issuer shall maintain a debt service coverage ratio of not less than 1.35:1 tested semi-annually, and shall not incur additional secured indebtedness without the consent of the Trustee.
+  6. MEETINGS OF HOLDERS. Provisions for meetings of noteholders are set out in Schedule 3.
+  7. GOVERNING LAW. The laws of the Federal Democratic Republic of Ethiopia.
+
+  [TBD: events of default schedule to be inserted following counsel review.]
+  [INSERT: ranking statement to be confirmed against the existing Development Bank facility.]

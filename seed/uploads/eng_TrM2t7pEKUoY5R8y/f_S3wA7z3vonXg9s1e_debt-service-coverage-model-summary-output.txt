@@ -1,0 +1,15 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+LALIBELA CEMENT — DEBT SERVICE COVERAGE SUMMARY
+  Base case, Birr '000
+
+  Period    EBITDA     Debt service    Coverage
+  FY2027     688,440       502,118        1.37
+  FY2028     742,118       502,118        1.48
+  FY2029     801,440       502,118        1.60
+  FY2030     866,880       502,118        1.73
+  FY2031     938,220     1,502,118        0.62
+
+  Assumptions: clinker price growth of 6% per annum; capacity utilisation rising from 62% to 78%; coal cost indexed to the base period.
+
+  Note: FY2031 coverage reflects bullet repayment of principal. Refinancing or a sinking fund will be required.

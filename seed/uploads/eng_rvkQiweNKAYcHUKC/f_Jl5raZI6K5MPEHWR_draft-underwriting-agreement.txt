@@ -1,0 +1,13 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+DRAFT UNDERWRITING AGREEMENT
+
+Status: Draft for negotiation — v3, 5 September 2026
+Underwriter: Gondar Gate Securities S.C. (licensed securities dealer)
+
+Commitment: firm underwriting of 60% of the offer shares (1,200,000 shares) at the final offer price; best efforts for the balance.
+Commission: 2.25% of gross proceeds on the underwritten portion; 1.25% on the best-efforts portion.
+Conditions: ECMA approval of the prospectus; no material adverse change; delivery of legal opinions and a comfort letter from the auditor.
+Termination: force majeure, suspension of trading on the exchange, or a material adverse change before allotment.
+
+Initialled for identification by the parties.

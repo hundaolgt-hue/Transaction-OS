@@ -1,0 +1,23 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+RIFT VALLEY HAULAGE PLC
+  FINANCIAL STATEMENTS FOR THE YEARS ENDED 7 JULY 2023 TO 2025
+
+  These financial statements have been prepared in accordance with IFRS for SMEs.
+
+  STATEMENT OF FINANCIAL POSITION (Birr '000)
+                                  FY2025    FY2024    FY2023
+  Motor vehicles                 388,220   402,118   366,880
+  Trade receivables              142,006   128,440   112,118
+  Cash                            42,118    38,220    29,006
+  Total assets                   572,344   568,778   508,004
+  Share capital                  120,000   120,000   120,000
+  Retained earnings              188,440   166,220   142,880
+  Borrowings                     198,220   212,118   188,440
+
+  STATEMENT OF PROFIT OR LOSS (Birr '000)
+  Revenue                        602,118   566,880   498,440
+  Operating profit                88,440    81,220    68,006
+  Profit for the year             52,118    48,006    39,440
+
+  Notes 1 to 19 form part of these statements.

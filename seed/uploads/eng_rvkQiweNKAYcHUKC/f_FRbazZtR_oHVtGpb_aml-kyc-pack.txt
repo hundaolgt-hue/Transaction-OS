@@ -1,0 +1,16 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+AML / KYC PACK — BENEFICIAL OWNERSHIP AND SCREENING
+
+Prepared by: Compliance officer
+Date: 22 April 2026
+
+Beneficial owners holding, directly or indirectly, 10% or more:
+| Beneficial owner | Direct | Indirect | Total | Via |
+|---|---|---|---|---|
+| Getachew Mengistu | 32.0% | 12.2% | 44.2% | Kality Holdings PLC (81% owned) |
+| Hiwot Assefa | 18.0% | 7.0% | 25.0% | Rift Valley Investments PLC (64% owned) |
+
+Identity documents for each controller are held on file. Politically exposed person (PEP) and sanctions screening was run on 22 April 2026 against the national and UN consolidated lists for all directors, controllers and their close associates: no matches. Source of wealth: oilseed trading and prior manufacturing interests, supported by tax returns for five years.
+
+Signed: Compliance officer.

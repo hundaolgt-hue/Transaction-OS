@@ -1,0 +1,25 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+CONDENSED INTERIM FINANCIAL INFORMATION — NINE MONTHS TO 7 APRIL 2026
+
+Status: Reviewed, not audited (ISRE 2410 review by the auditor)
+Period: nine months ended 7 April 2026
+Date of review report: 28 May 2026
+
+| Birr '000 | 9M to 7 Apr 2026 | 9M to 7 Apr 2025 |
+|---|---|---|
+| Revenue | 2,341,880 | 2,101,400 |
+| Gross profit | 601,220 | 529,100 |
+| Operating profit | 358,910 | 322,400 |
+| Finance costs | -144,354 | -143,500 |
+| Profit before tax | 214,556 | 178,900 |
+| Profit for the period | 150,189 | 125,230 |
+
+| Birr '000 | 7 Apr 2026 | 7 Jul 2025 |
+|---|---|---|
+| Total assets | 3,288,440 | 3,162,265 |
+| Cash and cash equivalents | 118,320 | 142,655 |
+| Total borrowings | 1,392,100 | 1,297,798 |
+| Total equity | 1,398,240 | 1,201,223 |
+
+Prepared in accordance with IAS 34 on the basis of the accounting policies applied in the annual financial statements. Revenue grew 11.4% on the comparative period, driven by refined-oil volumes; gross margin improved to 25.7%. Signed by the Chief Finance Officer, 28 May 2026.

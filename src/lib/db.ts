@@ -19,10 +19,25 @@ function schemaSql(): string {
   throw new Error('schema.sql not found');
 }
 
+/**
+ * First boot with no database: restore the bundled demo snapshot
+ * (seed/advisor-os.db + seed/uploads) so a fresh clone or a serverless
+ * cold start comes up with the demo data instead of an empty app.
+ */
+function restoreSnapshot() {
+  if (fs.existsSync(env.dbPath)) return;
+  const snap = path.join(env.snapshotDir, 'advisor-os.db');
+  if (!fs.existsSync(snap)) return;
+  fs.copyFileSync(snap, env.dbPath);
+  const up = path.join(env.snapshotDir, 'uploads');
+  if (fs.existsSync(up)) fs.cpSync(up, env.uploadDir, { recursive: true });
+}
+
 export function db(): Database.Database {
   if (_db) return _db;
   fs.mkdirSync(env.dataDir, { recursive: true });
   fs.mkdirSync(env.uploadDir, { recursive: true });
+  if (process.env.ADVISOROS_NO_SNAPSHOT !== '1') restoreSnapshot();
   const d = new Database(env.dbPath);
   d.pragma('journal_mode = WAL');
   d.pragma('foreign_keys = ON');

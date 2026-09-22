@@ -1,0 +1,23 @@
+SYNTHETIC SAMPLE DOCUMENT — FICTIONAL COMPANY — PREPARED FOR SOFTWARE DEMONSTRATION ONLY. Names, figures and events are invented; any resemblance to a real entity is coincidental.
+
+VAT AND WITHHOLDING TAX FILINGS SUMMARY FY2025
+
+Prepared by: Tax Manager
+Period: 8 July 2024 – 7 July 2025
+
+| Month | Output VAT | Input VAT | Net VAT paid | Withholding remitted | Filed on time |
+|---|---|---|---|---|---|
+| Hamle | 36,000 | 24,100 | 11,900 | 2,100 | Yes |
+| Nehase | 36,900 | 24,710 | 12,190 | 2,140 | Yes |
+| Meskerem | 37,800 | 25,320 | 12,480 | 2,180 | Yes |
+| Tikimt | 38,700 | 25,930 | 12,770 | 2,220 | Yes |
+| Hidar | 39,600 | 26,540 | 13,060 | 2,260 | Yes |
+| Tahsas | 40,500 | 27,150 | 13,350 | 2,300 | Yes |
+| Tir | 41,400 | 27,760 | 13,640 | 2,340 | Yes |
+| Yekatit | 42,300 | 28,370 | 13,930 | 2,380 | No — filed 6 days late, penalty Birr 38,000 paid |
+| Megabit | 43,200 | 28,980 | 14,220 | 2,420 | Yes |
+| Miyazya | 44,100 | 29,590 | 14,510 | 2,460 | Yes |
+| Ginbot | 45,000 | 30,200 | 14,800 | 2,500 | Yes |
+| Sene | 45,900 | 30,810 | 15,090 | 2,540 | Yes |
+
+Amounts in Birr '000. Payment evidence (bank transfer receipts) for each month is held in the data room. Signed: Tax Manager.
