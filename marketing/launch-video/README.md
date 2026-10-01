@@ -20,3 +20,9 @@ ffmpeg -f concat -safe 0 -i list.txt -i score.wav -filter_complex "[0:v]noise=al
 `am_scenes.js` holds the seven Amharic scenes and `am_sheets.json` the Amharic sheet titles taken from the workbook.
 `index_am.html` is assembled from the engine in `index.html` plus `am_scenes.js`; render with `PAGE=index_am.html`
 (4 × 300 frames) and mux with `score_am.wav` from `python3 score_am.py`.
+
+## 50 s tutorial
+
+Built from `Rapha_ProjectControl_Tutorial.pdf`: its screenshots are in `tut/` and the step text follows the tutorial.
+`index_tut.html` (engine + `tut_scenes.js`); render 4 × 750 frames with `PAGE=index_tut.html`, then mux with
+`score_tut.wav` from `python3 score_tut.py`.
