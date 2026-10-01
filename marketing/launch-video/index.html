@@ -1,0 +1,511 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>Rapha ProjectControl Launch</title>
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+:root{--amber:#E8A447;--amber2:#D98E2B;--blue:#5B8FE8;--navy:#0F2A44;--ink:#F5F7FA;--mute:#8C96A6;--line:rgba(255,255,255,.08)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden}
+body{font-family:'Inter','Noto Sans Ethiopic','DejaVu Sans',sans-serif;color:var(--ink);-webkit-font-smoothing:antialiased;text-rendering:geometricPrecision}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#020307}
+.abs{position:absolute}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;transform-origin:50% 50%;display:none}
+.center{left:0;width:1080px;text-align:center}
+.w,.ch{display:inline-block;will-change:transform,opacity,filter}
+.mono{font-family:'JetBrains Mono',monospace}
+.tn{font-variant-numeric:tabular-nums}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:24px;font-weight:500;letter-spacing:.28em;text-transform:uppercase;color:var(--amber)}
+.h1{font-weight:700;font-size:104px;line-height:1.04;letter-spacing:-.045em;color:#fff}
+.h2{font-weight:700;font-size:84px;line-height:1.06;letter-spacing:-.04em;color:#fff}
+.h3{font-weight:600;font-size:60px;line-height:1.1;letter-spacing:-.03em;color:#fff}
+.acc{background:linear-gradient(180deg,#FFD596 0%,#E8A447 55%,#C9781D 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.04em}
+.grad{background:linear-gradient(180deg,#FFFFFF 30%,#AEB8C6 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.cap{font-size:30px;font-weight:400;color:var(--mute);letter-spacing:-.005em}
+.glass{background:linear-gradient(160deg,rgba(255,255,255,.085),rgba(255,255,255,.025));border:1px solid rgba(255,255,255,.12);border-radius:28px;box-shadow:0 40px 120px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.12)}
+/* bg */
+.orb{position:absolute;border-radius:50%;width:1600px;height:1600px;left:-800px;top:-800px}
+#grain{position:absolute;inset:0;opacity:.075;mix-blend-mode:overlay;pointer-events:none}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 80% 60% at 50% 50%,transparent 55%,rgba(0,0,0,.65) 100%);pointer-events:none}
+#bug{position:absolute;left:0;width:1080px;top:1808px;text-align:center;font-size:22px;letter-spacing:.32em;text-transform:uppercase;color:rgba(255,255,255,.38);font-weight:500}
+#bug b{color:var(--amber);font-weight:600}
+/* helix */
+.card{position:absolute;left:-160px;top:-38px;width:320px;height:76px;border-radius:18px;display:flex;align-items:center;gap:16px;padding:0 20px;
+  background:linear-gradient(160deg,rgba(255,255,255,.12),rgba(255,255,255,.035));border:1.5px solid rgba(255,255,255,.14);backface-visibility:hidden}
+.card b{font-family:'JetBrains Mono';font-weight:500;font-size:22px;color:var(--amber);min-width:36px}
+.card span{font-size:25px;font-weight:600;color:#fff;letter-spacing:-.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mod{position:absolute;left:90px;width:900px;height:84px;display:flex;align-items:center;gap:28px}
+.mod i{font-style:normal;width:72px;height:72px;border-radius:20px;display:flex;align-items:center;justify-content:center;font-size:34px;color:var(--amber);
+  background:rgba(232,164,71,.10);border:1px solid rgba(232,164,71,.35);font-family:'DejaVu Sans'}
+.mod span{font-size:44px;font-weight:600;letter-spacing:-.025em;flex:1}
+.mod em{font-style:normal;font-family:'JetBrains Mono';font-size:24px;color:var(--mute)}
+/* table */
+.tbl{position:absolute;left:0;top:0;width:960px;height:640px;overflow:hidden}
+.trow{position:absolute;left:0;width:960px;height:56px;display:flex;align-items:center;font-size:22px;border-top:1px solid rgba(255,255,255,.06)}
+.trow div{padding:0 12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.thead{font-family:'JetBrains Mono';font-size:17px;letter-spacing:.14em;text-transform:uppercase;color:var(--mute);border-top:none}
+.c1{width:132px;font-family:'JetBrains Mono';color:var(--amber);font-size:19px}.c2{width:340px;color:#E7EBF0}.c3{width:70px;color:var(--mute)}
+.c4{width:124px;text-align:right}.c5{width:116px;text-align:right}.c6{width:168px;text-align:right;font-weight:600;color:#fff}
+.num{font-variant-numeric:tabular-nums}
+/* bars */
+.bar-row{position:absolute;left:70px;width:940px;height:64px}
+.bar-row .lb{position:absolute;left:0;top:10px;font-size:30px;font-weight:500;color:#E7EBF0;letter-spacing:-.01em}
+.bar-row .tr{position:absolute;left:250px;top:24px;width:530px;height:16px;border-radius:8px;background:rgba(255,255,255,.06)}
+.bar-row .fl{position:absolute;left:0;top:0;height:16px;border-radius:8px;transform-origin:0 50%}
+.bar-row .vl{position:absolute;right:0;top:12px;font-family:'JetBrains Mono';font-size:26px;color:#fff;text-align:right}
+/* gantt */
+.grow{position:absolute;left:0;width:1000px;height:40px}
+.grow .gid{position:absolute;left:24px;top:9px;font-family:'JetBrains Mono';font-size:15px;color:var(--mute);width:120px}
+.grow .gnm{position:absolute;left:142px;top:7px;font-size:19px;color:#E7EBF0;width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gbar{position:absolute;top:12px;height:16px;border-radius:5px;transform-origin:0 50%}
+.gms{position:absolute;top:11px;width:18px;height:18px;transform-origin:50% 50%;margin-left:-9px}
+/* tiles */
+.tile{position:absolute;width:470px;height:470px;border-radius:36px;padding:44px}
+.tile .tv{font-size:150px;font-weight:700;letter-spacing:-.05em;line-height:1;font-variant-numeric:tabular-nums}
+.tile .tl{font-size:32px;font-weight:600;margin-top:18px;letter-spacing:-.015em}
+.tile .ts{font-size:24px;color:var(--mute);margin-top:8px;line-height:1.3}
+.tile .tk{font-family:'JetBrains Mono';font-size:20px;letter-spacing:.2em;color:var(--amber);text-transform:uppercase;margin-bottom:26px}
+/* dashboard */
+.dk{position:absolute;border-radius:24px;padding:26px 28px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08)}
+.dk .k{font-family:'JetBrains Mono';font-size:16px;letter-spacing:.18em;color:var(--mute);text-transform:uppercase}
+.dk .v{font-size:66px;font-weight:700;letter-spacing:-.045em;margin-top:10px;font-variant-numeric:tabular-nums}
+.dk .pb{position:absolute;left:28px;right:28px;bottom:26px;height:8px;border-radius:4px;background:rgba(255,255,255,.08);overflow:hidden}
+.dk .pb i{position:absolute;left:0;top:0;bottom:0;border-radius:4px;transform-origin:0 50%}
+.chip{position:absolute;height:96px;border-radius:22px;background:rgba(255,255,255,.045);border:1px solid rgba(255,255,255,.08);text-align:center;padding-top:14px}
+.chip b{display:block;font-size:40px;font-weight:700;letter-spacing:-.03em}
+.chip span{font-family:'JetBrains Mono';font-size:14px;letter-spacing:.16em;color:var(--mute);text-transform:uppercase}
+</style></head>
+<body><div id="stage"></div>
+<script>
+// ===================== DATA (from Rapha_ProjectControl_Sample.xlsx) =====================
+const SHEETS=["00 Start","01 Dashboard","02 Setup","03 Contract Data","04 Parties","05 Personnel","06 Securities","07 Insurance","08 Calendar","09 Check","10 BOQ","11 BOQ Summary","12 Resources","13 Rate Build-up","14 Rate Analysis","15 Tender Check","16 WBS Map","17 Actual Costs","18 Cost Report","20 Activities","21 CPM","22 Gantt","23 Look-ahead","24 Histogram","25 Progress Update","26 Delay Log","27 MSP Export","30 IPC","31 Measurement","32 Statement","33 IPC by Bill","34 Payments","35 Ret & Adv","36 MOS","37 Price Adj","38 Cash Flow","39 Advance Request","40 Instructions","41 RFI","42 VO Pricing","43 VO Register","44 Dayworks","45 Notices","46 EOT","47 Letters","50 Site Diary","51 Diary Print","52 Returns","53 Materials","54 Weather","55 Subcontractors","56 Weekly Report","60 IR Register","61 Tests","62 Material Approvals","63 NCR","64 HSE Log","65 Incidents","66 HSE Stats","70 Drawings","71 Submittals","72 Correspondence","73 Minutes","74 Permits","75 Method Statements","76 Doc Register","80 Monthly Report","81 Owner Summary","82 Alerts","90 Snag List","91 Handover Register","92 Defects","93 Retention Release","94 Final Account","95 Closeout","96 Forms","X1 IPC Ledger","X2 Letter Library","X3 Form Library","X4 Lists"];
+const MODULES=[["⚙","Setup & Contract","02–09"],["▦","Tender, Scope & Cost","10–18"],["◷","Planning & Time","20–27"],["¤","Money","30–39"],["⇄","Change & Claims","40–47"],["⌂","Site","50–56"],["✚","Quality & HSE","60–66"],["▤","Documents","70–76"],["◉","Reporting","80–82"],["✔","Closeout","90–96"]];
+const BOQ=[["B1-E-02","Bulk excavation in ordinary soil to 1.50 m depth","m3",900,380],["B1-C-02","Reinforced concrete C-25 in isolated footings","m3",180,14500],["B1-C-06","Reinforcement bars dia. 8-24 mm, cut, bent and fixed","kg",32000,145],["B1-M-01","Basaltic stone masonry foundation wall, mortar 1:4","m3",95,4600],["B2-C-03","Reinforced concrete C-25 in ribbed slabs","m3",420,15400],["B2-C-05","Reinforcement bars dia. 8-24 mm, cut, bent and fixed","kg",118000,145],["B4-R-01","EGA-300 pre-painted roof sheet, 0.4 mm","m2",480,1650],["B11-E-04","Earthing and lightning protection system","LS",1,380000]];
+const TRADES=[["Concrete",44023200],["Finishing",12008500],["Sanitary",6544000],["Mechanical",6270000],["Masonry",5408500],["Metal work",5064000],["Electrical",4408000],["Painting",3368000],["Roofing",2329200],["Glazing",1838000],["Carpentry",1740000],["Earthwork",1338800]];
+const CONTRACT=94340200;
+const ACT=[ // id, name, start day, duration, critical
+["M-000","Commencement of works",0,0,1],["PRE-MOB-010","Mobilization & site camp",0,18,1],["SUB-EXC-010","Bulk excavation",18,20,1],["SUB-CON-020","Isolated footings",38,34,1],
+["SUB-MAS-010","Stone masonry wall",58,26,0],["SUB-CON-040","Grade beams",72,22,1],["SUB-CON-050","Ground floor slab",94,18,1],["SUP-GF-010","Ground floor columns",112,20,1],
+["SUP-GF-020","First floor slab",132,34,1],["SUP-1F-020","Second floor slab",172,34,1],["SUP-2F-020","Third floor slab",212,34,1],["SUP-3F-020","Fourth floor slab",252,34,1],
+["SUP-4F-020","Roof beams & slab",292,34,1],["FIN-MAS-010","External HCB walls",236,96,0],["MEP-ELE-010","Conduits & wiring",250,150,0],["SUP-RF-010","Roof sheeting",326,30,1],
+["FIN-PLA-010","Internal plastering",356,70,1],["FIN-WIN-010","Windows & curtain wall",400,64,0],["FIN-TIL-010","Floor tiling",426,52,1],["MEP-LFT-010","Passenger lift",440,45,0],
+["FIN-PNT-010","Internal painting",478,48,1],["CLS-SNG-010","Snagging & handover",526,44,1],["MS-END","Practical completion",570,0,1]];
+const IPC=[0,3.325,7.109,10.262,13.925,18.418,23.654,26.948,31.953,38.607,46.615,56.115]; // cumulative measured, ETB M, Oct-25..Sep-26
+const COST=[["Material",24776400,"#E8A447"],["Labour",10390400,"#5B8FE8"],["Plant",4794700,"#9FB6D9"],["Overhead",4235000,"#3E4A5C"]];
+const COST_T=44196500;
+
+// ===================== HELPERS =====================
+const W=1080,H=1920;
+const C=(x,a=0,b=1)=>x<a?a:x>b?b:x;
+const P=(t,a,b)=>C((t-a)/(b-a));
+const L=(a,b,x)=>a+(b-a)*x;
+const E={
+ oE:x=>x>=1?1:1-Math.pow(2,-10*x),
+ ioE:x=>x<=0?0:x>=1?1:x<.5?Math.pow(2,20*x-10)/2:(2-Math.pow(2,-20*x+10))/2,
+ oC:x=>1-Math.pow(1-x,3), iC:x=>x*x*x, ioC:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,
+ oQ:x=>1-Math.pow(1-x,5), ioS:x=>-(Math.cos(Math.PI*x)-1)/2,
+ oB:x=>{const c1=1.3,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)},
+};
+const stage=document.getElementById('stage');
+function h(tag,attrs={},parent,html){const e=tag.startsWith('svg:')?document.createElementNS('http://www.w3.org/2000/svg',tag.slice(4)):document.createElement(tag);
+ for(const k in attrs){ if(k==='style') e.style.cssText=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; if(parent) parent.appendChild(e); return e;}
+function tf(e,o){const {x=0,y=0,z=0,s=1,rx=0,ry=0,rz=0}=o;
+ e.style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,${z.toFixed(2)}px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg) scale(${(o.sx??s).toFixed(4)},${(o.sy??s).toFixed(4)})`;
+ if(o.o!==undefined) e.style.opacity=C(o.o).toFixed(4);
+ if(o.b!==undefined) e.style.filter=o.b>0.08?`blur(${o.b.toFixed(2)}px)`:'none';}
+function words(parent,text,cls,style){const wrap=h('div',{class:cls,style:style||''},parent);wrap.spans=[];
+ text.split(' ').forEach((w,i)=>{ if(w==='/'){h('br',{},wrap);return;} let c='w'; if(w[0]==='*'){w=w.slice(1);c='w acc';}
+   const s=h('span',{class:c},wrap); s.textContent=w; wrap.spans.push(s); wrap.appendChild(document.createTextNode(' '));});
+ return wrap;}
+function chars(parent,text,cls,style){const g=/\bgrad\b/.test(cls);const wrap=h('div',{class:cls.replace(/\bgrad\b/,''),style:style||''},parent);wrap.spans=[];
+ [...text].forEach(ch=>{const s=h('span',{class:g?'ch grad':'ch'},wrap); s.textContent=ch===' '?' ':ch; wrap.spans.push(s);}); return wrap;}
+function reveal(wrap,t,t0,{st=.08,d=1.2,dy=46,bl=16,ease=E.oE,sc=0}={}){wrap.spans.forEach((s,i)=>{const p=ease(P(t,t0+i*st,t0+i*st+d));
+ tf(s,{y:(1-p)*dy,o:p,b:(1-p)*bl,s:1-(1-p)*sc});});}
+const fmt=n=>Math.round(n).toLocaleString('en-US');
+const hash=(i,j)=>{let x=Math.sin(i*127.1+j*311.7)*43758.5453;return x-Math.floor(x);};
+
+// ===================== BACKGROUND =====================
+const bg=h('div',{class:'abs',style:'inset:0'},stage);
+const orbs=[['rgba(31,95,173,.55)'],['rgba(217,142,43,.30)'],['rgba(15,42,68,.9)']].map(([c])=>h('div',{class:'orb',style:`background:radial-gradient(circle at 50% 50%,${c} 0%,transparent 62%)`},bg));
+const scenes=[];
+function scene(a,b,build,update,opt={}){const root=h('div',{class:'scene'},stage);const s={a,b,root,fi:opt.fi??.7,fo:opt.fo??.7,zin:opt.zin??1.05,zout:opt.zout??.94,amber:opt.amber??.4};build(root,s);s.update=update;scenes.push(s);return s;}
+// overlays created after scenes (see bottom)
+
+// ===================== S1 COLD OPEN =====================
+scene(0,5.0,(r,s)=>{
+ s.cv=h('canvas',{width:W,height:H,class:'abs',style:'left:0;top:0'},r); s.ctx=s.cv.getContext('2d');
+ h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 70% 22% at 50% 45%,rgba(2,3,7,.82),transparent 75%)'},r);
+ s.lines=[words(r,'Every *birr.','h1 abs center'),words(r,'Every *day.','h1 abs center'),words(r,'Every *decision.','h1 abs center')];
+ s.lines.forEach((w,i)=>w.style.top=(650+i*124)+'px');
+},(t,lt,s)=>{
+ drawGrid(s.ctx,lt);
+ s.lines.forEach((w,i)=>{const t0=.45+i*1.1; reveal(w,lt,t0,{st:.12,d:1.4,dy:60,bl:22,sc:.04});
+   w.style.opacity=(i<2?1-.62*E.ioC(P(lt,t0+1.1,t0+1.9)):1)*(1-E.iC(P(lt,4.2,4.95)));});
+},{fi:.01,fo:.5,zout:1.12});
+function drawGrid(ctx,lt){
+ ctx.clearRect(0,0,W,H);
+ const g=E.oC(P(lt,0,1.8)), warp=E.iC(P(lt,3.8,5.0));
+ const zOff=lt*.55+warp*12, hor=560, F=980, Hc=1.05, cw=.95, ZF=26, rd=.2;
+ ctx.save(); ctx.translate(540+Math.sin(lt*.4)*20,hor); ctx.rotate((-7+lt*1.1)*Math.PI/180);
+ // horizon glow
+ const hg=ctx.createRadialGradient(0,0,0,0,0,700); hg.addColorStop(0,`rgba(232,164,71,${.22*g})`); hg.addColorStop(.4,`rgba(91,143,232,${.10*g})`); hg.addColorStop(1,'rgba(0,0,0,0)');
+ ctx.fillStyle=hg; ctx.fillRect(-1200,-500,2400,1000);
+ const j0=Math.floor(zOff/rd);
+ // highlighted cells
+ for(let j=j0;j<j0+ZF/rd;j++){ const z0=j*rd-zOff, z1=z0+rd; if(z1<.25) continue;
+   for(let i=-24;i<24;i++){ const hv=hash(i,j); if(hv>.06) continue;
+     const za=Math.max(z0,.25), x0=i*cw, x1=x0+cw;
+     const pulse=.55+.45*Math.sin(lt*2.2+hv*80); const fade=C(1-za/ZF)*g;
+     const amber=hash(j,i)>.35; ctx.fillStyle=amber?`rgba(232,164,71,${.55*pulse*fade})`:`rgba(91,143,232,${.45*pulse*fade})`;
+     ctx.beginPath(); ctx.moveTo(F*x0/za,F*Hc/za); ctx.lineTo(F*x1/za,F*Hc/za); ctx.lineTo(F*x1/z1,F*Hc/z1); ctx.lineTo(F*x0/z1,F*Hc/z1); ctx.closePath(); ctx.fill();
+     if(amber && za<7){ // tiny data bar inside cell
+       const zm=(za+z1)/2, bw=(F*cw/zm)*.55*(hash(i*3,j)*.6+.3), bx=F*(x0+cw*.12)/zm, by=F*Hc/zm, bh=Math.max(1,F*.08/zm);
+       ctx.fillStyle=`rgba(255,240,215,${.6*fade*pulse})`; ctx.fillRect(bx,by-bh/2,bw,bh);} }}
+ // row lines
+ for(let j=j0;j<j0+ZF/rd;j++){const z=j*rd-zOff; if(z<.25) continue; const y=F*Hc/z, a=C(1-z/ZF)*.26*g*(j%5===0?1.9:1);
+   ctx.strokeStyle=`rgba(200,215,235,${a})`; ctx.lineWidth=Math.min(2,.6+1.2/z); ctx.beginPath(); ctx.moveTo(-1400,y); ctx.lineTo(1400,y); ctx.stroke();}
+ // column lines
+ for(let i=-24;i<=24;i++){const x=i*cw; const zn=.25, zf=ZF; const gr=ctx.createLinearGradient(0,F*Hc/zn,0,F*Hc/zf);
+   gr.addColorStop(0,`rgba(200,215,235,${.32*g})`); gr.addColorStop(1,'rgba(200,215,235,0)'); ctx.strokeStyle=gr; ctx.lineWidth=1.3;
+   ctx.beginPath(); ctx.moveTo(F*x/zn,F*Hc/zn); ctx.lineTo(F*x/zf,F*Hc/zf); ctx.stroke();}
+ ctx.restore();
+ // fade to dark above horizon
+ const tg=ctx.createLinearGradient(0,0,0,hor+120); tg.addColorStop(0,'rgba(2,3,7,1)'); tg.addColorStop(.75,'rgba(2,3,7,.6)'); tg.addColorStop(1,'rgba(2,3,7,0)');
+ ctx.fillStyle=tg; ctx.fillRect(0,0,W,hor+120);
+ if(warp>0){ctx.fillStyle=`rgba(255,236,205,${warp*.35})`; ctx.fillRect(0,0,W,H);}
+}
+
+// ===================== S2 LOGO =====================
+scene(4.55,10.0,(r,s)=>{
+ s.g=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;transform-origin:540px 650px'},r);
+ s.glow=h('div',{class:'abs',style:'left:240px;top:350px;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(232,164,71,.45),transparent 65%)'},s.g);
+ s.svg=h('svg:svg',{width:240,height:240,viewBox:'0 0 240 240',style:'position:absolute;left:420px;top:530px;overflow:visible'},s.g);
+ const defs=h('svg:defs',{},s.svg); const lg=h('svg:linearGradient',{id:'lgA',x1:0,y1:0,x2:1,y2:1},defs);
+ h('svg:stop',{offset:'0','stop-color':'#FFD596'},lg); h('svg:stop',{offset:'1','stop-color':'#C9781D'},lg);
+ s.rect=h('svg:rect',{x:8,y:8,width:224,height:224,rx:56,fill:'none',stroke:'url(#lgA)','stroke-width':7,pathLength:1,'stroke-dasharray':'1 1','stroke-linecap':'round'},s.svg);
+ s.inner=h('svg:rect',{x:70,y:70,width:100,height:100,rx:22,fill:'url(#lgA)',style:'transform-origin:120px 120px'},s.svg);
+ s.w1=chars(s.g,'Rapha','abs center grad','top:810px;font-size:190px;font-weight:800;letter-spacing:-.06em;line-height:1');
+ s.w2=chars(s.g,'ProjectControl','abs center','top:1010px;font-size:86px;font-weight:300;letter-spacing:-.02em;color:#E7EBF0;line-height:1');
+ s.ul=h('div',{class:'abs',style:'left:540px;top:1140px;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,#E8A447,transparent)'},s.g);
+ s.sub=words(s.g,'Project control, reimagined.','abs center','top:1180px;font-size:42px;font-weight:500;color:#C9D1DC;letter-spacing:-.01em');
+ s.am=words(s.g,'ራፋ ፕሮጀክት ቁጥጥር','abs center','top:1252px;font-size:36px;font-weight:500;color:#E8A447;letter-spacing:.02em');
+},(t,lt,s)=>{
+ const pd=E.ioC(P(lt,.1,1.7)); s.rect.setAttribute('stroke-dashoffset',(1-pd).toFixed(4));
+ const pi=E.oB(P(lt,1.1,1.9)); s.inner.style.transform=`scale(${pi}) rotate(${(1-pi)*-90}deg)`; s.inner.style.opacity=C(P(lt,1.1,1.4));
+ s.glow.style.opacity=(.25+.75*E.oC(P(lt,1.1,2.4)))*(.85+.15*Math.sin(lt*2));
+ s.svg.style.filter=`drop-shadow(0 0 ${(18*E.oC(P(lt,1.2,2.4))).toFixed(1)}px rgba(232,164,71,.7))`;
+ reveal(s.w1,lt,1.25,{st:.07,d:1.3,dy:90,bl:24});
+ reveal(s.w2,lt,1.7,{st:.035,d:1.2,dy:50,bl:16});
+ s.ul.style.width=(E.oE(P(lt,2.3,3.6))*520)+'px'; s.ul.style.marginLeft=(-E.oE(P(lt,2.3,3.6))*260)+'px';
+ reveal(s.sub,lt,2.6,{st:.1}); reveal(s.am,lt,3.1,{st:.1});
+ const zo=E.iC(P(lt,4.5,5.45));
+ tf(s.g,{s:1+lt*.012+zo*1.6,y:0});
+},{fi:.4,fo:.6,zout:1.15});
+
+// ===================== S3 80 SHEETS + MODULES =====================
+scene(9.6,16.9,(r,s)=>{
+ s.top=h('div',{class:'abs',style:'left:0;top:0;width:1080px'},r);
+ s.cnt=h('div',{class:'abs center grad tn',style:'top:170px;font-size:340px;font-weight:800;letter-spacing:-.06em;line-height:1'},s.top,'0');
+ s.lab=words(s.top,'sheets. One *system.','abs center h2','top:540px');
+ s.hw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:1500px;perspective-origin:540px 700px'},r);
+ s.ring=h('div',{class:'abs',style:'left:540px;top:1260px;transform-style:preserve-3d'},s.hw);
+ s.cards=SHEETS.map((nm,i)=>{const sp=nm.indexOf(' ');const c=h('div',{class:'card'},s.ring,`<b>${nm.slice(0,sp)}</b><span>${nm.slice(sp+1)}</span>`);return c;});
+ s.mh=words(r,'Ten modules. / *Contract to closeout.','abs center h2','top:300px');
+ s.mods=MODULES.map((m,i)=>{const d=h('div',{class:'mod',style:`top:${600+i*104}px`},r,`<i>${m[0]}</i><span>${m[1]}</span><em>${m[2]}</em>`);return d;});
+},(t,lt,s)=>{
+ const k=E.ioC(P(lt,3.5,4.5));
+ const n=Math.round(80*E.oE(P(lt,.3,2.8))); s.cnt.textContent=n;
+ tf(s.cnt,{s:.9+.1*E.oE(P(lt,.2,1.6)),o:E.oC(P(lt,.1,.8)),b:(1-E.oC(P(lt,.1,.9)))*20});
+ reveal(s.lab,lt,1.0,{st:.12});
+ tf(s.top,{y:-80*k,o:1-k,b:12*k});
+ const rot=-30-lt*16;
+ s.ring.style.transform=`translateY(${(-40*lt).toFixed(1)}px) rotateX(-14deg) rotateY(${rot.toFixed(2)}deg)`;
+ tf(s.hw,{s:1-.22*k,y:120*k,o:1-.85*k,b:9*k});
+ if(k<1) s.cards.forEach((c,i)=>{const a=i*22.5, pi=E.oE(P(lt,.05+i*.022,.05+i*.022+1.4));
+   const R=430+(1-pi)*700, y=(i-40)*13.5+(1-pi)*-300;
+   const wa=(a+rot)*Math.PI/180, cs=Math.cos(wa);
+   c.style.transform=`rotateY(${a}deg) translateZ(${R.toFixed(1)}px) translateY(${y.toFixed(1)}px)`;
+   c.style.opacity=(pi*(.08+.92*Math.pow((cs+1)/2,1.6))).toFixed(3);
+   const hl=C((cs-.86)/.14); c.style.borderColor=`rgba(232,164,71,${(.14+.86*hl).toFixed(3)})`;
+   c.style.boxShadow=hl>.01?`0 0 ${(40*hl).toFixed(1)}px rgba(232,164,71,${(.45*hl).toFixed(3)})`:'none';});
+ reveal(s.mh,lt,4.1,{st:.1});
+ s.mods.forEach((m,i)=>{const p=E.oE(P(lt,4.4+i*.1,4.4+i*.1+1.3)); tf(m,{x:(1-p)*90,o:p,b:(1-p)*12});});
+});
+
+// ===================== S4 BOQ =====================
+scene(16.5,23.6,(r,s)=>{
+ s.eb=words(r,'10 · Bill of Quantities','abs center eyebrow','top:250px');
+ s.hd=words(r,'Priced to the / *last birr.','abs center h2','top:300px');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2200px;perspective-origin:540px 900px'},r);
+ s.panel=h('div',{class:'abs glass',style:'left:60px;top:560px;width:960px;height:690px;overflow:hidden;transform-origin:50% 40%'},s.pw);
+ const bar=h('div',{class:'abs',style:'left:0;top:0;width:960px;height:60px;border-bottom:1px solid rgba(255,255,255,.08);display:flex;align-items:center;gap:10px;padding-left:24px'},s.panel,
+  '<i style="width:12px;height:12px;border-radius:6px;background:#ff5f57"></i><i style="width:12px;height:12px;border-radius:6px;background:#febc2e"></i><i style="width:12px;height:12px;border-radius:6px;background:#28c840"></i><span class="mono" style="margin-left:18px;font-size:18px;color:#8C96A6;letter-spacing:.06em">Rapha_ProjectControl · 10 BOQ</span>');
+ const tb=h('div',{class:'tbl',style:'top:60px'},s.panel);
+ s.head=h('div',{class:'trow thead',style:'top:0'},tb,'<div class="c1">Item</div><div class="c2">Description</div><div class="c3">Unit</div><div class="c4">Qty</div><div class="c5">Rate</div><div class="c6">Amount</div>');
+ s.scan=h('div',{class:'abs',style:'left:0;width:960px;height:56px;background:linear-gradient(90deg,transparent,rgba(232,164,71,.16),transparent)'},tb);
+ s.rows=BOQ.map((b,i)=>{const d=h('div',{class:'trow',style:`top:${56+i*70}px;height:70px`},tb,
+   `<div class="c1">${b[0]}</div><div class="c2">${b[1]}</div><div class="c3">${b[2]}</div><div class="c4 num">${fmt(b[3])}</div><div class="c5 num">${fmt(b[4])}</div><div class="c6 num">0</div>`);
+   d.amt=d.lastChild; d.v=b[3]*b[4]; return d;});
+ s.sheen=h('div',{class:'abs',style:'left:-400px;top:-200px;width:300px;height:1200px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.07),transparent);transform:rotate(20deg)'},s.panel);
+ s.te=words(r,'Contract sum · ETB','abs center eyebrow','top:1352px');
+ s.tot=h('div',{class:'abs center grad tn',style:'top:1400px;font-size:150px;font-weight:800;letter-spacing:-.05em;line-height:1'},r,'0');
+ s.tc=words(r,'54 items · 12 trades · every rate built up','abs center cap','top:1590px');
+},(t,lt,s)=>{
+ s.eb.style.opacity=1; reveal(s.eb,lt,.25,{st:.05,dy:20}); reveal(s.hd,lt,.4,{st:.1});
+ const p=E.oQ(P(lt,0,5.2));
+ tf(s.panel,{rx:L(32,7,p)+Math.sin(lt*.7)*1.2,ry:L(-26,-5,p),rz:L(7,0,p),z:L(-520,0,p),y:L(220,0,p),o:E.oC(P(lt,.1,1.1))});
+ s.rows.forEach((d,i)=>{const t0=1.0+i*.17, pr=E.oE(P(lt,t0,t0+1.1)); tf(d,{x:(1-pr)*140,o:pr,b:(1-pr)*10});
+   const pa=E.ioC(P(lt,t0+.35,t0+1.25)); d.amt.textContent=fmt(d.v*pa);
+   d.amt.style.color=pa>0&&pa<1?'#FFD596':'#fff';});
+ const sp=P(lt,1.0,3.3); s.scan.style.top=(56+sp*7*70)+'px'; s.scan.style.height='70px'; s.scan.style.opacity=(Math.sin(sp*Math.PI)).toFixed(3);
+ s.sheen.style.left=(-400+E.ioC(P(lt,2.6,4.6))*1700)+'px';
+ reveal(s.te,lt,3.0,{st:.06,dy:20});
+ const pt=E.ioE(P(lt,3.1,5.6)); s.tot.textContent=fmt(CONTRACT*pt);
+ tf(s.tot,{o:E.oC(P(lt,3.0,3.5)),s:1+.04*Math.sin(Math.PI*C(P(lt,5.5,6.1))),b:(1-E.oC(P(lt,3.0,3.6)))*14});
+ s.tot.style.filter=(s.tot.style.filter==='none'?'':s.tot.style.filter)+` drop-shadow(0 0 ${(30*Math.sin(Math.PI*P(lt,5.4,6.6))).toFixed(1)}px rgba(232,164,71,.6))`;
+ reveal(s.tc,lt,4.6,{st:.06,dy:20});
+});
+
+// ===================== S5 TRADES =====================
+scene(23.2,28.7,(r,s)=>{
+ s.eb=words(r,'11 · BOQ Summary','abs center eyebrow','top:250px');
+ s.hd=words(r,'Every trade, / *collected.','abs center h2','top:300px');
+ s.rows=TRADES.map((tr,i)=>{const d=h('div',{class:'bar-row',style:`top:${560+i*76}px`},r);
+   h('div',{class:'lb'},d,tr[0]); const track=h('div',{class:'tr'},d);
+   const f=h('div',{class:'fl',style:`width:${(tr[1]/TRADES[0][1]*530).toFixed(1)}px;background:${i===0?'linear-gradient(90deg,#C9781D,#FFD596)':'linear-gradient(90deg,rgba(91,143,232,.55),rgba(170,196,240,.95))'};${i===0?'box-shadow:0 0 24px rgba(232,164,71,.6)':''}`},track);
+   const v=h('div',{class:'vl num'},d,'0.00M'); d.f=f; d.v=v; d.val=tr[1]; return d;});
+ s.big=h('div',{class:'abs center tn acc',style:'top:1500px;font-size:150px;font-weight:800;letter-spacing:-.05em;line-height:1'},r,'0.0%');
+ s.bc=words(r,'of the contract is concrete & frame','abs center cap','top:1670px');
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ s.rows.forEach((d,i)=>{const t0=.7+i*.1, p=E.oE(P(lt,t0,t0+1.7)); d.f.style.transform=`scaleX(${p.toFixed(4)})`;
+   d.v.textContent=(d.val*p/1e6).toFixed(2)+'M'; tf(d,{o:E.oC(P(lt,t0-.2,t0+.4)),x:(1-E.oE(P(lt,t0-.2,t0+.9)))*40,y:-lt*6});});
+ const pb=E.ioC(P(lt,2.6,4.2)); s.big.textContent=(46.66*pb).toFixed(1)+'%';
+ tf(s.big,{o:E.oC(P(lt,2.5,3)),b:(1-E.oC(P(lt,2.5,3.1)))*14}); reveal(s.bc,lt,3.2,{st:.07,dy:20});
+});
+
+// ===================== S6 PLANNING / GANTT =====================
+scene(28.3,34.7,(r,s)=>{
+ s.eb=words(r,'20 Activities · 21 CPM · 22 Gantt','abs center eyebrow','top:250px');
+ s.hd=words(r,'46 activities. / One *critical path.','abs center h2','top:300px');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2400px;perspective-origin:540px 1000px'},r);
+ s.panel=h('div',{class:'abs glass',style:'left:40px;top:540px;width:1000px;height:1000px;overflow:hidden'},s.pw);
+ const X0=360, SC=600/600; s.X0=X0; // 1px per day, 600 days
+ s.dx=d=>X0+d*SC;
+ // month ticks
+ const start=new Date(2025,9,6); const tick=h('div',{class:'abs',style:'left:0;top:0;width:1000px;height:56px;border-bottom:1px solid rgba(255,255,255,.08)'},s.panel);
+ const mn=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+ for(let m=0;m<20;m++){const d=new Date(2025,9+m,1); const day=Math.round((d-start)/864e5); if(day<0||day>600) continue;
+   const x=s.dx(day); h('div',{class:'abs',style:`left:${x}px;top:56px;width:1px;height:950px;background:rgba(255,255,255,${m%3===0?.07:.03})`},s.panel);
+   if(m%3===0) h('div',{class:'abs mono',style:`left:${x+6}px;top:18px;font-size:15px;color:#8C96A6;letter-spacing:.08em`},s.panel,(mn[d.getMonth()]+" '"+String(d.getFullYear()).slice(2)).toUpperCase());}
+ s.rows=ACT.map((a,i)=>{const d=h('div',{class:'grow',style:`top:${64+i*40}px`},s.panel);
+   h('div',{class:'gid',style:a[4]?'color:#E8A447':''},d,a[0]); h('div',{class:'gnm'},d,a[1]);
+   if(a[3]===0){d.bar=h('div',{class:'gms',style:`left:${s.dx(a[2])}px;background:${a[4]?'#E8A447':'#9FB6D9'};transform:rotate(45deg)`},d);d.ms=1;}
+   else d.bar=h('div',{class:'gbar',style:`left:${s.dx(a[2])}px;width:${a[3]*SC}px;background:${a[4]?'linear-gradient(90deg,#C9781D,#FFC979)':'linear-gradient(90deg,rgba(91,143,232,.6),rgba(170,196,240,.9))'};${a[4]?'box-shadow:0 0 14px rgba(232,164,71,.45)':''}`},d);
+   return d;});
+ // critical path svg
+ s.svg=h('svg:svg',{width:1000,height:1000,style:'position:absolute;left:0;top:0;overflow:visible'},s.panel);
+ let dpath='', prev=null; ACT.forEach((a,i)=>{ if(!a[4]) return; const y=64+i*40+20; if(prev){ dpath+=` L ${s.dx(prev[0])} ${y} L ${s.dx(a[2])} ${y}`;} else dpath=`M ${s.dx(a[2])} ${y}`; prev=[a[2]+a[3]]; dpath+=` L ${s.dx(a[2]+a[3])} ${y}`; });
+ s.cp=h('svg:path',{d:dpath,fill:'none',stroke:'#FFD596','stroke-width':2.2,pathLength:1,'stroke-dasharray':'1 1','stroke-linejoin':'round',style:'filter:drop-shadow(0 0 6px rgba(232,164,71,.9))'},s.svg);
+ s.dd=h('div',{class:'abs',style:'top:56px;width:2px;height:944px;background:linear-gradient(180deg,#fff,rgba(255,255,255,.1));box-shadow:0 0 18px rgba(255,255,255,.6)'},s.panel);
+ s.ddl=h('div',{class:'abs mono',style:'top:962px;font-size:15px;color:#fff;letter-spacing:.1em;white-space:nowrap'},s.panel,'DATA DATE · 30 SEP 2026');
+ s.stats=[["570","contract days"],["359","days elapsed"],["63%","time used"]].map((st,i)=>{const d=h('div',{class:'abs',style:`left:${60+i*330}px;top:1590px;width:300px;text-align:center`},r,
+   `<div class="tn grad" style="font-size:96px;font-weight:800;letter-spacing:-.05em;line-height:1">0</div><div class="cap" style="font-size:26px;margin-top:10px">${st[1]}</div>`);d.n=d.firstChild;d.v=st[0];return d;});
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ const p=E.oQ(P(lt,0,5.5)); tf(s.panel,{rx:L(26,4,p),ry:L(18,2,p),rz:L(-4,0,p),z:L(-420,0,p),o:E.oC(P(lt,.1,1))});
+ s.rows.forEach((d,i)=>{const t0=.7+i*.07, pr=E.oE(P(lt,t0,t0+1.3)); d.style.opacity=E.oC(P(lt,t0-.15,t0+.5));
+   if(d.ms) d.bar.style.transform=`rotate(45deg) scale(${E.oB(P(lt,t0,t0+.7))})`; else d.bar.style.transform=`scaleX(${pr.toFixed(4)})`;});
+ s.cp.setAttribute('stroke-dashoffset',(1-E.ioC(P(lt,2.4,4.6))).toFixed(4));
+ const dd=E.ioC(P(lt,2.8,4.8)); const x=s.dx(359*dd); s.dd.style.left=x+'px'; s.ddl.style.left=(x-110)+'px';
+ const pdd=C(P(lt,2.7,3.1)); s.dd.style.opacity=pdd; s.ddl.style.opacity=pdd;
+ s.stats.forEach((d,i)=>{const t0=3.4+i*.18, pc=E.ioC(P(lt,t0,t0+1.6)); const num=parseInt(d.v); d.n.textContent=Math.round(num*pc)+(d.v.endsWith('%')?'%':'');
+   tf(d,{o:E.oC(P(lt,t0-.1,t0+.5)),y:(1-E.oE(P(lt,t0-.1,t0+1)))*40});});
+});
+
+// ===================== S7 MONEY / S-CURVE =====================
+function catmull(pts,n=24){const out=[];for(let i=0;i<pts.length-1;i++){const p0=pts[Math.max(0,i-1)],p1=pts[i],p2=pts[i+1],p3=pts[Math.min(pts.length-1,i+2)];
+ for(let k=0;k<n;k++){const t=k/n,t2=t*t,t3=t2*t;out.push([.5*((2*p1[0])+(-p0[0]+p2[0])*t+(2*p0[0]-5*p1[0]+4*p2[0]-p3[0])*t2+(-p0[0]+3*p1[0]-3*p2[0]+p3[0])*t3),
+ .5*((2*p1[1])+(-p0[1]+p2[1])*t+(2*p0[1]-5*p1[1]+4*p2[1]-p3[1])*t2+(-p0[1]+3*p1[1]-3*p2[1]+p3[1])*t3)]);}}out.push(pts[pts.length-1]);return out;}
+function partial(pts,u){const n=pts.length-1, f=u*n, i=Math.floor(f); if(i>=n) return pts.slice(); const fr=f-i; const a=pts[i],b=pts[i+1];return pts.slice(0,i+1).concat([[a[0]+(b[0]-a[0])*fr,a[1]+(b[1]-a[1])*fr]]);}
+const toD=pts=>pts.map((p,i)=>(i?'L':'M')+p[0].toFixed(1)+' '+p[1].toFixed(1)).join(' ');
+scene(34.3,40.9,(r,s)=>{
+ s.eb=words(r,'30 IPC · 31 Measurement · 38 Cash Flow','abs center eyebrow','top:250px');
+ s.hd=words(r,'Paid for what’s / *built.','abs center h2','top:300px');
+ const PX0=110,PX1=1000,PY0=600,PY1=1270, xm=m=>PX0+(PX1-PX0)*m/18, yv=v=>PY1-(PY1-PY0)*v/100;
+ s.svg=h('svg:svg',{width:1080,height:1920,style:'position:absolute;left:0;top:0'},r);
+ const defs=h('svg:defs',{},s.svg);
+ const ag=h('svg:linearGradient',{id:'ag',x1:0,y1:0,x2:0,y2:1},defs); h('svg:stop',{offset:0,'stop-color':'rgba(232,164,71,.45)'},ag); h('svg:stop',{offset:1,'stop-color':'rgba(232,164,71,0)'},ag);
+ s.grid=h('svg:g',{},s.svg);
+ [0,25,50,75,100].forEach(v=>{h('svg:line',{x1:PX0,x2:PX1,y1:yv(v),y2:yv(v),stroke:'rgba(255,255,255,.08)','stroke-width':1},s.grid);
+   const tx=h('svg:text',{x:PX0-16,y:yv(v)+6,'text-anchor':'end',fill:'#8C96A6','font-size':18,'font-family':'JetBrains Mono'},s.grid); tx.textContent=v+'M';});
+ const ml=['OCT','JAN','APR','JUL','OCT','JAN','APR'];
+ [0,3,6,9,12,15,18].forEach((m,i)=>{const tx=h('svg:text',{x:xm(m),y:PY1+40,'text-anchor':'middle',fill:'#8C96A6','font-size':17,'font-family':'JetBrains Mono','letter-spacing':2},s.grid);tx.textContent=ml[i];});
+ h('svg:line',{x1:PX0,x2:PX1,y1:yv(94.34),y2:yv(94.34),stroke:'rgba(255,213,150,.45)','stroke-width':1.5,'stroke-dasharray':'6 8'},s.grid);
+ const ct=h('svg:text',{x:PX1,y:yv(94.34)-14,'text-anchor':'end',fill:'#FFD596','font-size':18,'font-family':'JetBrains Mono','letter-spacing':1},s.grid); ct.textContent='CONTRACT SUM 94.34M';
+ // planned S-curve
+ const lg=x=>1/(1+Math.exp(-.52*(x-9.2))); const l0=lg(0),l1=lg(18.6);
+ const plan=[];for(let m=0;m<=18.6;m+=.25) plan.push([xm(Math.min(m,18)),yv(94.34*(lg(m)-l0)/(l1-l0))]);
+ s.plan=plan; s.planP=h('svg:path',{fill:'none',stroke:'rgba(220,230,245,.55)','stroke-width':3,'stroke-dasharray':'2 9','stroke-linecap':'round'},s.svg);
+ s.planL=h('svg:text',{x:xm(14.2)+18,y:yv(80),fill:'rgba(220,230,245,.75)','font-size':20,'font-family':'JetBrains Mono','letter-spacing':2},s.svg); s.planL.textContent='PLANNED';
+ s.act=catmull(IPC.map((v,m)=>[xm(m),yv(v)]),30);
+ s.area=h('svg:path',{fill:'url(#ag)'},s.svg);
+ s.actP=h('svg:path',{fill:'none',stroke:'#FFC979','stroke-width':6,'stroke-linecap':'round','stroke-linejoin':'round',style:'filter:drop-shadow(0 0 10px rgba(232,164,71,.85))'},s.svg);
+ s.drop=h('svg:line',{stroke:'rgba(255,213,150,.5)','stroke-width':1.5,'stroke-dasharray':'3 5'},s.svg);
+ s.halo=h('svg:circle',{r:30,fill:'rgba(232,164,71,.25)'},s.svg);
+ s.dot=h('svg:circle',{r:11,fill:'#fff',stroke:'#E8A447','stroke-width':4},s.svg);
+ s.tag=h('div',{class:'abs mono tn',style:'font-size:22px;color:#1a1206;background:#FFD596;padding:6px 12px;border-radius:10px;white-space:nowrap;font-weight:500'},r,'');
+ // monthly IPC bars
+ s.bars=[]; for(let m=1;m<IPC.length;m++){const v=IPC[m]-IPC[m-1]; const bh=v/9.5*120; const b=h('svg:rect',{x:xm(m)-14,y:PY1+70+(130-bh),width:28,height:bh,rx:5,fill:'rgba(91,143,232,.75)',style:`transform-origin:${xm(m)}px ${PY1+200}px`},s.svg); b.m=m; s.bars.push(b);}
+ const bl=h('svg:text',{x:PX0,y:PY1+64,fill:'#8C96A6','font-size':16,'font-family':'JetBrains Mono','letter-spacing':2},s.svg); bl.textContent='MONTHLY IPC · 2 → 12'; s.bl=bl;
+ s.big=h('div',{class:'abs center tn acc',style:'top:1540px;font-size:150px;font-weight:800;letter-spacing:-.05em;line-height:1'},r,'0.0M');
+ s.bc=words(r,'ETB measured to IPC 12 · 59.5% of contract','abs center cap','top:1710px');
+ s.xm=xm; s.yv=yv; s.PY1=PY1;
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ s.grid.style.opacity=E.oC(P(lt,.4,1.2));
+ const pp=E.ioC(P(lt,.8,2.8)); s.planP.setAttribute('d',toD(partial(s.plan,Math.max(.001,pp)))); s.planL.style.opacity=C(P(lt,2.4,2.9));
+ const pa=E.ioS(P(lt,1.6,4.9)); const pts=partial(s.act,Math.max(.001,pa)); const hd=pts[pts.length-1];
+ s.actP.setAttribute('d',toD(pts)); s.area.setAttribute('d',toD(pts)+` L ${hd[0].toFixed(1)} ${s.PY1} L ${pts[0][0]} ${s.PY1} Z`);
+ const vis=C(P(lt,1.6,1.9)); [s.dot,s.halo,s.drop].forEach(e=>e.style.opacity=vis); s.tag.style.opacity=vis;
+ s.dot.setAttribute('cx',hd[0]); s.dot.setAttribute('cy',hd[1]); s.halo.setAttribute('cx',hd[0]); s.halo.setAttribute('cy',hd[1]); s.halo.setAttribute('r',(26+8*Math.sin(lt*5)).toFixed(1));
+ s.drop.setAttribute('x1',hd[0]); s.drop.setAttribute('x2',hd[0]); s.drop.setAttribute('y1',hd[1]); s.drop.setAttribute('y2',s.PY1);
+ const curV=(s.PY1-hd[1])/(s.PY1-600)*100; s.tag.textContent=curV.toFixed(1)+'M'; s.tag.style.left=(hd[0]-56)+'px'; s.tag.style.top=(hd[1]-74)+'px';
+ const mNow=pa*11; s.bars.forEach(b=>{const k=E.oB(C((mNow-b.m+1)*1.4)); b.style.transform=`scaleY(${k.toFixed(3)})`; b.style.fill=b.m<=Math.floor(mNow)+0.0001&&b.m===11&&pa>.98?'#FFC979':'rgba(91,143,232,.75)';});
+ s.bl.style.opacity=E.oC(P(lt,1.5,2));
+ const pb=E.ioC(P(lt,3.4,5.0)); s.big.textContent=(56.1*pb).toFixed(1)+'M';
+ tf(s.big,{o:E.oC(P(lt,3.3,3.8)),b:(1-E.oC(P(lt,3.3,3.9)))*14}); reveal(s.bc,lt,4.0,{st:.06,dy:20});
+});
+
+// ===================== S8 COST DONUT =====================
+scene(40.5,45.9,(r,s)=>{
+ s.eb=words(r,'17 Actual Costs · 18 Cost Report','abs center eyebrow','top:250px');
+ s.hd=words(r,'Cost, tracked / *to the line.','abs center h2','top:300px');
+ s.svg=h('svg:svg',{width:1080,height:1920,style:'position:absolute;left:0;top:0'},r);
+ s.g=h('svg:g',{style:'transform-origin:540px 960px'},s.svg);
+ h('svg:circle',{cx:540,cy:960,r:270,fill:'none',stroke:'rgba(255,255,255,.05)','stroke-width':64},s.g);
+ let acc=0; s.segs=COST.map(c=>{const f=c[1]/COST_T; const seg=h('svg:circle',{cx:540,cy:960,r:270,fill:'none',stroke:c[2],'stroke-width':64,pathLength:1,
+   style:`transform-origin:540px 960px;transform:rotate(${(-90+acc*360).toFixed(2)}deg);${c[0]==='Material'?'filter:drop-shadow(0 0 16px rgba(232,164,71,.55))':''}`},s.g); seg.st=acc; seg.f=f; acc+=f; return seg;});
+ s.cv=h('div',{class:'abs center tn grad',style:'top:870px;font-size:130px;font-weight:800;letter-spacing:-.05em;line-height:1'},r,'0.0M');
+ s.cl=h('div',{class:'abs center cap',style:'top:1010px;font-size:28px'},r,'ETB spent to date');
+ s.leg=COST.map((c,i)=>{const d=h('div',{class:'abs',style:`left:120px;top:${1340+i*78}px;width:840px;height:64px;display:flex;align-items:center;gap:22px;border-bottom:1px solid rgba(255,255,255,.07)`},r,
+   `<i style="width:18px;height:18px;border-radius:9px;background:${c[2]}"></i><span style="font-size:34px;font-weight:600;flex:1;letter-spacing:-.02em">${c[0]}</span><span class="mono tn" style="font-size:26px;color:#C9D1DC">${(c[1]/1e6).toFixed(2)}M</span><span class="mono tn" style="font-size:26px;color:#E8A447;width:90px;text-align:right">${Math.round(c[1]/COST_T*100)}%</span>`);return d;});
+ s.bc=words(r,'272 entries, each linked to a BOQ item','abs center cap','top:1690px');
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ const P0=E.ioC(P(lt,.6,3.0));
+ s.segs.forEach(seg=>{const v=C((P0-seg.st)/seg.f)*seg.f; const gap=.004; seg.setAttribute('stroke-dasharray',`${Math.max(0,v-gap).toFixed(4)} 1`);});
+ s.g.style.transform=`rotate(${(-28*(1-E.oQ(P(lt,.4,3.6)))+lt*1.5).toFixed(2)}deg) scale(${(.86+.14*E.oE(P(lt,.4,2))).toFixed(4)})`;
+ s.cv.textContent=(44.2*P0).toFixed(1)+'M'; tf(s.cv,{o:E.oC(P(lt,.6,1.2))}); s.cl.style.opacity=E.oC(P(lt,1,1.6));
+ s.leg.forEach((d,i)=>{const t0=1.6+i*.14,p=E.oE(P(lt,t0,t0+1.2)); tf(d,{x:(1-p)*70,o:p,b:(1-p)*10});});
+ reveal(s.bc,lt,2.8,{st:.06,dy:20});
+});
+
+// ===================== S9 QUALITY & SITE TILES =====================
+scene(45.5,50.9,(r,s)=>{
+ s.eb=words(r,'Site · Quality · HSE','abs center eyebrow','top:250px');
+ s.hd=words(r,'Quality, / *on record.','abs center h2','top:300px');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:1800px;perspective-origin:540px 1050px'},r);
+ const T=[["61 Tests","50/51","tests passed","Cube, slump, FDT, rebar",1],["60 IR Register","52","inspection requests","Every pour signed off",0],["31 Measurement","108","measured lines","Feeding 11 IPCs",0],["54 Weather","750","mm rain logged","90 days · Kiremt tracked",0]];
+ s.tiles=T.map((tt,i)=>{const x=50+(i%2)*510, y=600+Math.floor(i/2)*510;
+   const d=h('div',{class:'tile glass',style:`left:${x}px;top:${y}px;transform-origin:${i%2?'100%':'0%'} 50%`},s.pw,
+    `<div class="tk">${tt[0]}</div><div class="tv ${tt[4]?'acc':'grad'}">0</div><div class="tl">${tt[2]}</div><div class="ts">${tt[3]}</div>`);
+   d.v=d.children[1]; d.tt=tt; return d;});
+ s.ring=h('svg:svg',{width:150,height:150,style:'position:absolute;right:40px;bottom:40px;transform:rotate(-90deg)'},s.tiles[0]);
+ h('svg:circle',{cx:75,cy:75,r:60,fill:'none',stroke:'rgba(255,255,255,.08)','stroke-width':12},s.ring);
+ s.ra=h('svg:circle',{cx:75,cy:75,r:60,fill:'none',stroke:'#E8A447','stroke-width':12,'stroke-linecap':'round',pathLength:1,'stroke-dasharray':'0 1',style:'filter:drop-shadow(0 0 8px rgba(232,164,71,.8))'},s.ring);
+ s.tiles[0].v.style.fontSize='128px';
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ s.tiles.forEach((d,i)=>{const t0=.6+i*.2,p=E.oE(P(lt,t0,t0+1.6));
+   tf(d,{ry:(1-p)*(i%2?-75:75),z:(1-p)*-300,o:E.oC(P(lt,t0,t0+.6)),y:-lt*5});
+   const pc=E.ioC(P(lt,t0+.3,t0+1.9)); const tt=d.tt;
+   if(i===0) d.v.textContent=Math.round(50*pc)+'/51'; else d.v.textContent=Math.round(parseInt(tt[1])*pc);});
+ s.ra.setAttribute('stroke-dasharray',`${(.98*E.ioC(P(lt,1.0,2.6))).toFixed(4)} 1`);
+});
+
+// ===================== S10 DASHBOARD =====================
+scene(50.5,56.2,(r,s)=>{
+ s.eb=words(r,'01 · Dashboard','abs center eyebrow','top:220px');
+ s.hd=words(r,'On time? On budget? / *Getting paid?','abs center h2','top:270px');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2000px;perspective-origin:540px 1000px'},r);
+ s.panel=h('div',{class:'abs glass',style:'left:60px;top:540px;width:960px;height:1150px;overflow:hidden;border-radius:40px'},s.pw);
+ const hb=h('div',{class:'abs',style:'left:0;top:0;width:960px;height:150px;background:linear-gradient(120deg,#0F2A44,#16365A);border-bottom:1px solid rgba(255,255,255,.08)'},s.panel,
+  `<div class="mono" style="position:absolute;left:36px;top:30px;font-size:16px;letter-spacing:.2em;color:#E8A447">01 · PROJECT DASHBOARD</div>
+   <div style="position:absolute;left:36px;top:58px;font-size:40px;font-weight:700;letter-spacing:-.03em">G+4 Mixed-Use Building</div>
+   <div class="mono" style="position:absolute;left:36px;top:110px;font-size:16px;color:#9FB0C6;letter-spacing:.06em">SMP/WKS/2025/017 · Bole, Addis Ababa · Data date 30 Sep 2026</div>`);
+ s.items=[];
+ const kp=[["Time elapsed","63%",.63,'#5B8FE8'],["Work measured","59.5%",.595,'#E8A447'],["Spent to date","44.2M",.469,'#9FB6D9'],["Tests passed","98%",.98,'#E8A447']];
+ kp.forEach((k,i)=>{const d=h('div',{class:'dk',style:`left:${30+(i%2)*460}px;top:${180+Math.floor(i/2)*230}px;width:440px;height:210px`},s.panel,
+   `<div class="k">${k[0]}</div><div class="v">${k[1]}</div><div class="pb"><i style="width:${k[2]*100}%;background:${k[3]}"></i></div>`); d.fill=d.querySelector('.pb i'); d.p=k[2]; s.items.push(d);});
+ // mini curve
+ const mc=h('div',{class:'dk',style:'left:30px;top:650px;width:900px;height:300px'},s.panel,'<div class="k">S-curve · measured vs planned</div>'); s.items.push(mc);
+ s.msvg=h('svg:svg',{width:900,height:240,style:'position:absolute;left:0;top:60px'},mc);
+ const xm=m=>40+820*m/18, yv=v=>210-190*v/100;
+ const lg=x=>1/(1+Math.exp(-.52*(x-9.2))); const l0=lg(0),l1=lg(18.6); const plan=[];for(let m=0;m<=18;m+=.25) plan.push([xm(m),yv(94.34*(lg(m)-l0)/(l1-l0))]);
+ h('svg:path',{d:toD(plan),fill:'none',stroke:'rgba(220,230,245,.45)','stroke-width':2.5,'stroke-dasharray':'2 8','stroke-linecap':'round'},s.msvg);
+ s.mpts=catmull(IPC.map((v,m)=>[xm(m),yv(v)]),20); s.mp=h('svg:path',{fill:'none',stroke:'#FFC979','stroke-width':5,'stroke-linecap':'round',style:'filter:drop-shadow(0 0 8px rgba(232,164,71,.8))'},s.msvg);
+ // chips
+ [["4","Variations"],["4","Notices"],["4","Delays"],["3","NCRs"],["3","RFIs"]].forEach((c,i)=>{const d=h('div',{class:'chip',style:`left:${30+i*184}px;top:980px;width:168px`},s.panel,`<b>${c[0]}</b><span>${c[1]}</span>`); s.items.push(d);});
+ s.sheen=h('div',{class:'abs',style:'left:-500px;top:-300px;width:360px;height:1800px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.08),transparent);transform:rotate(18deg)'},s.panel);
+},(t,lt,s)=>{
+ reveal(s.eb,lt,.2,{st:.05,dy:20}); reveal(s.hd,lt,.3,{st:.1});
+ const p=E.oQ(P(lt,0,5.6));
+ tf(s.panel,{rx:L(30,5,p),ry:L(-22,-3,p),rz:L(5,0,p),z:L(-600,0,p),y:L(260,0,p)+Math.sin(lt*.8)*6,o:E.oC(P(lt,.1,1))});
+ s.items.forEach((d,i)=>{const t0=.8+i*.1,pr=E.oE(P(lt,t0,t0+1.2)); tf(d,{y:(1-pr)*50,o:pr,b:(1-pr)*10}); if(d.fill) d.fill.style.transform=`scaleX(${E.oE(P(lt,t0+.3,t0+1.8)).toFixed(4)})`;});
+ s.mp.setAttribute('d',toD(partial(s.mpts,Math.max(.001,E.ioC(P(lt,1.4,3.4))))));
+ s.sheen.style.left=(-500+E.ioC(P(lt,2.6,4.8))*1900)+'px';
+});
+
+// ===================== S11 END CARD =====================
+scene(55.8,60.0,(r,s)=>{
+ s.glow=h('div',{class:'abs',style:'left:140px;top:300px;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(232,164,71,.32),transparent 65%)'},r);
+ s.svg=h('svg:svg',{width:180,height:180,viewBox:'0 0 240 240',style:'position:absolute;left:450px;top:560px;overflow:visible;filter:drop-shadow(0 0 16px rgba(232,164,71,.7))'},r);
+ const defs=h('svg:defs',{},s.svg); const lg=h('svg:linearGradient',{id:'lgB',x1:0,y1:0,x2:1,y2:1},defs);
+ h('svg:stop',{offset:'0','stop-color':'#FFD596'},lg); h('svg:stop',{offset:'1','stop-color':'#C9781D'},lg);
+ s.rect=h('svg:rect',{x:8,y:8,width:224,height:224,rx:56,fill:'none',stroke:'url(#lgB)','stroke-width':8,pathLength:1,'stroke-dasharray':'1 1'},s.svg);
+ s.inner=h('svg:rect',{x:70,y:70,width:100,height:100,rx:22,fill:'url(#lgB)',style:'transform-origin:120px 120px'},s.svg);
+ s.w=words(r,'Rapha ProjectControl','abs center','top:800px;font-size:92px;font-weight:700;letter-spacing:-.045em;color:#fff');
+ s.l1=words(r,'Know where every birr / and every day goes.','abs center','top:940px;font-size:46px;font-weight:500;line-height:1.25;color:#C9D1DC;letter-spacing:-.015em');
+ s.am=words(r,'English · አማርኛ','abs center','top:1100px;font-size:34px;font-weight:500;color:#E8A447');
+ s.f1=words(r,'80 sheets · Tender to closeout · One workbook','abs center mono','top:1480px;font-size:22px;letter-spacing:.12em;color:#8C96A6;text-transform:uppercase');
+ s.f2=words(r,'Rapha Engineering & Consulting · v1.0','abs center','top:1530px;font-size:26px;color:#6B7585');
+},(t,lt,s)=>{
+ s.rect.setAttribute('stroke-dashoffset',(1-E.ioC(P(lt,0,1.2))).toFixed(4));
+ const pi=E.oB(P(lt,.7,1.4)); s.inner.style.transform=`scale(${pi})`; s.inner.style.opacity=C(P(lt,.7,1));
+ s.glow.style.opacity=E.oC(P(lt,.4,1.8))*(.85+.15*Math.sin(lt*2));
+ reveal(s.w,lt,.6,{st:.12,d:1.4,dy:60,bl:20}); reveal(s.l1,lt,1.2,{st:.07}); reveal(s.am,lt,1.8,{st:.12});
+ reveal(s.f1,lt,2.1,{st:.04,dy:16}); reveal(s.f2,lt,2.3,{st:.05,dy:16});
+},{fo:.9,zout:1});
+
+// ===================== OVERLAYS =====================
+const bug=h('div',{id:'bug'},stage,'<b>▣</b>&nbsp;&nbsp;Rapha ProjectControl');
+
+h('div',{id:'vig'},stage);
+const flash=h('div',{class:'abs',style:'inset:0;background:#fff;opacity:0;mix-blend-mode:screen'},stage);
+
+window.renderAt=function(t){
+ // background orbs drift
+ const a=t*.12;
+ tf(orbs[0],{x:200+Math.sin(a)*160,y:300+Math.cos(a*.8)*140});
+ tf(orbs[1],{x:880+Math.cos(a*.9)*150,y:1650+Math.sin(a*1.1)*120,o:.55+.45*Math.sin(t*.35)});
+ tf(orbs[2],{x:540+Math.sin(a*.6)*220,y:1000+Math.cos(a*.5)*260});
+ bg.style.opacity=C(P(t,.6,2.5))*(1-P(t,59.0,60));
+ for(const s of scenes){
+  if(t<s.a||t>s.b){s.root.style.display='none';continue;}
+  s.root.style.display='block';
+  const lt=t-s.a, pin=P(t,s.a,s.a+s.fi), pout=P(t,s.b-s.fo,s.b);
+  const ei=E.oC(pin), eo=E.iC(pout);
+  const sc=L(s.zin,1,ei)*L(1,s.zout,eo);
+  s.root.style.opacity=(ei*(1-eo)).toFixed(4);
+  s.root.style.transform=`scale(${sc.toFixed(4)})`;
+  const bl=(1-ei)*12+eo*16; s.root.style.filter=bl>.1?`blur(${bl.toFixed(2)}px)`:'none';
+  s.update(t,lt,s);
+ }
+ bug.style.opacity=(C(P(t,10.5,11.5))*(1-C(P(t,55.2,55.8)))*.9).toFixed(3);
+ // whiteflash at logo zoom-through & warp
+ const f1=Math.max(0,1-Math.abs(t-4.75)/0.35)*.55, f2=Math.max(0,1-Math.abs(t-9.85)/0.3)*.25;
+ flash.style.opacity=(f1+f2).toFixed(3);
+};
+window.DURATION=60;
+document.fonts.ready.then(()=>{window.READY=true;});
+</script></body></html>

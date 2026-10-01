@@ -1,0 +1,16 @@
+# Rapha ProjectControl — launch video (vertical 1080×1920, 60 fps, 60 s)
+
+Motion-graphics composition built from `Rapha_ProjectControl_Sample.xlsx` (real BOQ items, trade totals,
+activities, IPC measurements, actual costs, tests and register counts).
+
+- `index.html` — deterministic timeline; `window.renderAt(t)` draws any moment.
+- `score.py` — original soundtrack synthesized with numpy, synced to on-screen events (`score.wav`).
+- `render.js` — Playwright frame capture → ffmpeg. Serve this folder first: `python3 -m http.server 8765`.
+
+```bash
+for i in 0 1 2 3; do node render.js $((i*900)) $(((i+1)*900)) seg/s$i.mp4 60 & done; wait
+python3 score.py
+printf "file 'seg/s%d.mp4'\n" 0 1 2 3 > list.txt
+ffmpeg -f concat -safe 0 -i list.txt -i score.wav -filter_complex "[0:v]noise=alls=7:allf=t+u,format=yuv420p[v]" \
+  -map "[v]" -map 1:a -c:v libx264 -crf 17 -c:a aac -b:a 256k -movflags +faststart -shortest launch.mp4
+```
