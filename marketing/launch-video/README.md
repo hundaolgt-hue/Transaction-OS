@@ -14,3 +14,9 @@ printf "file 'seg/s%d.mp4'\n" 0 1 2 3 > list.txt
 ffmpeg -f concat -safe 0 -i list.txt -i score.wav -filter_complex "[0:v]noise=alls=7:allf=t+u,format=yuv420p[v]" \
   -map "[v]" -map 1:a -c:v libx264 -crf 17 -c:a aac -b:a 256k -movflags +faststart -shortest launch.mp4
 ```
+
+## Amharic 20 s cut
+
+`am_scenes.js` holds the seven Amharic scenes and `am_sheets.json` the Amharic sheet titles taken from the workbook.
+`index_am.html` is assembled from the engine in `index.html` plus `am_scenes.js`; render with `PAGE=index_am.html`
+(4 × 300 frames) and mux with `score_am.wav` from `python3 score_am.py`.
