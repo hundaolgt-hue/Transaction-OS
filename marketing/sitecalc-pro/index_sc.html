@@ -1,0 +1,202 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>SiteCalc Pro Ad</title>
+<link rel="stylesheet" href="fonts2/fonts.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden}
+body{font-family:'Montserrat','Noto Sans Ethiopic',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#0A1426}
+.abs{position:absolute}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;display:none;transform-origin:50% 50%}
+.w,.ch{display:inline-block}
+.et{font-family:'Noto Sans Ethiopic',sans-serif;letter-spacing:0}
+.gold{background:linear-gradient(180deg,#F6DC93 0%,#DDB052 48%,#B98A2E 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.03em}
+.eyebrow{font-family:'Montserrat';font-weight:700;font-size:26px;letter-spacing:.42em;color:#E2B65A;display:flex;align-items:center;gap:26px}
+.eyebrow i{display:block;height:3px;width:70px;background:#E2B65A;transform-origin:0 50%}
+.photo{position:absolute;left:0;width:1080px;overflow:hidden}
+.photo img{position:absolute;left:0;top:0;width:1080px;transform-origin:50% 40%}
+.chip{position:absolute;left:72px;height:104px;border-radius:52px;padding:0 44px 0 38px;display:flex;align-items:center;gap:22px;
+ background:rgba(13,22,40,.78);border:1.5px solid rgba(226,182,90,.45);box-shadow:0 20px 50px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.08)}
+.chip i{width:14px;height:14px;border-radius:7px;background:#E2B65A;box-shadow:0 0 14px rgba(226,182,90,.9)}
+.chip span{font-family:'Noto Sans Ethiopic';font-weight:700;font-size:46px}
+.card{position:absolute;border-radius:40px;background:linear-gradient(165deg,rgba(22,34,58,.94),rgba(10,18,34,.96));border:1.5px solid rgba(226,182,90,.55);
+ box-shadow:0 60px 140px rgba(0,0,0,.7),inset 0 1px 0 rgba(255,255,255,.08);overflow:hidden}
+.lg{position:absolute;left:450px;width:480px;height:56px;display:flex;align-items:center;gap:16px;font-size:26px;white-space:nowrap;font-weight:500;color:#D9DFE8}
+.lg i{width:20px;height:20px;border-radius:5px;flex:none}
+.lg span{flex:1}
+.lg b{font-weight:800;color:#fff;font-variant-numeric:tabular-nums}
+.stat{position:absolute;width:450px;height:330px;border-radius:34px;padding:40px 40px;background:rgba(13,22,40,.82);border:1.5px solid rgba(226,182,90,.35)}
+.stat .n{font-family:'Montserrat';font-weight:800;font-size:132px;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+.stat .l{font-family:'Noto Sans Ethiopic';font-weight:700;font-size:38px;margin-top:22px}
+.stat .s{font-family:'Montserrat';font-size:20px;font-weight:600;letter-spacing:.2em;color:#9AA6B8;margin-top:8px;text-transform:uppercase}
+.shot{position:absolute;border-radius:22px;overflow:hidden;background:#fff;box-shadow:0 40px 120px rgba(0,0,0,.6)}
+.shot img{width:100%;display:block}
+.cta{position:absolute;height:150px;border-radius:75px;background:linear-gradient(180deg,#F4D88D,#D9AA4C 55%,#C0912F);display:flex;align-items:center;justify-content:center;gap:34px;
+ box-shadow:0 30px 80px rgba(217,170,76,.35),inset 0 2px 0 rgba(255,255,255,.5);overflow:hidden}
+.cta span{font-family:'Noto Sans Ethiopic';font-weight:900;font-size:60px;color:#0F1B30}
+.cta b{font-family:'Montserrat';font-weight:600;font-size:52px;color:#0F1B30}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 85% 65% at 50% 45%,transparent 55%,rgba(0,0,0,.55) 100%);pointer-events:none}
+</style></head>
+<body><div id="stage"></div>
+<script>
+const W=1080,H=1920;
+const C=(x,a=0,b=1)=>x<a?a:x>b?b:x, P=(t,a,b)=>C((t-a)/(b-a)), L=(a,b,x)=>a+(b-a)*x;
+const E={oE:x=>x>=1?1:1-Math.pow(2,-10*x),ioE:x=>x<=0?0:x>=1?1:x<.5?Math.pow(2,20*x-10)/2:(2-Math.pow(2,-20*x+10))/2,
+ oC:x=>1-Math.pow(1-x,3),iC:x=>x*x*x,ioC:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,oQ:x=>1-Math.pow(1-x,5),ioS:x=>-(Math.cos(Math.PI*x)-1)/2,
+ oB:x=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}};
+const stage=document.getElementById('stage');
+function h(tag,attrs={},parent,html){const e=tag.startsWith('svg:')?document.createElementNS('http://www.w3.org/2000/svg',tag.slice(4)):document.createElement(tag);
+ for(const k in attrs){ if(k==='style') e.style.cssText=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; if(parent) parent.appendChild(e); return e;}
+function tf(e,o){const {x=0,y=0,z=0,s=1,rx=0,ry=0,rz=0}=o;
+ e.style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,${z.toFixed(2)}px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg) scale(${(o.sx??s).toFixed(4)},${(o.sy??s).toFixed(4)})`;
+ if(o.o!==undefined) e.style.opacity=C(o.o).toFixed(4); if(o.b!==undefined) e.style.filter=o.b>0.08?`blur(${o.b.toFixed(2)}px)`:'none';}
+function words(parent,text,cls,style){const wrap=h('div',{class:cls,style:style||''},parent);wrap.spans=[];
+ text.split(' ').forEach(w=>{ if(w==='/'){h('br',{},wrap);return;} let c='w'; if(w[0]==='*'){w=w.slice(1);c='w gold';}
+   const s=h('span',{class:c},wrap); s.textContent=w; wrap.spans.push(s); wrap.appendChild(document.createTextNode(' '));}); return wrap;}
+function reveal(wrap,t,t0,{st=.08,d=1.1,dy=50,bl=16,sc=0}={}){wrap.spans.forEach((s,i)=>{const p=E.oE(P(t,t0+i*st,t0+i*st+d)); tf(s,{y:(1-p)*dy,o:p,b:(1-p)*bl,s:1-(1-p)*sc});});}
+const scenes=[];
+function scene(a,b,build,update,opt={}){const root=h('div',{class:'scene'},stage);const s={a,b,root,fi:opt.fi??.5,fo:opt.fo??.5,zin:opt.zin??1.06,zout:opt.zout??.96};build(root,s);s.update=update;scenes.push(s);return s;}
+function photo(parent,src,top,hgt){const d=h('div',{class:'photo',style:`top:${top}px;height:${hgt}px`},parent); d.img=h('img',{src},d);
+ h('div',{class:'abs',style:`left:0;top:0;width:1080px;height:${hgt}px;background:linear-gradient(180deg,#0A1426 0%,rgba(10,20,38,.0) 22%,rgba(10,20,38,0) 62%,#0A1426 100%)`},d); return d;}
+function shimmer(parent,hgt){return h('div',{class:'abs',style:`left:-400px;top:-50px;width:220px;height:${hgt+100}px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.55),transparent);transform:skewX(-20deg);mix-blend-mode:soft-light`},parent);}
+function eyebrow(parent,text,top){const d=h('div',{class:'abs eyebrow',style:`left:72px;top:${top}px`},parent); d.line=h('i',{},d); d.txt=words(d,text,'');return d;}
+function showEyebrow(d,lt,t0=.1){d.line.style.transform=`scaleX(${E.oE(P(lt,t0,t0+.8)).toFixed(4)})`; reveal(d.txt,lt,t0+.2,{st:.05,dy:14,d:.8});}
+const GOLD='#E2B65A';
+
+// ---------- 1 · HOOK (0–4.2) ----------
+scene(0,4.2,(r,s)=>{
+ s.ph=photo(r,'sc/p1.jpg',520,1400);
+ s.glow=h('div',{class:'abs',style:'left:-200px;top:200px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(226,182,90,.18),transparent 65%)'},r);
+ s.eb=eyebrow(r,'SITECALC PRO · BOQ',150);
+ s.l1=words(r,'BOQ ለማዘጋጀት','abs et','left:66px;top:212px;font-size:124px;font-weight:900;line-height:1.2;white-space:nowrap');
+ s.l2=words(r,'*ሳምንት *አይጠብቁ።','abs et','left:66px;top:360px;font-size:124px;font-weight:900;line-height:1.2;white-space:nowrap');
+ s.rule=h('div',{class:'abs',style:'left:72px;top:540px;width:640px;height:2px;background:linear-gradient(90deg,#E2B65A,rgba(226,182,90,0));transform-origin:0 50%'},r);
+},(t,lt,s)=>{
+ const pv=E.oC(P(lt,0,1.2));
+ tf(s.ph.img,{s:1.0+lt*.022,y:-lt*6}); tf(s.ph,{o:pv,b:(1-pv)*24});
+ s.glow.style.opacity=.6+.4*Math.sin(lt*1.5);
+ showEyebrow(s.eb,lt,.25);
+ reveal(s.l1,lt,.45,{st:.14,d:1.1,dy:70,bl:22,sc:.05});
+ reveal(s.l2,lt,1.15,{st:.16,d:1.2,dy:70,bl:22,sc:.05});
+ s.rule.style.transform=`scaleX(${E.oE(P(lt,1.8,2.9)).toFixed(4)})`;
+ s.l2.style.filter=`drop-shadow(0 0 ${(22*Math.sin(Math.PI*P(lt,2.2,3.6))).toFixed(1)}px rgba(226,182,90,.55))`;
+},{fi:.01,fo:.45,zout:1.05});
+
+// ---------- 2 · CHIPS (3.9–8.3) ----------
+scene(3.9,8.3,(r,s)=>{
+ s.ph=photo(r,'sc/p2.jpg',120,1520);
+ s.eb=eyebrow(r,'SITECALC PRO',1320);
+ s.chips=['ሁሉም ስሌት በአንድ ፋይል','ወጪው በብር','ለህትመት ዝግጁ'].map((tx,i)=>h('div',{class:'chip',style:`top:${1395+i*128}px`},r,`<i></i><span>${tx}</span>`));
+ s.chips.forEach(c=>c.sh=shimmer(c,104));
+},(t,lt,s)=>{
+ tf(s.ph.img,{s:1.06+lt*.02,x:-lt*8,y:-lt*5});
+ showEyebrow(s.eb,lt,.3);
+ s.chips.forEach((c,i)=>{const t0=.6+i*.42, p=E.oE(P(lt,t0,t0+1.0)), pb=E.oB(P(lt,t0,t0+.7));
+   tf(c,{x:(1-p)*-120,s:.9+.1*pb,o:p,b:(1-p)*12});
+   c.sh.style.left=(-400+E.ioC(P(lt,t0+.5,t0+1.3))*1300)+'px';});
+});
+
+// ---------- 3 · PROOF STATS (8.0–12.4) ----------
+scene(8.0,12.4,(r,s)=>{
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2000px;perspective-origin:540px 900px'},r);
+ s.home=h('div',{class:'shot',style:'left:150px;top:250px;width:780px;opacity:.0'},s.pw,'<img src="sc/home.jpg">');
+ s.dim=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;background:radial-gradient(ellipse 70% 55% at 50% 52%,rgba(10,20,38,.78),rgba(10,20,38,.95))'},r);
+ s.eb=eyebrow(r,'ONE FILE · EVERY CALCULATION',230);
+ s.hd=words(r,'አንድ ፋይል። / *ሙሉ *ሳይት።','abs et','left:66px;top:290px;font-size:104px;font-weight:900;line-height:1.22');
+ s.sw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2000px;perspective-origin:540px 900px'},r);
+ const ST=[['62','ማስሊያዎች','Calculators'],['191','የተረጋገጡ ሙከራዎች','Verified tests'],['EN·አማ','ሁለት ቋንቋ','English / Amharic'],['0','ማክሮ የለም','Pure formulas']];
+ s.stats=ST.map((st,i)=>{const d=h('div',{class:'stat',style:`left:${60+(i%2)*510}px;top:${620+Math.floor(i/2)*370}px`},s.sw,
+   `<div class="n gold">${st[0]}</div><div class="l">${st[1]}</div><div class="s">${st[2]}</div>`); d.n=d.firstChild; d.v=st[0]; return d;});
+ s.stats[2].n.style.fontSize='92px'; s.stats[2].n.style.lineHeight='1.43'; s.stats[2].n.classList.add('et');
+ s.ft=words(r,'Excel · Google Sheets · LibreOffice','abs','left:0;width:1080px;text-align:center;top:1400px;font-size:30px;font-weight:600;letter-spacing:.06em;color:#C9D1DC');
+},(t,lt,s)=>{
+ const p=E.oQ(P(lt,0,4.4));
+ tf(s.home,{rx:L(38,28,p),rz:L(-10,-6,p),y:L(260,120,p),s:1.25,o:.55*E.oC(P(lt,0,.8)),b:2});
+ showEyebrow(s.eb,lt,.15);
+ reveal(s.hd,lt,.3,{st:.12,d:1.1,dy:60,bl:20});
+ s.stats.forEach((d,i)=>{const t0=.9+i*.16, pp=E.oE(P(lt,t0,t0+1.2));
+   tf(d,{y:(1-pp)*90,rx:(1-pp)*40,o:E.oC(P(lt,t0,t0+.5))});
+   const pc=E.ioC(P(lt,t0+.1,t0+1.5)); if(/^\d+$/.test(d.v)) d.n.textContent=Math.round(parseInt(d.v)*pc);});
+ reveal(s.ft,lt,2.2,{st:.08,dy:20});
+});
+
+// ---------- 4 · COST CARD (12.1–16.9) ----------
+const CAT=[['Concrete & aggregates',31,'#E2B65A'],['Reinforcement steel',22,'#E6E9EE'],['Blocks & masonry',14,'#8FA3BF'],['Finishes & tiles',12,'#C9962F'],['Labour',11,'#5E7594'],['Other',10,'#34465F']];
+scene(12.1,16.9,(r,s)=>{
+ s.bgp=h('div',{class:'abs',style:'left:-60px;top:-60px;width:1200px;height:2040px;background:url(sc/p2full.jpg) center/cover;filter:blur(26px) brightness(.45) saturate(1.1)'},r);
+ h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;background:linear-gradient(180deg,rgba(10,20,38,.85),rgba(10,20,38,.35) 45%,rgba(10,20,38,.9))'},r);
+ s.eb=eyebrow(r,'PROJECT SUMMARY',230);
+ s.hd=words(r,'ወጪው *በብር።','abs et','left:66px;top:290px;font-size:112px;font-weight:900;line-height:1.2');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2200px;perspective-origin:540px 1000px'},r);
+ s.card=h('div',{class:'card',style:'left:50px;top:540px;width:980px;height:820px'},s.pw);
+ h('div',{class:'abs et',style:'left:50px;top:44px;font-size:50px;font-weight:800;color:#E2B65A'},s.card,'የፕሮጀክት ማጠቃለያ');
+ h('div',{class:'abs',style:'right:50px;top:66px;font-size:20px;font-weight:600;letter-spacing:.3em;color:#9AA6B8'},s.card,'COST BY CATEGORY');
+ s.svg=h('svg:svg',{width:400,height:400,style:'position:absolute;left:40px;top:150px;overflow:visible'},s.card);
+ s.g=h('svg:g',{style:'transform-origin:200px 200px'},s.svg);
+ h('svg:circle',{cx:200,cy:200,r:150,fill:'none',stroke:'rgba(255,255,255,.06)','stroke-width':58},s.g);
+ let acc=0; s.segs=CAT.map(c=>{const f=c[1]/100; const seg=h('svg:circle',{cx:200,cy:200,r:150,fill:'none',stroke:c[2],'stroke-width':58,pathLength:1,'stroke-dasharray':'0 1',
+   style:`transform-origin:200px 200px;transform:rotate(${(-90+acc*360).toFixed(2)}deg)`},s.g); seg.st=acc; seg.f=f; acc+=f; return seg;});
+ h('div',{class:'abs',style:'left:40px;top:290px;width:400px;text-align:center;font-size:22px;font-weight:600;letter-spacing:.2em;color:#9AA6B8'},s.card,'BOQ');
+ s.c25=h('div',{class:'abs',style:'left:40px;top:318px;width:400px;text-align:center;font-size:72px;font-weight:800;line-height:1'},s.card,'0');
+ h('div',{class:'abs',style:'left:40px;top:398px;width:400px;text-align:center;font-size:20px;color:#9AA6B8'},s.card,'categories');
+ s.lgs=CAT.map((c,i)=>{const d=h('div',{class:'lg',style:`top:${170+i*58}px`},s.card,`<i style="background:${c[2]}"></i><span>${c[0]}</span><b>0%</b>`); d.b=d.lastChild; d.v=c[1]; return d;});
+ h('div',{class:'abs',style:'left:50px;top:600px;width:880px;height:1.5px;background:rgba(226,182,90,.35)'},s.card);
+ h('div',{class:'abs et',style:'left:50px;top:650px;font-size:54px;font-weight:800'},s.card,'ጠቅላላ');
+ h('div',{class:'abs',style:'left:300px;top:690px;font-size:26px;font-weight:700;letter-spacing:.14em;color:#E2B65A'},s.card,'ETB');
+ s.tot=h('div',{class:'abs',style:'right:50px;top:648px;font-size:76px;font-weight:800;letter-spacing:-.02em;font-variant-numeric:tabular-nums'},s.card,'0.00');
+ s.sh=shimmer(s.card,820);
+ s.cap=words(r,'ዋጋ ሲቀይሩ፣ ሁሉም ስሌት ወዲያውኑ ይዘመናል።','abs et','left:72px;width:940px;top:1420px;font-size:40px;font-weight:600;line-height:1.35;color:#D9DFE8');
+},(t,lt,s)=>{
+ tf(s.bgp,{s:1.05+lt*.01});
+ showEyebrow(s.eb,lt,.1); reveal(s.hd,lt,.25,{st:.14,d:1.1,dy:60,bl:20});
+ const p=E.oQ(P(lt,0,3.8));
+ tf(s.card,{rx:L(30,0,p)+Math.sin(lt*.8)*1.2,ry:L(-20,0,p),z:L(-500,0,p),y:L(260,0,p),o:E.oC(P(lt,.1,.7))});
+ const D=E.ioC(P(lt,.7,2.4));
+ s.segs.forEach(sg=>{const v=C((D-sg.st)/sg.f)*sg.f; sg.setAttribute('stroke-dasharray',`${Math.max(0,v-.005).toFixed(4)} 1`);});
+ s.g.style.transform=`rotate(${(-40*(1-E.oQ(P(lt,.5,3)))).toFixed(2)}deg)`;
+ s.c25.textContent=Math.round(25*E.ioC(P(lt,.8,2.0)));
+ s.lgs.forEach((d,i)=>{const t0=1.0+i*.1, pp=E.oE(P(lt,t0,t0+.9)); tf(d,{x:(1-pp)*50,o:pp}); d.b.textContent=Math.round(d.v*E.ioC(P(lt,t0,t0+.9)))+'%';});
+ const pt=E.ioE(P(lt,1.6,3.4)); s.tot.textContent=(8574690.11*pt).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+ s.tot.style.color=pt>0&&pt<1?'#F6DC93':'#fff';
+ s.sh.style.left=(-400+E.ioC(P(lt,3.3,4.4))*1600)+'px';
+ reveal(s.cap,lt,2.9,{st:.07,dy:24});
+});
+
+// ---------- 5 · CTA (16.6–20) ----------
+scene(16.6,20.0,(r,s)=>{
+ s.ph=photo(r,'sc/p1.jpg',380,1520); s.ph.style.filter='brightness(.55)';
+ s.glow=h('div',{class:'abs',style:'left:90px;top:300px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(226,182,90,.25),transparent 62%)'},r);
+ s.logo=h('div',{class:'abs',style:'left:0;width:1080px;top:470px;text-align:center;font-size:132px;font-weight:800;letter-spacing:-.03em;line-height:1'},r,'SiteCalc <span class="gold">Pro</span>');
+ s.sub=words(r,'RAPHA ENGINEERING AND CONSULTING','abs','left:0;width:1080px;text-align:center;top:640px;font-size:25px;font-weight:600;letter-spacing:.3em;color:#C9D1DC');
+ s.tag=words(r,'BOQ ለማዘጋጀት *ሳምንት *አይጠብቁ።','abs et','left:0;width:1080px;text-align:center;top:760px;font-size:50px;font-weight:800;line-height:1.3');
+ s.cta=h('div',{class:'cta',style:'left:190px;top:1460px;width:700px'},r,'<span>አሁኑኑ ያውርዱ</span><b>→</b>'); s.arrow=s.cta.lastChild;
+ s.sh=shimmer(s.cta,150);
+ s.pl=words(r,'Excel · Google Sheets · LibreOffice','abs','left:0;width:1080px;text-align:center;top:1660px;font-size:26px;font-weight:600;letter-spacing:.06em;color:#9AA6B8');
+},(t,lt,s)=>{
+ tf(s.ph.img,{s:1.1+lt*.02}); s.glow.style.opacity=E.oC(P(lt,.2,1.4))*(.85+.15*Math.sin(lt*3));
+ const pl=E.oE(P(lt,.15,1.3)); tf(s.logo,{s:.88+.12*pl,o:pl,b:(1-pl)*20,y:(1-pl)*30});
+ reveal(s.sub,lt,.6,{st:.05,dy:14}); reveal(s.tag,lt,.85,{st:.1,dy:30});
+ const pc=E.oB(P(lt,1.3,2.0)); tf(s.cta,{s:.6+.4*pc,o:C(P(lt,1.3,1.55))});
+ s.sh.style.left=(-400+E.ioC(P(lt,1.9,2.7))*1400)+'px';
+ tf(s.arrow,{x:10*Math.max(0,Math.sin((lt-2.2)*6))*(lt>2.2?1:0)});
+ reveal(s.pl,lt,1.8,{st:.08,dy:16});
+},{fo:.4,zout:1});
+
+h('div',{id:'vig'},stage);
+const flash=h('div',{class:'abs',style:'inset:0;background:#fff;opacity:0;mix-blend-mode:screen'},stage);
+window.renderAt=function(t){
+ for(const s of scenes){
+  if(t<s.a||t>s.b){s.root.style.display='none';continue;}
+  s.root.style.display='block';
+  const lt=t-s.a, ei=E.oC(P(t,s.a,s.a+s.fi)), eo=E.iC(P(t,s.b-s.fo,s.b));
+  s.root.style.opacity=(ei*(1-eo)).toFixed(4);
+  s.root.style.transform=`scale(${(L(s.zin,1,ei)*L(1,s.zout,eo)).toFixed(4)})`;
+  const bl=(1-ei)*12+eo*16; s.root.style.filter=bl>.1?`blur(${bl.toFixed(2)}px)`:'none';
+  s.update(t,lt,s);
+ }
+ const f=[3.95,8.05,12.15,16.65].reduce((m,x)=>Math.max(m,1-Math.abs(t-x)/.22),0);
+ flash.style.opacity=(Math.max(0,f)*.18).toFixed(3);
+ stage.style.opacity=(1-P(t,19.55,20)).toFixed(3);
+};
+window.DURATION=20;
+</script></body></html>
