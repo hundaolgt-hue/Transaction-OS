@@ -1,0 +1,235 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ProjectControl Profit</title>
+<link rel="stylesheet" href="fonts_pc.css">
+<style>
+:root{--amber:#E8A447;--navy:#0F2A44;--red:#E5574B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden}
+body{font-family:'Inter','Noto Sans Ethiopic',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#04070D}
+.abs{position:absolute}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;display:none;transform-origin:50% 50%}
+.w{display:inline-block}
+.et{font-family:'Noto Sans Ethiopic','Inter',sans-serif;letter-spacing:0}
+.acc{background:linear-gradient(180deg,#FFD596 0%,#E8A447 55%,#C9781D 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.04em}
+.mono{font-family:'JetBrains Mono',monospace}
+.eyebrow{font-family:'JetBrains Mono';font-size:24px;font-weight:500;letter-spacing:.26em;color:var(--amber);text-transform:uppercase}
+.dom{position:absolute;width:110px;height:420px;border-radius:16px;transform-origin:100% 100%;
+ background:linear-gradient(170deg,#1B2A40,#0B1422 70%);border:2px solid rgba(232,164,71,.55);box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 30px 60px rgba(0,0,0,.6)}
+.dom .ic{position:absolute;left:15px;top:40px;width:80px;height:80px}
+.dom .nm{position:absolute;left:0;width:110px;bottom:30px;text-align:center;font-family:'JetBrains Mono';font-size:22px;color:var(--amber)}
+.dom .dot{position:absolute;left:47px;top:190px;width:16px;height:16px;border-radius:8px;background:rgba(232,164,71,.25)}
+.cl{position:absolute;left:80px;height:84px;display:flex;align-items:center;gap:26px;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:54px}
+.cl i{width:22px;height:22px;border-radius:11px;background:var(--red);box-shadow:0 0 18px rgba(229,87,75,.8);flex:none}
+.cl em{font-style:normal;font-family:'Inter';color:rgba(255,255,255,.35);font-weight:400;font-size:40px;margin-left:6px}
+.win{position:absolute;border-radius:22px;overflow:hidden;background:#F4F6F8;box-shadow:0 40px 120px rgba(0,0,0,.65);color:#1B2430}
+.win .hd{height:92px;background:#0F2A44;border-bottom:4px solid #D98E2B;padding:16px 26px;color:#fff}
+.win .hd b{display:block;font-size:30px;font-weight:600}
+.win .hd span{font-family:'Noto Sans Ethiopic';font-size:19px;color:#C9D3DF}
+.tr{position:absolute;left:0;right:0;height:62px;display:flex;align-items:center;font-size:22px;border-bottom:1px solid #DDE3EA}
+.tr div{padding:0 14px;white-space:nowrap;overflow:hidden}
+.th{background:#E6EBF1;font-family:'JetBrains Mono';font-size:16px;letter-spacing:.06em;color:#5B6675;height:48px}
+.inp{background:#FFF8E6;color:#1F4E9C;font-weight:600;border-bottom:2px solid #D98E2B}
+.pn{position:absolute;width:470px;height:330px;border-radius:26px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);overflow:hidden}
+.pn .t{position:absolute;left:26px;top:22px;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:30px}
+.pn .k{position:absolute;right:24px;top:28px;font-family:'JetBrains Mono';font-size:16px;color:#8C96A6;letter-spacing:.08em}
+.pn .v{position:absolute;left:26px;bottom:24px;font-size:44px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pn .s{position:absolute;left:26px;bottom:84px;font-family:'Noto Sans Ethiopic';font-size:20px;color:#9AA6B8}
+.ok{position:absolute;right:22px;bottom:22px;width:54px;height:54px;border-radius:27px;background:#2E9D5F;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;box-shadow:0 0 24px rgba(46,157,95,.7)}
+.cta{position:absolute;height:150px;border-radius:75px;background:linear-gradient(180deg,#FFD596,#E8A447 55%,#C9781D);display:flex;align-items:center;justify-content:center;gap:30px;
+ box-shadow:0 30px 80px rgba(232,164,71,.35),inset 0 2px 0 rgba(255,255,255,.5);overflow:hidden}
+.cta span{font-family:'Noto Sans Ethiopic';font-weight:900;font-size:60px;color:#141A24}
+.cta b{font-weight:600;font-size:52px;color:#141A24}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 85% 65% at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
+</style></head>
+<body><div id="stage"></div>
+<script>
+const W=1080,H=1920;
+const C=(x,a=0,b=1)=>x<a?a:x>b?b:x, P=(t,a,b)=>C((t-a)/(b-a)), L=(a,b,x)=>a+(b-a)*x;
+const E={oE:x=>x>=1?1:1-Math.pow(2,-10*x),ioE:x=>x<=0?0:x>=1?1:x<.5?Math.pow(2,20*x-10)/2:(2-Math.pow(2,-20*x+10))/2,
+ oC:x=>1-Math.pow(1-x,3),iC:x=>x*x*x,ioC:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,oQ:x=>1-Math.pow(1-x,5),ioS:x=>-(Math.cos(Math.PI*x)-1)/2,
+ oB:x=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}};
+const stage=document.getElementById('stage');
+function h(tag,attrs={},parent,html){const e=tag.startsWith('svg:')?document.createElementNS('http://www.w3.org/2000/svg',tag.slice(4)):document.createElement(tag);
+ for(const k in attrs){ if(k==='style') e.style.cssText=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; if(parent) parent.appendChild(e); return e;}
+function tf(e,o){const {x=0,y=0,z=0,s=1,rx=0,ry=0,rz=0}=o;
+ e.style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,${z.toFixed(2)}px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg) scale(${(o.sx??s).toFixed(4)},${(o.sy??s).toFixed(4)})`;
+ if(o.o!==undefined) e.style.opacity=C(o.o).toFixed(4); if(o.b!==undefined) e.style.filter=o.b>0.08?`blur(${o.b.toFixed(2)}px)`:'none';}
+function words(parent,text,cls,style){const wrap=h('div',{class:cls,style:style||''},parent);wrap.spans=[];
+ text.split(' ').forEach(w=>{ if(w==='/'){h('br',{},wrap);return;} let c='w'; if(w[0]==='*'){w=w.slice(1);c='w acc';}
+   const s=h('span',{class:c},wrap); s.textContent=w; wrap.spans.push(s); wrap.appendChild(document.createTextNode(' '));}); return wrap;}
+function reveal(wrap,t,t0,{st=.08,d=1.1,dy=50,bl=16,sc=0}={}){wrap.spans.forEach((s,i)=>{const p=E.oE(P(t,t0+i*st,t0+i*st+d)); tf(s,{y:(1-p)*dy,o:p,b:(1-p)*bl,s:1-(1-p)*sc});});}
+const fmt=(n,d=0)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const scenes=[];
+function scene(a,b,build,update,opt={}){const root=h('div',{class:'scene'},stage);const s={a,b,root,fi:opt.fi??.5,fo:opt.fo??.5,zin:opt.zin??1.05,zout:opt.zout??.95};build(root,s);s.update=update;scenes.push(s);return s;}
+// background
+const bg=h('div',{class:'abs',style:'inset:0'},stage);
+const orbs=['rgba(31,95,173,.45)','rgba(217,142,43,.22)','rgba(15,42,68,.9)'].map(c=>h('div',{class:'abs',style:`width:1600px;height:1600px;left:-800px;top:-800px;border-radius:50%;background:radial-gradient(circle,${c} 0%,transparent 62%)`},bg));
+
+h('style',{},document.head,`
+.rc{position:absolute;width:150px;height:200px;background:#F2EEE4;border-radius:6px 6px 0 0;box-shadow:0 14px 30px rgba(0,0,0,.45);color:#3A3A3A;padding:14px 12px;font-family:'JetBrains Mono';font-size:12px;line-height:1.7}
+.rc:after{content:'';position:absolute;left:0;right:0;bottom:-10px;height:10px;background:linear-gradient(-45deg,transparent 5px,#F2EEE4 0) 0 0/10px 10px,linear-gradient(45deg,transparent 5px,#F2EEE4 0) 0 0/10px 10px}
+.rc b{display:block;font-size:13px;color:#111;border-bottom:1px dashed #999;margin-bottom:6px}
+.rc i{font-style:normal;float:right}
+.bub{position:absolute;padding:12px 18px;border-radius:20px;font-family:'Noto Sans Ethiopic';font-size:21px;max-width:250px;line-height:1.3}
+.lbl{position:absolute;width:320px;text-align:center;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:34px;line-height:1.25}
+.vr{font-weight:700;font-variant-numeric:tabular-nums}
+`);
+// ======================= 1 · HOOK (0–3.3) =======================
+scene(0,3.3,(r,s)=>{
+ s.glow=h('div',{class:'abs',style:'left:140px;top:820px;width:800px;height:800px;border-radius:50%;background:radial-gradient(circle,rgba(232,164,71,.20),transparent 62%)'},r);
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:1600px;perspective-origin:540px 1000px'},r);
+ s.calc=h('div',{class:'abs',style:'left:330px;top:760px;width:500px;height:760px;border-radius:46px;background:linear-gradient(170deg,#202B3B,#0C121C);border:2px solid rgba(255,255,255,.12);box-shadow:0 60px 140px rgba(0,0,0,.7),inset 0 2px 0 rgba(255,255,255,.1)'},s.pw);
+ s.disp=h('div',{class:'abs',style:'left:36px;top:40px;width:428px;height:150px;border-radius:20px;background:#C9D4BE;box-shadow:inset 0 4px 14px rgba(0,0,0,.35);color:#1C2318;text-align:right;padding:18px 26px;font-family:JetBrains Mono;font-weight:500'},s.calc,
+   '<div class="lb" style="font-size:22px;font-family:Noto Sans Ethiopic;font-weight:700;opacity:.65">ትርፍ</div><div class="nv" style="font-size:66px;line-height:1.05">0</div>');
+ s.nv=s.disp.querySelector('.nv');
+ const K=['C','±','%','÷','7','8','9','×','4','5','6','−','1','2','3','+','0','.','=','='];
+ s.keys=K.slice(0,19).map((k,i)=>{const col=i%4,row=Math.floor(i/4); const wide=i===18; const op=col===3||i===18;
+   return h('div',{class:'abs',style:`left:${36+col*110}px;top:${226+row*104}px;width:${wide?208:98}px;height:92px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:40px;font-weight:600;${op?'background:linear-gradient(180deg,#F0B25A,#C9781D);color:#1a1206':'background:rgba(255,255,255,.07);color:#E7EBF0'}`},s.calc,k);});
+ s.hat=h('svg:svg',{width:300,height:200,viewBox:'0 0 300 200',style:'position:absolute;left:720px;top:1420px;overflow:visible'},r,
+  '<path d="M30 150 Q40 50 150 40 Q260 50 270 150 Z" fill="#F2F4F7" stroke="#C9D1DC" stroke-width="3"/><path d="M10 152 L290 152 Q292 168 270 170 L30 170 Q8 168 10 152 Z" fill="#E1E6EC"/><path d="M150 40 L150 150 M110 52 L112 150 M190 52 L188 150" stroke="#C9D1DC" stroke-width="5"/>');
+ s.l1=words(r,'ፕሮጀክቱ *አለቀ።','abs et','left:0;width:1080px;text-align:center;top:250px;font-size:96px;font-weight:800;line-height:1.25');
+ s.l2=words(r,'ትርፉ የት *ገባ?','abs et','left:0;width:1080px;text-align:center;top:400px;font-size:120px;font-weight:900;line-height:1.25');
+},(t,lt,s)=>{
+ const p=E.oQ(P(lt,0,3.3));
+ tf(s.calc,{rx:L(38,26,p),rz:L(-10,-6,p),y:L(180,40,p),s:L(.9,1,p),o:E.oC(P(lt,0,.6))});
+ tf(s.hat,{o:E.oC(P(lt,.3,1)),y:(1-E.oE(P(lt,.3,1.4)))*60,rz:-6});
+ s.glow.style.opacity=.7+.3*Math.sin(lt*2);
+ // display: sums climb then collapse to a question
+ let txt; if(lt<1.3){txt=Math.round(1250000*E.oC(P(lt,.2,1.3))).toLocaleString('en-US');}
+ else if(lt<2.0){txt=Math.round(1250000*(1-E.ioC(P(lt,1.3,2.0)))).toLocaleString('en-US');}
+ else txt=(Math.floor(lt*3)%2? '?':'0');
+ s.nv.textContent=txt; s.nv.style.color=lt>1.3?'#8B2A20':'#1C2318';
+ s.keys.forEach((k,i)=>{const press=[[.35,5],[.6,14],[.85,15],[1.1,18],[1.6,11],[1.9,18]].some(([tt,ki])=>ki===i&&lt>tt&&lt<tt+.14); k.style.transform=press?'scale(.9)':'none'; k.style.filter=press?'brightness(1.5)':'none';});
+ reveal(s.l1,lt,.2,{st:.14,d:1.0,dy:60,bl:20});
+ reveal(s.l2,lt,1.2,{st:.12,d:1.0,dy:80,bl:24,sc:.08});
+},{fi:.01,fo:.35,zout:1.04});
+
+// ======================= 2 · SCATTERED RECORDS (3.0–8.3) =======================
+scene(3.0,8.3,(r,s)=>{
+ // pocket
+ s.pocket=h('svg:svg',{width:300,height:260,viewBox:'0 0 300 260',style:'position:absolute;left:40px;top:640px;overflow:visible'},r,
+  '<path d="M10 10 L290 10 L270 200 Q150 260 30 200 Z" fill="#23365A" stroke="#5B7BB0" stroke-width="4"/><path d="M10 10 Q150 110 290 10" fill="#1A2944" stroke="#5B7BB0" stroke-width="4"/><path d="M30 30 Q150 120 270 30" fill="none" stroke="#E8A447" stroke-width="3" stroke-dasharray="10 8"/>');
+ const RC=[['ሲሚንቶ','4,250'],['ብረት','18,600'],['አሸዋ','3,900'],['ትራንስፖርት','1,200'],['ሚስማር','650'],['ጣውላ','7,800'],['ብረት','12,400'],['ሲሚንቶ','5,100']];
+ s.rcs=RC.map((x,i)=>{const d=h('div',{class:'rc'},r,`<b>ደረሰኝ #${1040+i*7}</b>${x[0]}<i>${x[1]}</i><br>ቫት<i>…</i><br>ጠቅላላ<i>?</i>`); d.i=i; return d;});
+ // notebook
+ s.nb=h('div',{class:'abs',style:'left:385px;top:620px;width:310px;height:400px;border-radius:12px;background:#F4EBD6;box-shadow:0 30px 70px rgba(0,0,0,.55);overflow:hidden'},r);
+ h('div',{class:'abs',style:'left:0;top:0;width:34px;height:400px;background:#B5413A'},s.nb);
+ for(let i=0;i<12;i++) h('div',{class:'abs',style:`left:34px;right:0;top:${60+i*28}px;height:1px;background:rgba(80,110,160,.35)`},s.nb);
+ h('div',{class:'abs et',style:'left:52px;top:14px;font-size:22px;font-weight:700;color:#5A3A1A'},s.nb,'የሠራተኛ ክፍያ');
+ s.nl=[['አበበ','450'],['ከበደ','450'],['ሙሉ','380'],['ታደሰ','520'],['ሰላም','380'],['ዮናስ','450'],['…','…']].map((x,i)=>h('div',{class:'abs et',style:`left:52px;top:${64+i*28*1.5}px;width:240px;font-size:24px;color:#22355A;transform:rotate(-1.5deg);clip-path:inset(0 100% 0 0)`},s.nb,`${x[0]} <span style="float:right;font-family:JetBrains Mono">${x[1]}</span>`));
+ // phone
+ s.ph=h('div',{class:'abs',style:'left:745px;top:600px;width:290px;height:560px;border-radius:44px;background:#0B0F16;border:6px solid #2A3446;box-shadow:0 30px 70px rgba(0,0,0,.6);overflow:hidden'},r);
+ h('div',{class:'abs',style:'left:0;top:0;right:0;height:64px;background:#1A2232;color:#C9D1DC;font-family:Noto Sans Ethiopic;font-size:20px;padding:20px 22px'},s.ph,'ማቴሪያል · ግዢ');
+ s.bubs=[['ሲሚንቶ 40 ኩንታል ደረሰ?',1],['አዎ፣ ግን ዋጋ ጨምሯል',0],['ብረት ስንት ገባ?',1],['ነገ እልካለሁ',0],['ደረሰኙ የት ነው?',1]].map((x,i)=>h('div',{class:'bub',style:`top:${84+i*92}px;${x[1]?'right:14px;background:#2D6CDF;color:#fff':'left:14px;background:#283246;color:#E7EBF0'}`},s.ph,x[0]));
+ s.lbls=[['ደረሰኝ በኪስ',30],['የሠራተኛ ክፍያ / በደብተር',380],['ማቴሪያል / በስልክ',730]].map(([tx,x])=>{const d=h('div',{class:'lbl',style:`left:${x}px;top:1215px`},r,tx.replace(' / ','<br>')); return d;});
+ s.tot=h('div',{class:'abs',style:'left:0;width:1080px;top:250px;text-align:center'},r,'<div class="et" style="font-size:34px;color:#9AA6B8;font-weight:600">ጠቅላላ ወጪ</div><div class="sum mono" style="font-size:96px;font-weight:500;color:#E5574B;letter-spacing:.02em">???,???</div>');
+ s.sum=s.tot.querySelector('.sum');
+ s.q=words(r,'ማንም አጠቃላዩን *አያይም።','abs et','left:0;width:1080px;text-align:center;top:1520px;font-size:84px;font-weight:800;line-height:1.25');
+},(t,lt,s)=>{
+ tf(s.pocket,{o:E.oC(P(lt,.1,.5)),y:(1-E.oE(P(lt,.1,.9)))*-60,rz:-4});
+ s.rcs.forEach(d=>{const i=d.i, t0=.5+i*.32, k=lt-t0; if(k<0){d.style.opacity=0;return;}
+   const x=110+Math.sin(i*2.1)*60+Math.sin(k*2.2+i)*40, y=760+k*k*170+k*120, rot=(i%2?1:-1)*(20+k*55)+Math.sin(k*3+i)*12;
+   tf(d,{x,y,rz:rot,s:.9,o:C(k/.2)*(1-C((y-1080)/180))*(1-C(P(lt,3.2,3.6)))});});
+ tf(s.nb,{o:E.oC(P(lt,.35,.8)),y:(1-E.oE(P(lt,.35,1.3)))*-60,rz:2});
+ s.nl.forEach((d,i)=>{const p=C(P(lt,.9+i*.35,1.25+i*.35)); d.style.clipPath=`inset(0 ${(100-100*p).toFixed(1)}% 0 0)`;});
+ tf(s.ph,{o:E.oC(P(lt,.6,1.0)),y:(1-E.oE(P(lt,.6,1.5)))*-60,rz:-3});
+ s.bubs.forEach((b,i)=>{const t0=1.0+i*.55, p=E.oB(P(lt,t0,t0+.45)); tf(b,{s:.5+.5*p,o:C(P(lt,t0,t0+.15))});});
+ s.lbls.forEach((d,i)=>{const p=E.oE(P(lt,.9+i*.35,1.8+i*.35)); tf(d,{y:(1-p)*30,o:p});});
+ tf(s.tot,{o:E.oC(P(lt,1.2,1.6))*(1-.0),y:(1-E.oE(P(lt,1.2,2)))*-30});
+ const scr='0123456789?'; s.sum.textContent=lt<3.6? [...'???,???'].map((c,i)=>c===','?',':scr[Math.floor((lt*23+i*7)%11)]).join('') : '???,???';
+ reveal(s.q,lt,3.4,{st:.12,d:1.0,dy:60,bl:20});
+ const sc=E.ioC(P(lt,3.3,4.2)); [s.nb,s.ph,s.pocket].forEach(e=>{e.style.filter=`blur(${(sc*4).toFixed(1)}px) brightness(${(1-.45*sc).toFixed(2)})`;});
+},{fi:.35,fo:.4});
+
+// ======================= 3 · BOQ vs ACTUAL (8.0–15.3) =======================
+const CR=[['B1-C-04','RC C-25 grade beams',820707,781700],['B2-C-01','RC C-25 columns',1977272,1964000],['B2-C-03','RC C-25 ribbed slabs',4407406,4609800],['B3-M-01','20 cm HCB external wall',895409,873400],['B11-E-01','Conduit & wiring',546832,537000],['B12-M-03','Booster pump & tank',307660,296200]];
+scene(8.0,15.3,(r,s)=>{
+ s.hd=words(r,'በProjectControl ወጪዎ / ከBOQ ጋር *ይነጻጸራል —','abs et','left:60px;top:170px;font-size:72px;font-weight:800;line-height:1.24');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2200px;perspective-origin:540px 900px'},r);
+ s.win=h('div',{class:'win',style:'left:30px;top:430px;width:1020px;height:770px'},s.pw,'<div class="hd"><b>18 · Cost Report</b><span>የሥራ ተቋራጭ የወጪ ሪፖርት · BOQ ↔ 17 ትክክለኛ ወጪዎች</span></div>');
+ const tb=h('div',{class:'abs',style:'left:0;top:92px;width:1020px;height:680px'},s.win);
+ h('div',{class:'tr th',style:'top:0'},tb,'<div style="width:150px">ITEM</div><div style="width:300px">DESCRIPTION</div><div style="width:190px;text-align:right">BUDGET</div><div style="width:190px;text-align:right">ACTUAL</div><div style="width:190px;text-align:right">VARIANCE</div>');
+ s.rows=CR.map((c,i)=>{const d=h('div',{class:'tr',style:`top:${48+i*104}px;height:104px;flex-wrap:wrap;align-content:center`},tb,
+   `<div style="width:150px" class="mono">${c[0]}</div><div style="width:300px;font-size:21px">${c[1]}</div><div style="width:190px;text-align:right" class="vr">${fmt(c[2])}</div><div class="vr ac" style="width:190px;text-align:right">0</div><div class="vr va" style="width:190px;text-align:right;color:#8A94A3">—</div>
+    <div class="bt" style="position:absolute;left:150px;right:20px;bottom:14px;height:10px;padding:0;border-radius:5px;background:#DDE3EA;overflow:visible"><i class="bb" style="position:absolute;left:0;top:0;bottom:0;border-radius:5px;background:#5B8FE8;transform-origin:0 50%"></i><i style="position:absolute;top:-4px;bottom:-4px;width:3px;background:#0F2A44;left:${(c[2]/4800000*100).toFixed(2)}%"></i></div>`);
+   d.ac=d.querySelector('.ac'); d.va=d.querySelector('.va'); d.bb=d.querySelector('.bb'); d.c=c; return d;});
+ s.flash=h('div',{class:'abs',style:`left:0;right:0;top:${48+2*104}px;height:104px;background:rgba(229,87,75,.0);pointer-events:none`},tb);
+ s.tag=h('div',{class:'abs et',style:'left:470px;top:1225px;white-space:nowrap;padding:16px 26px;border-radius:20px;background:#E5574B;font-size:34px;font-weight:800;box-shadow:0 20px 60px rgba(229,87,75,.6)'},r,'−202,394 ብር · ከበጀት በላይ');
+ s.ch=h('div',{class:'abs mono',style:'left:60px;top:1240px;font-size:20px;color:#9AA6B8;letter-spacing:.06em'},r,'');
+ s.c2=words(r,'የትኛው ሥራ እያከሰረዎት እንደሆነ / ዳሽቦርዱ *ያሳያል።','abs et','left:0;width:1080px;text-align:center;top:1560px;font-size:52px;font-weight:700;line-height:1.35');
+},(t,lt,s)=>{
+ reveal(s.hd,lt,.1,{st:.1,d:1.0,dy:50,bl:18});
+ const pw=E.oQ(P(lt,.2,2.2)); tf(s.win,{rx:L(26,0,pw)+Math.sin(lt*.7)*.8,ry:L(-14,0,pw),y:L(160,0,pw),z:L(-300,0,pw),o:E.oC(P(lt,.2,.8))});
+ s.rows.forEach((d,i)=>{const t0=1.2+i*.32, pa=E.ioC(P(lt,t0,t0+1.4)); const c=d.c; const ac=c[3]*pa;
+   d.ac.textContent=fmt(ac); d.bb.style.width=(ac/4800000*100).toFixed(2)+'%';
+   const done=pa>=1, over=c[3]>c[2], v=c[2]-c[3];
+   d.va.textContent=done?(v>=0?'+':'−')+fmt(Math.abs(v)):'—';
+   d.va.style.color=done?(over?'#D23A2E':'#2E8B57'):'#8A94A3';
+   d.bb.style.background=over&&ac>c[2]?'#E5574B':'#5B8FE8';});
+ const red=E.oC(P(lt,4.0,4.4))*(0.55+0.45*Math.sin(Math.max(0,lt-4.0)*7)); s.flash.style.background=`rgba(229,87,75,${(.22*red+.08*C(P(lt,4,4.4))).toFixed(3)})`;
+ s.rows[2].style.boxShadow=lt>4?`inset 6px 0 0 #E5574B`:'none';
+ tf(s.tag,{s:.4+.6*E.oB(P(lt,4.1,4.7)),o:C(P(lt,4.1,4.25)),rz:-3});
+ s.ch.textContent=lt>1.1&&lt<3.4?'17 Actual Costs → '+['GRN/12 · Material','PAY/12 · Labour','PLT/12 · Plant','GRN/11 · Material'][Math.floor(lt*3)%4]:'';
+ reveal(s.c2,lt,4.6,{st:.08,dy:30});
+},{fi:.4,fo:.45});
+
+// ======================= 4 · DASHBOARD + CTA (15.0–20) =======================
+const OVR=[['B2-C-03','Ribbed slabs',202394],['B2-C-05','Rebar · superstructure',113631],['B1-C-06','Rebar · substructure',98000]];
+scene(15.0,20.0,(r,s)=>{
+ s.hd=words(r,'ትርፍዎን ከመጥፋቱ በፊት *ይዩ።','abs et','left:0;width:1080px;text-align:center;top:190px;font-size:80px;font-weight:800;line-height:1.25');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2000px;perspective-origin:540px 800px'},r);
+ s.db=h('div',{class:'abs',style:'left:70px;top:360px;width:940px;height:760px;border-radius:34px;background:linear-gradient(165deg,rgba(26,38,60,.95),rgba(10,16,28,.97));border:1.5px solid rgba(255,255,255,.12);box-shadow:0 50px 140px rgba(0,0,0,.7);overflow:hidden;transform-origin:50% 0'},s.pw);
+ h('div',{class:'abs',style:'left:0;top:0;width:940px;height:96px;background:#0F2A44;border-bottom:4px solid #D98E2B;padding:16px 30px'},s.db,'<div class="mono" style="font-size:16px;letter-spacing:.2em;color:#E8A447">01 · DASHBOARD</div><div class="et" style="font-size:30px;font-weight:700">የፕሮጀክት ዳሽቦርድ</div>');
+ h('div',{class:'abs et',style:'left:34px;top:126px;font-size:30px;font-weight:700'},s.db,'ከበጀት በላይ የሆኑ ሥራዎች');
+ h('div',{class:'abs mono',style:'right:34px;top:136px;font-size:16px;color:#9AA6B8;letter-spacing:.1em'},s.db,'ACTUAL − BUDGET · ETB');
+ s.ov=OVR.map((o,i)=>{const d=h('div',{class:'abs',style:`left:34px;top:${200+i*150}px;width:872px;height:130px;border-radius:22px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08)`},s.db,
+   `<div class="mono" style="position:absolute;left:24px;top:20px;font-size:20px;color:${i===0?'#FF8A80':'#E8A447'}">${o[0]}</div><div style="position:absolute;left:24px;top:48px;font-size:26px;font-weight:600">${o[1]}</div>
+    <div class="vv" style="position:absolute;right:24px;top:26px;font-size:44px;font-weight:800;color:${i===0?'#FF6B5E':'#FFB27A'};font-variant-numeric:tabular-nums">0</div>
+    <div style="position:absolute;left:24px;right:24px;bottom:18px;height:12px;border-radius:6px;background:rgba(255,255,255,.07)"><i class="bf" style="position:absolute;left:0;top:0;bottom:0;width:${(o[2]/202394*100).toFixed(1)}%;border-radius:6px;background:linear-gradient(90deg,#B83A30,#FF6B5E);transform-origin:0 50%"></i></div>`);
+   d.vv=d.querySelector('.vv'); d.bf=d.querySelector('.bf'); d.v=o[2]; return d;});
+ h('div',{class:'abs et',style:'left:34px;top:670px;font-size:22px;color:#9AA6B8'},s.db,'ከ17 ትክክለኛ ወጪዎች እና ከBOQ በራሱ ይሰላል');
+ // CTA
+ s.mark=h('svg:svg',{width:110,height:110,viewBox:'0 0 240 240',style:'position:absolute;left:485px;top:1230px;overflow:visible;filter:drop-shadow(0 0 14px rgba(232,164,71,.7))'},r,
+  '<defs><linearGradient id="lgP" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FFD596"/><stop offset="1" stop-color="#C9781D"/></linearGradient></defs><rect x="8" y="8" width="224" height="224" rx="56" fill="rgba(4,7,13,.85)" stroke="url(#lgP)" stroke-width="10"/><rect x="70" y="70" width="100" height="100" rx="22" fill="url(#lgP)"/>');
+ s.nm=words(r,'ራፋ የግንባታ ፕሮጀክት ቁጥጥር ስራዓት','abs et','left:0;width:1080px;text-align:center;top:1365px;font-size:42px;font-weight:800');
+ s.cta=h('div',{class:'cta',style:'left:190px;top:1480px;width:700px'},r,'<span>አሁኑኑ ያውርዱ</span><b>→</b>'); s.arrow=s.cta.lastChild;
+ s.sh=h('div',{class:'abs',style:'left:-400px;top:-50px;width:200px;height:250px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);mix-blend-mode:soft-light'},s.cta);
+ s.lat=words(r,'RAPHA PROJECTCONTROL','abs','left:0;width:1080px;text-align:center;top:1665px;font-size:22px;font-weight:600;letter-spacing:.34em;color:#9AA6B8');
+},(t,lt,s)=>{
+ reveal(s.hd,lt,.1,{st:.12,d:1.0,dy:50,bl:18});
+ const p=E.oQ(P(lt,0,2.2)), k=E.ioC(P(lt,2.1,2.9));
+ tf(s.db,{rx:L(28,0,p),y:L(200,0,p)-60*k,s:1-.12*k,o:E.oC(P(lt,0,.5))});
+ s.ov.forEach((d,i)=>{const t0=.5+i*.18, pp=E.oE(P(lt,t0,t0+.9)); tf(d,{x:(1-pp)*60,o:pp}); const pc=E.ioC(P(lt,t0,t0+1.2));
+   d.vv.textContent='−'+fmt(d.v*pc); d.bf.style.transform=`scaleX(${pc.toFixed(4)})`;});
+ const pm=E.oB(P(lt,2.4,3.0)); tf(s.mark,{s:pm,o:C(P(lt,2.4,2.6))});
+ reveal(s.nm,lt,2.6,{st:.07,dy:30});
+ const pc=E.oB(P(lt,2.9,3.5)); tf(s.cta,{s:.6+.4*pc,o:C(P(lt,2.9,3.1))});
+ s.sh.style.left=(-400+E.ioC(P(lt,3.4,4.2))*1400)+'px';
+ tf(s.arrow,{x:lt>3.6?10*Math.max(0,Math.sin((lt-3.6)*6)):0});
+ reveal(s.lat,lt,3.3,{st:.06,dy:14});
+},{fo:.4,zout:1});
+
+h('div',{id:'vig'},stage);
+const flash=h('div',{class:'abs',style:'inset:0;background:#fff;opacity:0;mix-blend-mode:screen'},stage);
+window.renderAt=function(t){
+ const a=t*.15;
+ tf(orbs[0],{x:200+Math.sin(a)*160,y:300+Math.cos(a*.8)*140});
+ tf(orbs[1],{x:880+Math.cos(a*.9)*150,y:1650+Math.sin(a*1.1)*120});
+ tf(orbs[2],{x:540+Math.sin(a*.6)*220,y:1000+Math.cos(a*.5)*260});
+ bg.style.opacity=C(P(t,0,1.2));
+ for(const s of scenes){
+  if(t<s.a||t>s.b){s.root.style.display='none';continue;}
+  s.root.style.display='block';
+  const lt=t-s.a, ei=E.oC(P(t,s.a,s.a+s.fi)), eo=E.iC(P(t,s.b-s.fo,s.b));
+  s.root.style.opacity=(ei*(1-eo)).toFixed(4);
+  s.root.style.transform=`scale(${(L(s.zin,1,ei)*L(1,s.zout,eo)).toFixed(4)})`;
+  const bl=(1-ei)*12+eo*16; s.root.style.filter=bl>.1?`blur(${bl.toFixed(2)}px)`:'none';
+  s.update(t,lt,s);
+ }
+ const f=[3.15,8.15,15.15].reduce((m,x)=>Math.max(m,1-Math.abs(t-x)/.22),0);
+ flash.style.opacity=(f*.16).toFixed(3);
+ stage.style.opacity=(1-P(t,19.6,20)).toFixed(3);
+};
+window.DURATION=20;
+</script></body></html>

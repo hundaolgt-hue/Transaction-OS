@@ -31,3 +31,9 @@ Built from `Rapha_ProjectControl_Tutorial.pdf`: its screenshots are in `tut/` an
 
 `index_pc.html` (fonts: `fonts_pc.css`), soundtrack `score_pc.py` → `score_pc.wav`. Render 4 × 375 frames with
 `PAGE=index_pc.html`. The domino fall uses a contact solver, so each tile leans on the next exactly.
+
+## Profit ad — Amharic 20 s ("ፕሮጀክቱ አለቀ። ትርፉ የት ገባ?")
+
+`index_pr.html` (fonts: `fonts_pc.css`), soundtrack `score_pr.py` → `score_pr.wav`. Render 4 × 300 frames with
+`PAGE=index_pr.html`. Cost Report figures: budget = approved measured qty × direct cost/unit (rate build-up, or rate ÷ 1.10 ÷ 1.08);
+actual = sum of 17 Actual Costs per item, from the sample workbook.
