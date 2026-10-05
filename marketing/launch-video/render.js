@@ -5,7 +5,7 @@ const [,, startF, endF, out, fpsArg, scaleArg] = process.argv; const FPS=+fpsArg
  const p=await b.newPage({viewport:{width:1080,height:1920}});
  p.on('pageerror',e=>console.log('ERR',e.message));
  await p.goto('http://127.0.0.1:8765/'+(process.env.PAGE||'index.html'));
- await p.evaluate(async()=>{await Promise.all(['800 40px Inter','300 40px Inter','500 40px "JetBrains Mono"','500 40px "Noto Sans Ethiopic"'].map(f=>document.fonts.load(f,'Aa ራፋ የግንባታ ፕሮጀክት ቁጥጥር ስራዓት ፎርሞች'))); await document.fonts.ready; await Promise.all([...document.images].map(i=>i.decode().catch(()=>{})));});
+ await p.evaluate(async()=>{await Promise.all(['800 40px Montserrat','900 40px "Noto Sans Ethiopic"','800 40px Inter','300 40px Inter','500 40px "JetBrains Mono"','500 40px "Noto Sans Ethiopic"'].map(f=>document.fonts.load(f,'Aa ራፋ የግንባታ ፕሮጀክት ቁጥጥር ስራዓት ፎርሞች'))); await document.fonts.ready; await Promise.all([...document.images].map(i=>i.decode().catch(()=>{})));});
  const vf=scaleArg?['-vf',`scale=${scaleArg}`]:[];
  const ff=spawn('ffmpeg',['-loglevel','error','-y','-f','image2pipe','-framerate',String(FPS),'-c:v','mjpeg','-i','-',...vf,'-c:v','libx264','-preset','medium','-crf','14','-pix_fmt','yuv420p','-tune','grain',out],{stdio:['pipe','inherit','inherit']});
  const t0=Date.now();

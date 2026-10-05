@@ -26,3 +26,8 @@ ffmpeg -f concat -safe 0 -i list.txt -i score.wav -filter_complex "[0:v]noise=al
 Built from `Rapha_ProjectControl_Tutorial.pdf`: its screenshots are in `tut/` and the step text follows the tutorial.
 `index_tut.html` (engine + `tut_scenes.js`); render 4 × 750 frames with `PAGE=index_tut.html`, then mux with
 `score_tut.wav` from `python3 score_tut.py`.
+
+## Domino ad — Amharic 25 s ("ሲሚንቶ ሁለት ቀን ዘገየ። ከዚያስ?")
+
+`index_pc.html` (fonts: `fonts_pc.css`), soundtrack `score_pc.py` → `score_pc.wav`. Render 4 × 375 frames with
+`PAGE=index_pc.html`. The domino fall uses a contact solver, so each tile leans on the next exactly.
