@@ -1,0 +1,260 @@
+<!doctype html>
+<html><head><meta charset="utf-8"><title>ProfitCheck Ad</title>
+<link rel="stylesheet" href="fonts_pc.css"><link rel="stylesheet" href="fonts2/fonts.css">
+<style>
+:root{--amber:#E8A447;--navy:#0F2A44;--red:#E5574B}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1080px;height:1920px;background:#000;overflow:hidden}
+body{font-family:'Inter','Noto Sans Ethiopic',sans-serif;color:#fff;-webkit-font-smoothing:antialiased}
+#stage{position:absolute;left:0;top:0;width:1080px;height:1920px;overflow:hidden;background:#04070D}
+.abs{position:absolute}
+.scene{position:absolute;left:0;top:0;width:1080px;height:1920px;display:none;transform-origin:50% 50%}
+.w{display:inline-block}
+.et{font-family:'Noto Sans Ethiopic','Inter',sans-serif;letter-spacing:0}
+.acc{background:linear-gradient(180deg,#FFD596 0%,#E8A447 55%,#C9781D 100%);-webkit-background-clip:text;background-clip:text;color:transparent;padding-right:.04em}
+.mono{font-family:'JetBrains Mono',monospace}
+.eyebrow{font-family:'JetBrains Mono';font-size:24px;font-weight:500;letter-spacing:.26em;color:var(--amber);text-transform:uppercase}
+.dom{position:absolute;width:110px;height:420px;border-radius:16px;transform-origin:100% 100%;
+ background:linear-gradient(170deg,#1B2A40,#0B1422 70%);border:2px solid rgba(232,164,71,.55);box-shadow:inset 0 2px 0 rgba(255,255,255,.12),0 30px 60px rgba(0,0,0,.6)}
+.dom .ic{position:absolute;left:15px;top:40px;width:80px;height:80px}
+.dom .nm{position:absolute;left:0;width:110px;bottom:30px;text-align:center;font-family:'JetBrains Mono';font-size:22px;color:var(--amber)}
+.dom .dot{position:absolute;left:47px;top:190px;width:16px;height:16px;border-radius:8px;background:rgba(232,164,71,.25)}
+.cl{position:absolute;left:80px;height:84px;display:flex;align-items:center;gap:26px;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:54px}
+.cl i{width:22px;height:22px;border-radius:11px;background:var(--red);box-shadow:0 0 18px rgba(229,87,75,.8);flex:none}
+.cl em{font-style:normal;font-family:'Inter';color:rgba(255,255,255,.35);font-weight:400;font-size:40px;margin-left:6px}
+.win{position:absolute;border-radius:22px;overflow:hidden;background:#F4F6F8;box-shadow:0 40px 120px rgba(0,0,0,.65);color:#1B2430}
+.win .hd{height:92px;background:#0F2A44;border-bottom:4px solid #D98E2B;padding:16px 26px;color:#fff}
+.win .hd b{display:block;font-size:30px;font-weight:600}
+.win .hd span{font-family:'Noto Sans Ethiopic';font-size:19px;color:#C9D3DF}
+.tr{position:absolute;left:0;right:0;height:62px;display:flex;align-items:center;font-size:22px;border-bottom:1px solid #DDE3EA}
+.tr div{padding:0 14px;white-space:nowrap;overflow:hidden}
+.th{background:#E6EBF1;font-family:'JetBrains Mono';font-size:16px;letter-spacing:.06em;color:#5B6675;height:48px}
+.inp{background:#FFF8E6;color:#1F4E9C;font-weight:600;border-bottom:2px solid #D98E2B}
+.pn{position:absolute;width:470px;height:330px;border-radius:26px;background:rgba(255,255,255,.05);border:1.5px solid rgba(255,255,255,.12);overflow:hidden}
+.pn .t{position:absolute;left:26px;top:22px;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:30px}
+.pn .k{position:absolute;right:24px;top:28px;font-family:'JetBrains Mono';font-size:16px;color:#8C96A6;letter-spacing:.08em}
+.pn .v{position:absolute;left:26px;bottom:24px;font-size:44px;font-weight:700;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.pn .s{position:absolute;left:26px;bottom:84px;font-family:'Noto Sans Ethiopic';font-size:20px;color:#9AA6B8}
+.ok{position:absolute;right:22px;bottom:22px;width:54px;height:54px;border-radius:27px;background:#2E9D5F;display:flex;align-items:center;justify-content:center;font-size:30px;font-weight:800;box-shadow:0 0 24px rgba(46,157,95,.7)}
+.cta{position:absolute;height:150px;border-radius:75px;background:linear-gradient(180deg,#FFD596,#E8A447 55%,#C9781D);display:flex;align-items:center;justify-content:center;gap:30px;
+ box-shadow:0 30px 80px rgba(232,164,71,.35),inset 0 2px 0 rgba(255,255,255,.5);overflow:hidden}
+.cta span{font-family:'Noto Sans Ethiopic';font-weight:900;font-size:60px;color:#141A24}
+.cta b{font-weight:600;font-size:52px;color:#141A24}
+#vig{position:absolute;inset:0;background:radial-gradient(ellipse 85% 65% at 50% 45%,transparent 55%,rgba(0,0,0,.6) 100%);pointer-events:none}
+</style></head>
+<body><div id="stage"></div>
+<script>
+const W=1080,H=1920;
+const C=(x,a=0,b=1)=>x<a?a:x>b?b:x, P=(t,a,b)=>C((t-a)/(b-a)), L=(a,b,x)=>a+(b-a)*x;
+const E={oE:x=>x>=1?1:1-Math.pow(2,-10*x),ioE:x=>x<=0?0:x>=1?1:x<.5?Math.pow(2,20*x-10)/2:(2-Math.pow(2,-20*x+10))/2,
+ oC:x=>1-Math.pow(1-x,3),iC:x=>x*x*x,ioC:x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2,oQ:x=>1-Math.pow(1-x,5),ioS:x=>-(Math.cos(Math.PI*x)-1)/2,
+ oB:x=>{const c1=1.4,c3=c1+1;return 1+c3*Math.pow(x-1,3)+c1*Math.pow(x-1,2)}};
+const stage=document.getElementById('stage');
+function h(tag,attrs={},parent,html){const e=tag.startsWith('svg:')?document.createElementNS('http://www.w3.org/2000/svg',tag.slice(4)):document.createElement(tag);
+ for(const k in attrs){ if(k==='style') e.style.cssText=attrs[k]; else e.setAttribute(k,attrs[k]); } if(html!==undefined) e.innerHTML=html; if(parent) parent.appendChild(e); return e;}
+function tf(e,o){const {x=0,y=0,z=0,s=1,rx=0,ry=0,rz=0}=o;
+ e.style.transform=`translate3d(${x.toFixed(2)}px,${y.toFixed(2)}px,${z.toFixed(2)}px) rotateX(${rx.toFixed(3)}deg) rotateY(${ry.toFixed(3)}deg) rotateZ(${rz.toFixed(3)}deg) scale(${(o.sx??s).toFixed(4)},${(o.sy??s).toFixed(4)})`;
+ if(o.o!==undefined) e.style.opacity=C(o.o).toFixed(4); if(o.b!==undefined) e.style.filter=o.b>0.08?`blur(${o.b.toFixed(2)}px)`:'none';}
+function words(parent,text,cls,style){const wrap=h('div',{class:cls,style:style||''},parent);wrap.spans=[];
+ text.split(' ').forEach(w=>{ if(w==='/'){h('br',{},wrap);return;} let c='w'; if(w[0]==='*'){w=w.slice(1);c='w acc';}
+   const s=h('span',{class:c},wrap); s.textContent=w; wrap.spans.push(s); wrap.appendChild(document.createTextNode(' '));}); return wrap;}
+function reveal(wrap,t,t0,{st=.08,d=1.1,dy=50,bl=16,sc=0}={}){wrap.spans.forEach((s,i)=>{const p=E.oE(P(t,t0+i*st,t0+i*st+d)); tf(s,{y:(1-p)*dy,o:p,b:(1-p)*bl,s:1-(1-p)*sc});});}
+const fmt=(n,d=0)=>n.toLocaleString('en-US',{minimumFractionDigits:d,maximumFractionDigits:d});
+const scenes=[];
+function scene(a,b,build,update,opt={}){const root=h('div',{class:'scene'},stage);const s={a,b,root,fi:opt.fi??.5,fo:opt.fo??.5,zin:opt.zin??1.05,zout:opt.zout??.95};build(root,s);s.update=update;scenes.push(s);return s;}
+// background
+const bg=h('div',{class:'abs',style:'inset:0'},stage);
+const orbs=['rgba(31,95,173,.45)','rgba(217,142,43,.22)','rgba(15,42,68,.9)'].map(c=>h('div',{class:'abs',style:`width:1600px;height:1600px;left:-800px;top:-800px;border-radius:50%;background:radial-gradient(circle,${c} 0%,transparent 62%)`},bg));
+
+h('style',{},document.head,`
+#stage{background:#0B1D35}
+.mt{font-family:'Montserrat',sans-serif}
+.pcard{position:absolute;border-radius:36px;background:linear-gradient(165deg,rgba(40,58,84,.92),rgba(18,32,54,.95));border:1.5px solid rgba(255,255,255,.14);box-shadow:0 50px 140px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.08);overflow:hidden}
+.kt{position:absolute;width:440px;height:200px;border-radius:24px;background:rgba(255,255,255,.04);border:1.5px solid rgba(255,255,255,.1);padding:24px 26px}
+.kt .k{font-family:'Montserrat';font-weight:600;font-size:21px;letter-spacing:.06em;color:#9FB0C6}
+.kt .v{font-family:'Montserrat';font-weight:800;font-size:70px;line-height:1.15;color:#fff;font-variant-numeric:tabular-nums}
+.kt .v small{font-size:32px}
+.kt .s{font-family:'Noto Sans Ethiopic';font-size:23px;color:#4FD1B5}
+.tab{position:absolute;height:58px;padding:0 20px;border-radius:14px;background:rgba(255,255,255,.06);border:1.5px solid rgba(232,163,61,.45);display:flex;align-items:center;font-family:'Montserrat';font-weight:700;font-size:21px;white-space:nowrap}
+.vp{position:absolute;height:72px;padding:0 30px;border-radius:36px;display:flex;align-items:center;gap:14px;font-family:'Montserrat';font-weight:800;font-size:28px;letter-spacing:.1em;white-space:nowrap}
+.vp span{font-family:'Noto Sans Ethiopic';letter-spacing:0}
+.chipin{position:absolute;height:96px;padding:0 34px;border-radius:48px;background:rgba(255,255,255,.07);border:1.5px solid rgba(232,163,61,.55);display:flex;align-items:center;gap:18px;font-family:'Noto Sans Ethiopic';font-weight:700;font-size:42px;white-space:nowrap}
+.chipin i{font-style:normal;color:#E8A33D;font-family:'Montserrat';font-weight:800}
+.ctab{position:absolute;height:150px;border-radius:75px;background:linear-gradient(180deg,#F5B54E,#E39A2C 60%,#C97F1A);display:flex;align-items:center;justify-content:center;gap:28px;box-shadow:0 30px 90px rgba(232,163,61,.45),inset 0 2px 0 rgba(255,255,255,.5);overflow:hidden}
+.ctab span{font-family:'Noto Sans Ethiopic';font-weight:900;font-size:60px;color:#111A28}
+.ctab b{font-family:'Montserrat';font-weight:700;font-size:52px;color:#111A28}
+`);
+const AMB='#E8A33D', TEAL='#2A9D8F', ROSE='#C44E52';
+// blueprint grid background
+const grid=h('div',{class:'abs',style:'left:-120px;top:-120px;width:1320px;height:2160px;background-image:linear-gradient(rgba(255,255,255,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.035) 1px,transparent 1px);background-size:60px 60px'},bg);
+function wordmark(parent,top,size=56,left=72){return h('div',{class:'abs mt',style:`left:${left}px;top:${top}px;font-size:${size}px;font-weight:800;letter-spacing:-.02em;white-space:nowrap`},parent,`<span style="color:${AMB}">Profit</span>Check<span style="display:inline-block;width:${size*.22}px;height:${size*.22}px;background:${AMB};border-radius:${size*.04}px;margin-left:${size*.1}px"></span>`);}
+function pill(parent,text,top){return h('div',{class:'abs mt',style:`right:72px;top:${top}px;height:60px;padding:0 28px;border-radius:30px;border:1.5px solid rgba(232,163,61,.5);background:rgba(255,255,255,.04);display:flex;align-items:center;font-size:19px;font-weight:800;letter-spacing:.2em;color:${AMB}`},parent,text);}
+
+h('style',{},document.head,`
+.page{position:absolute;width:760px;height:520px;border-radius:18px;background:#F7F9FB;color:#1B2430;box-shadow:0 40px 100px rgba(0,0,0,.6);overflow:hidden;transform-origin:50% 100%}
+.page .ph{height:86px;background:#0F2A44;border-bottom:4px solid #E8A33D;padding:14px 24px;color:#fff}
+.page .ph b{display:block;font-family:'Noto Sans Ethiopic';font-size:26px;font-weight:700}
+.page .ph span{font-family:'Montserrat';font-size:16px;font-weight:600;color:#9FB0C6;letter-spacing:.08em}
+.prow{position:absolute;left:0;right:0;height:38px;display:flex;align-items:center;font-family:'Montserrat';font-size:15px;font-variant-numeric:tabular-nums;border-bottom:1px solid #E1E6EC}
+.prow div{flex:1;text-align:right;padding-right:10px}
+.prow div:first-child{flex:none;width:170px;text-align:left;padding-left:20px;font-family:'Noto Sans Ethiopic';font-weight:600;color:#33415A}
+.badge{position:absolute;height:120px;width:300px;border-radius:26px;background:rgba(42,157,143,.12);border:2px solid rgba(42,157,143,.7);padding:18px 24px}
+.badge b{display:block;font-family:'Montserrat';font-weight:800;font-size:22px;letter-spacing:.14em;color:#4FD1B5}
+.badge span{font-family:'Montserrat';font-weight:800;font-size:44px}
+.ltab .prow{font-size:19px;height:50px}
+.ltab .prow div:first-child{width:110px;font-family:'Montserrat';font-weight:700}
+`);
+// ======================= 1 · THE BANK'S QUESTION (0–3.4) =======================
+scene(0,3.4,(r,s)=>{
+ const S=h('svg:svg',{width:1080,height:1920,style:'position:absolute;left:0;top:0'},r); s.svg=S;
+ const ln=(d,w=3,c='rgba(220,230,245,.75)')=>h('svg:path',{d,fill:'none',stroke:c,'stroke-width':w,'stroke-linejoin':'round',pathLength:1,'stroke-dasharray':'1 1'},S);
+ s.lines=[ln('M190 1150 L540 980 L890 1150 Z M170 1150 L910 1150 M170 1180 L910 1180'),
+  ln([0,1,2,3,4,5].map(i=>{const x=230+i*124; return `M${x} 1200 L${x} 1520 M${x+36} 1200 L${x+36} 1520`;}).join(' '),2.5),
+  ln('M170 1520 L910 1520 M140 1555 L940 1555 M110 1590 L970 1590',3)];
+ s.bank=h('div',{class:'abs mt',style:'left:0;width:1080px;text-align:center;top:1060px;font-size:30px;font-weight:800;letter-spacing:.5em;color:rgba(232,163,61,.85)'},r,'BANK');
+ s.bub=h('div',{class:'abs',style:'left:90px;top:330px;width:900px;min-height:330px;border-radius:44px;background:#F4F6F8;color:#0F1B30;padding:44px 52px;box-shadow:0 40px 100px rgba(0,0,0,.55);transform-origin:20% 100%'},r,
+   '<div class="et typed" style="font-size:96px;font-weight:900;line-height:1.22"></div>');
+ h('div',{class:'abs',style:'left:120px;bottom:-40px;width:0;height:0;border-left:30px solid transparent;border-right:30px solid transparent;border-top:48px solid #F4F6F8'},s.bub);
+ s.typed=s.bub.querySelector('.typed');
+ s.lbl=words(r,'— የባንኩ የመጀመሪያ ጥያቄ','abs et','left:0;width:1080px;text-align:center;top:760px;font-size:38px;font-weight:600;color:#9FB0C6');
+ s.full='ብድሩን እንዴት ይመልሳሉ?';
+},(t,lt,s)=>{
+ s.lines.forEach((l,i)=>l.setAttribute('stroke-dashoffset',(1-E.ioC(P(lt,i*.12,1.0+i*.12))).toFixed(4)));
+ s.bank.style.opacity=C(P(lt,.8,1.2));
+ const pb=E.oB(P(lt,.25,.8)); tf(s.bub,{s:.7+.3*pb,o:C(P(lt,.25,.4))});
+ const n=Math.floor(C(P(lt,.6,1.9))*[...s.full].length); const chs=[...s.full].slice(0,n).join('');
+ s.typed.innerHTML=chs.replace('እንዴት','<span style="color:#C97F1A">እንዴት</span>')+(lt<2.4&&Math.floor(lt*3)%2===0?'<span style="color:#C97F1A">|</span>':'');
+ reveal(s.lbl,lt,2.0,{st:.08,dy:20});
+ tf(s.svg,{s:1+lt*.012});
+},{fi:.01,fo:.35,zout:1.05});
+
+// ======================= 2 · A GUESS ON PAPER (3.1–6.6) =======================
+scene(3.1,6.6,(r,s)=>{
+ s.q=words(r,'ግምት ብቻ ይዘው / *ይሄዳሉ?','abs et','left:72px;top:230px;font-size:96px;font-weight:900;line-height:1.24');
+ s.pap=h('div',{class:'abs',style:'left:200px;top:640px;width:680px;height:640px;background:#F1EAD8;border-radius:6px;box-shadow:0 40px 90px rgba(0,0,0,.6);transform-origin:50% 50%'},r);
+ for(let i=0;i<14;i++) h('div',{class:'abs',style:`left:0;right:0;top:${60+i*42}px;height:1px;background:rgba(80,110,160,.3)`},s.pap);
+ h('div',{class:'abs',style:'left:70px;top:0;bottom:0;width:2px;background:rgba(196,78,82,.4)'},s.pap);
+ s.gl=[['ሽያጭ ≈ 80M','?'],['ኪራይ ≈ …','??'],['ወለድ ~ 15%','?'],['ብድር ስንት ዓመት','?'],['ትርፍ = ?','']].map((x,i)=>h('div',{class:'abs et',style:`left:96px;top:${70+i*96}px;font-size:46px;color:#25385C;transform:rotate(${[-2,1.5,-1,2,-1.5][i]}deg);clip-path:inset(0 100% 0 0);white-space:nowrap`},s.pap,`${x[0]} <span style="color:#C44E52;font-weight:800">${x[1]}</span>`));
+ s.ans=words(r,'መልሱ በሰንጠረዥ ሲቀርብ / ውይይቱ *ይቀየራል።','abs et','left:0;width:1080px;text-align:center;top:1440px;font-size:66px;font-weight:800;line-height:1.3');
+},(t,lt,s)=>{
+ reveal(s.q,lt,.1,{st:.12,d:1.0,dy:60,bl:20});
+ const crum=E.iC(P(lt,1.9,2.5));
+ tf(s.pap,{o:E.oC(P(lt,.1,.5))*(1-C(P(lt,2.35,2.55))),y:(1-E.oE(P(lt,.1,.9)))*80+crum*500,rz:-3+crum*-160,s:1-.8*crum,sx:(1-.8*crum)*(1-.25*Math.sin(crum*9)),b:crum*3});
+ s.gl.forEach((d,i)=>{const p=C(P(lt,.4+i*.28,.7+i*.28)); d.style.clipPath=`inset(0 ${(100-100*p).toFixed(1)}% 0 0)`;});
+ reveal(s.ans,lt,2.3,{st:.1,d:1.0,dy:50,bl:18});
+},{fi:.35,fo:.4});
+
+// ======================= 3 · 10-YEAR STATEMENTS (6.3–11.6) =======================
+const PG=[['የትርፍና ኪሳራ መግለጫ','P&L',['ገቢ','ወጪ','EBITDA','ወለድ','ታክስ','የተጣራ ትርፍ']],['የሀብትና ዕዳ መግለጫ','BALANCE SHEET',['ንብረት','ጥሬ ገንዘብ','ብድር','ካፒታል','ተቀማጭ ትርፍ','ድምር']],['የገንዘብ ፍሰት መግለጫ','CASH FLOW',['ከሥራ','ከኢንቨስትመንት','ከፋይናንስ','የተጣራ ፍሰት','መጀመሪያ','መጨረሻ']]];
+scene(6.3,11.6,(r,s)=>{
+ s.h=words(r,'የ10 ዓመት የፋይናንስ / መግለጫዎች — *በራሱ።','abs et','left:72px;top:230px;font-size:84px;font-weight:900;line-height:1.24');
+ s.pw=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:1920px;perspective:2200px;perspective-origin:540px 1000px'},r);
+ s.pages=PG.map((pg,k)=>{const d=h('div',{class:'page',style:`left:160px;top:${640+k*0}px`},s.pw,`<div class="ph"><b>${pg[0]}</b><span>${pg[1]} · O1–O10</span></div>`);
+   const hdr=h('div',{class:'prow',style:'top:86px;background:#E8EDF2;font-weight:700;color:#5B6675'},d,'<div style="font-family:Montserrat">ETB M</div>'+[...Array(6)].map((_,i)=>`<div>O${i+1}</div>`).join(''));
+   d.cells=[]; pg[2].forEach((rn,j)=>{const row=h('div',{class:'prow',style:`top:${124+j*38}px;${j===5?'font-weight:800;background:#FFF8E6':''}`},d,`<div>${rn}</div>`+[...Array(6)].map(()=>'<div class="c">–</div>').join('')); d.cells.push(...row.querySelectorAll('.c'));});
+   d.k=k; return d;});
+ s.tl=h('div',{class:'abs',style:'left:100px;top:1370px;width:880px;height:120px'},r);
+ s.yrs=[...Array(10)].map((_,i)=>{const d=h('div',{class:'abs mt',style:`left:${i*88}px;top:30px;width:76px;height:76px;border-radius:38px;border:2px solid rgba(232,163,61,.5);display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:800`},s.tl,`O${i+1}`); return d;});
+ s.cap=words(r,'P&L · Balance Sheet · Cash Flow','abs mt','left:0;width:1080px;text-align:center;top:1540px;font-size:34px;font-weight:700;color:#C9D4E3');
+},(t,lt,s)=>{
+ reveal(s.h,lt,.1,{st:.1,d:1.0,dy:60,bl:20});
+ s.pages.forEach(d=>{const k=d.k, t0=.5+k*.45, p=E.oQ(P(lt,t0,t0+1.4)), fan=E.ioC(P(lt,2.6,3.6));
+   tf(d,{x:L(400,0,p)+(k-1)*fan*30, y:(1-p)*-200+(k-1)*fan*-95+k*0, rz:L(18,(k-1)*-4,p)+(k-1)*fan*-3, rx:L(30,0,p), z:-k*10, o:E.oC(P(lt,t0,t0+.4))});
+   d.style.zIndex=k;
+   d.cells.forEach((c,i)=>{const col=i%6, row=Math.floor(i/6); const on=lt>t0+.6+col*.12+row*.03;
+     const v=((k*31+row*17+col*7)%90+10)*(row===5?2.3:1)*(1+col*.12); c.textContent=on?(v/10).toFixed(1):'–'; c.style.color=on?(row===5?'#0F2A44':'#1B2430'):'#B6C0CC';});});
+ s.yrs.forEach((d,i)=>{const on=lt>1.2+i*.22; d.style.background=on?'linear-gradient(160deg,#F5B54E,#C97F1A)':'transparent'; d.style.color=on?'#111A28':'#fff'; tf(d,{s:on?1+.15*Math.sin(Math.PI*C(P(lt,1.2+i*.22,1.45+i*.22))):.9,o:E.oC(P(lt,.6+i*.05,1+i*.05))});});
+ reveal(s.cap,lt,2.6,{st:.1,dy:20});
+},{fi:.35,fo:.4});
+
+// ======================= 4 · LOAN SCHEDULE + LENDER RATIOS (11.3–15.4) =======================
+const LN=(()=>{const L=150,r=.15,pm=L*r/(1-Math.pow(1+r,-8));let b=L;const out=[];for(let y=1;y<=10;y++){const i=b*r,p=y<=2?0:pm-i;out.push([y,b,i,p,Math.max(0,b-p)]);b-=p;}return out;})();
+scene(11.3,15.4,(r,s)=>{
+ s.h=words(r,'ሙሉ የብድር ክፍያ ሰንጠረዥ / *(የእፎይታ *ጊዜን *ጨምሮ)','abs et','left:72px;top:230px;font-size:70px;font-weight:900;line-height:1.28');
+ s.card=h('div',{class:'pcard',style:'left:50px;top:450px;width:980px;height:900px'},r);
+ // chart
+ const CX=60,CY=360,CW=860,CH=260; s.CX=CX;s.CY=CY;s.CW=CW;s.CH=CH;
+ s.svg=h('svg:svg',{width:980,height:900,style:'position:absolute;left:0;top:0'},s.card);
+ h('svg:rect',{x:CX,y:CY-CH,width:CW*2/10,height:CH,fill:'rgba(232,163,61,.12)'},s.svg);
+ const gt=h('svg:text',{x:CX+12,y:CY-CH+30,fill:'#E8A33D','font-size':24,'font-family':'Noto Sans Ethiopic','font-weight':700},s.svg); gt.textContent='የእፎይታ ጊዜ';
+ h('svg:line',{x1:CX,x2:CX+CW,y1:CY,y2:CY,stroke:'rgba(255,255,255,.2)','stroke-width':2},s.svg);
+ s.bars=LN.map(([y,b],i)=>{const bh=b/150*CH*.74; const g=h('svg:rect',{x:CX+i*CW/10+10,y:CY-bh,width:CW/10-20,height:bh,rx:6,fill:i<2?'rgba(232,163,61,.75)':'rgba(42,157,143,.85)',style:`transform-origin:${CX+i*CW/10+CW/20}px ${CY}px`},s.svg);
+   const tx=h('svg:text',{x:CX+i*CW/10+CW/20,y:CY+34,'text-anchor':'middle',fill:'#9FB0C6','font-size':20,'font-family':'Montserrat','font-weight':700},s.svg); tx.textContent='O'+(i+1); return g;});
+ h('div',{class:'abs mt',style:'left:60px;top:44px;font-size:20px;font-weight:700;letter-spacing:.14em;color:#9FB0C6'},s.card,'LOAN BALANCE · ETB M (SAMPLE)');
+ // table
+ s.tb=h('div',{class:'abs ltab',style:'left:40px;top:430px;width:900px;height:420px;border-radius:18px;overflow:hidden;background:#F7F9FB;color:#1B2430'},s.card);
+ h('div',{class:'prow',style:'top:0;background:#0F2A44;color:#fff;font-weight:700'},s.tb,'<div style="color:#fff">YEAR</div><div>OPENING</div><div>INTEREST</div><div>PRINCIPAL</div><div>CLOSING</div>');
+ s.rows=LN.slice(0,7).map((l,i)=>h('div',{class:'prow',style:`top:${50+i*50}px;${i<2?'background:#FFF4E0':''}`},s.tb,`<div>O${l[0]}</div><div>${l[1].toFixed(1)}</div><div>${l[2].toFixed(1)}</div><div>${l[3]?l[3].toFixed(1):'—'}</div><div>${l[4].toFixed(1)}</div>`));
+ s.bd=[['DSCR','1.42x'],['LLCR','✓'],['ICR','✓']].map((b,i)=>h('div',{class:'badge',style:`left:${50+i*335}px;top:1400px`},r,`<b>${b[0]}</b><span>${b[1]}</span>`));
+ s.cap=words(r,'ባንኮች የሚመለከቷቸው መለኪያዎች','abs et','left:0;width:1080px;text-align:center;top:1560px;font-size:38px;font-weight:600;color:#C9D4E3');
+},(t,lt,s)=>{
+ reveal(s.h,lt,.1,{st:.1,d:1.0,dy:60,bl:20});
+ const p=E.oQ(P(lt,0,2)); tf(s.card,{rx:L(24,0,p),y:L(160,0,p),o:E.oC(P(lt,0,.5))});
+ s.bars.forEach((b,i)=>{const pb=E.oB(P(lt,.5+i*.09,.9+i*.09)); b.style.transform=`scaleY(${pb.toFixed(3)})`;});
+ s.rows.forEach((d,i)=>{const pp=E.oE(P(lt,1.0+i*.12,1.6+i*.12)); tf(d,{o:pp,x:(1-pp)*40});});
+ s.bd.forEach((d,i)=>{const pp=E.oB(P(lt,2.2+i*.18,2.7+i*.18)); tf(d,{s:.6+.4*pp,o:C(P(lt,2.2+i*.18,2.35+i*.18))});});
+ reveal(s.cap,lt,2.7,{st:.08,dy:20});
+},{fi:.35,fo:.4});
+
+// ======================= 5 · IFRS + TAX → FILE READY (15.1–17.5) =======================
+scene(15.1,17.5,(r,s)=>{
+ s.h=words(r,'በIFRS መሠረት የተዘጋጀ፤ / የኢትዮጵያን የታክስ / ሥርዓት *ያገናዘበ።','abs et','left:72px;top:250px;font-size:72px;font-weight:900;line-height:1.28');
+ s.fold=h('div',{class:'abs',style:'left:240px;top:840px;width:600px;height:460px;border-radius:24px;background:linear-gradient(160deg,#E8A33D,#B9761B);box-shadow:0 40px 100px rgba(0,0,0,.6)'},r);
+ h('div',{class:'abs',style:'left:0;top:-40px;width:240px;height:70px;border-radius:20px 20px 0 0;background:#C9851F'},s.fold);
+ s.sheets=[0,1,2,3].map(i=>h('div',{class:'abs',style:`left:${40+i*8}px;top:${30-i*14}px;width:520px;height:300px;border-radius:10px;background:#F7F9FB;box-shadow:0 6px 20px rgba(0,0,0,.25)`},s.fold,
+   `<div style="height:40px;background:#0F2A44;border-radius:10px 10px 0 0"></div>`+[0,1,2,3,4].map(j=>`<div style="margin:16px 24px 0;height:10px;width:${[90,70,84,60,76][j]}%;background:#C9D2DD;border-radius:5px"></div>`).join('')));
+ s.front=h('div',{class:'abs',style:'left:0;top:150px;width:600px;height:310px;border-radius:24px;background:linear-gradient(160deg,#F5B54E,#D4901F);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px'},s.fold);
+ h('div',{class:'mt',style:'font-size:56px;font-weight:800;letter-spacing:-.02em;color:#111A28'},s.front,'Profit<span style="color:#fff">Check</span>');
+ h('div',{class:'et',style:'font-size:34px;font-weight:800;color:#111A28'},s.front,'ለባንክ ለማቅረብ ዝግጁ');
+},(t,lt,s)=>{
+ reveal(s.h,lt,.05,{st:.09,d:.9,dy:50,bl:18});
+ const p=E.oB(P(lt,.4,1.0)); tf(s.fold,{s:.7+.3*p,o:C(P(lt,.4,.6)),rz:-2});
+ s.sheets.forEach((d,i)=>{const pp=E.ioC(P(lt,.7+i*.15,1.2+i*.15)); tf(d,{y:(1-pp)*-160,o:C(P(lt,.7+i*.15,.85+i*.15)),rz:(1-pp)*(i%2?8:-8)});});
+ tf(s.front,{o:C(P(lt,1.2,1.4)),y:(1-E.oE(P(lt,1.2,1.8)))*40});
+},{fi:.3,fo:.35});
+
+// ======================= 6 · CTA (17.2–20) =======================
+scene(17.2,20.0,(r,s)=>{
+ s.glow=h('div',{class:'abs',style:'left:90px;top:300px;width:900px;height:900px;border-radius:50%;background:radial-gradient(circle,rgba(232,163,61,.22),transparent 62%)'},r);
+ s.t=words(r,'ወደ ባንክ ከመሄድዎ በፊት / *ቁጥሮችዎን *ያዘጋጁ።','abs et','left:0;width:1080px;text-align:center;top:430px;font-size:78px;font-weight:900;line-height:1.3');
+ s.wm=wordmark(r,800,140,0); s.wm.style.width='1080px'; s.wm.style.textAlign='center';
+ s.cta=h('div',{class:'ctab',style:'left:190px;top:1250px;width:700px'},r,'<span>አሁኑኑ ያዉርዱ</span><b>→</b>'); s.arrow=s.cta.lastChild;
+ s.sh=h('div',{class:'abs',style:'left:-400px;top:-50px;width:200px;height:250px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.6),transparent);transform:skewX(-20deg);mix-blend-mode:soft-light'},s.cta);
+ s.ft=words(r,'P&L · Balance Sheet · Cash Flow · DSCR','abs mt','left:0;width:1080px;text-align:center;top:1460px;font-size:26px;font-weight:600;color:#8FA2BA');
+},(t,lt,s)=>{
+ s.glow.style.opacity=E.oC(P(lt,0,1))*(.85+.15*Math.sin(lt*3));
+ reveal(s.t,lt,.1,{st:.1,d:1.0,dy:50,bl:18});
+ const pw=E.oE(P(lt,.5,1.4)); tf(s.wm,{s:.85+.15*pw,o:pw,b:(1-pw)*18});
+ const pc=E.oB(P(lt,1.1,1.7)); tf(s.cta,{s:.6+.4*pc,o:C(P(lt,1.1,1.3))});
+ s.sh.style.left=(-400+E.ioC(P(lt,1.7,2.5))*1400)+'px';
+ tf(s.arrow,{x:lt>2.0?10*Math.max(0,Math.sin((lt-2.0)*6)):0});
+ reveal(s.ft,lt,1.5,{st:.06,dy:14});
+},{fo:.4,zout:1});
+
+const hdr=h('div',{class:'abs',style:'left:0;top:0;width:1080px;height:200px'},stage);
+wordmark(hdr,96,52); pill(hdr,'BANK-READY NUMBERS',92);
+h('div',{id:'vig'},stage);
+const flash=h('div',{class:'abs',style:'inset:0;background:#fff;opacity:0;mix-blend-mode:screen'},stage);
+window.renderAt=function(t){
+ tf(grid,{x:-(t*6)%60,y:-(t*9)%60});
+ const a=t*.15;
+ tf(orbs[0],{x:200+Math.sin(a)*160,y:300+Math.cos(a*.8)*140});
+ tf(orbs[1],{x:880+Math.cos(a*.9)*150,y:1650+Math.sin(a*1.1)*120});
+ tf(orbs[2],{x:540+Math.sin(a*.6)*220,y:1000+Math.cos(a*.5)*260});
+ bg.style.opacity=C(P(t,0,.8));
+ for(const s of scenes){
+  if(t<s.a||t>s.b){s.root.style.display='none';continue;}
+  s.root.style.display='block';
+  const lt=t-s.a, ei=E.oC(P(t,s.a,s.a+s.fi)), eo=E.iC(P(t,s.b-s.fo,s.b));
+  s.root.style.opacity=(ei*(1-eo)).toFixed(4);
+  s.root.style.transform=`scale(${(L(s.zin,1,ei)*L(1,s.zout,eo)).toFixed(4)})`;
+  const bl=(1-ei)*12+eo*16; s.root.style.filter=bl>.1?`blur(${bl.toFixed(2)}px)`:'none';
+  s.update(t,lt,s);
+ }
+ hdr.style.opacity=(C(P(t,3.2,3.7))*(1-C(P(t,17.0,17.4)))).toFixed(3);
+ const f=[3.25,6.45,11.45,15.25,17.35].reduce((m,x)=>Math.max(m,1-Math.abs(t-x)/.22),0);
+ flash.style.opacity=(f*.14).toFixed(3);
+ stage.style.opacity=(1-P(t,19.6,20)).toFixed(3);
+};
+window.DURATION=20;
+</script></body></html>
