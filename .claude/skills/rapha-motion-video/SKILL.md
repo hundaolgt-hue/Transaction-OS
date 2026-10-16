@@ -22,6 +22,13 @@ The bundled pieces:
 - `references/techniques.md`: recipes for every scene type used so far (domino physics, screenshot
   camera + spotlight, Gantt/S-curve/donut, line-art drawings, helix, typewriter, props, CTA).
 
+## When HyperFrames skills are also installed
+For Rapha product videos (ProjectControl, SiteCalc Pro, ProfitCheck) this workflow and `references/brands.md` lead,
+because they carry the Amharic, data and brand rules. Use the HyperFrames skills (`/hyperframes` router) when the
+user asks for HyperFrames, or for what it does better: registry blocks and named effects, captions or graphic overlays
+on existing footage, beat-synced music videos, Figma imports, decks. If HyperFrames renders a Rapha video, still
+apply brands.md and the reporting rules below.
+
 ## Workflow
 
 ### 1. Gather the truth before designing
